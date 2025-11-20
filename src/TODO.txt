@@ -1,0 +1,3 @@
+Existing servers (aka not mine?) can have more than 1 core --> Check that when handling hacking
+Review softResetManager in beholder
+Review beholder in its entirety
