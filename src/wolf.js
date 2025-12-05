@@ -3,6 +3,8 @@
 /** @param {NS} ns */
 let portfolio = {};
 export async function main(ns) {
+    if(!ns.stock.has4SDataTIXAPI())
+        ns.exit();
   const allSymbolsBank = ns.stock.getSymbols();
   let buyingLimit = 10000000;
   while (true) {

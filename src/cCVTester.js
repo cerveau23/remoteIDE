@@ -59,7 +59,8 @@ async function ultimate(ns) {
     let failedTests = [];
 
     for (let type in ns.enums.CodingContractName) {
-        const promise = massTesting(ns, ns.enums.CodingContractName[type])
+//        const promise = massTesting(ns, ns.enums.CodingContractName[type])
+        const promise = massTesting(ns, `${type}`)
             .catch(e => {
                 ns.tprint("Error at type: ", type);
                 failedTests.push(type);
@@ -110,7 +111,11 @@ async function massTesting(ns, type) {
         // let CC = ns.codingcontract.createDummyContract(data.type);
         // //ns.run("codingContractVirus.js",1,CC,"home");
         // await testing(ns, CC, "home");
-        await singleTesting(ns, type)
+        let contractName = await singleTesting(ns, type)
+        if(ns.fileExists(contractName)) {
+            ns.tprint(Math.floor(i / 10) + "% finished, Time used: " + ns.formatNumber((Date.now() - lastTimePercent) / 1000) + "s, Contract failure!");
+            return;
+        }
         //if(i%10==0){await ns.sleep();}
         if ((i % 100 === 0) && (i !== 0)) {
             allTimesPercent.push(Date.now() - lastTimePercent);
@@ -135,4 +140,5 @@ async function massTesting(ns, type) {
 async function singleTesting(ns, type) {
     let CC = ns.codingcontract.createDummyContract(type);
     await testing(ns, CC, "home");
+    return CC;
 }
