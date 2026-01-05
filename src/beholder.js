@@ -1,4 +1,4 @@
-import {dSe} from "depthScanner";
+import { dSe } from "depthScanner";
 let awakenAtStartOfScript;
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -21,27 +21,33 @@ export async function main(ns) {
     ns.tprint("Low Ram");
     // eslint-disable-next-line no-constant-condition
     // noinspection InfiniteLoopJS
-      while (true) {
+    while (true) {
       ns.run(await softResetManager(ns));
       await ns.sleep(10000);
     }
   }
-  else { ns.ramOverride(ns.getScriptRam(ns.getScriptName())) }
+  else {
+    ns.ramOverride(ns.getScriptRam(ns.getScriptName()));
+  }
   ns.tprint("Ram Okay");
   await newHackingServers(ns);
   let functionList = ns.ps();
   if (functionList.reduce((count, currentItem) => {
     return currentItem.filename === "netGrowth.js" ? count + 1 : count;
-  }, 0) > 0) { ns.kill("netGrowth.js", "home"); }
+  }, 0) > 0) {
+    ns.kill("netGrowth.js", "home");
+  }
   if (functionList.reduce((count, currentItem) => {
     return currentItem.filename === "beholder.js" ? count + 1 : count;
-  }, 0) > 1) { ns.exit(); }
-  let runningScripts = ["wolf.js", "googleMaps.js"];//, "codingContractVirus.js"];
+  }, 0) > 1) {
+    ns.exit();
+  }
+  let runningScripts = ["wolf.js", "googleMaps.js"]; //, "codingContractVirus.js"];
   for (let i of runningScripts) {
     ns.run(i, { preventDuplicates: true, temporary: true });
   }
-    // eslint-disable-next-line no-constant-condition
-    // noinspection InfiniteLoopJS
+  // eslint-disable-next-line no-constant-condition
+  // noinspection InfiniteLoopJS
   while (true) {
     ns.run(await softResetManager(ns));
     await ns.sleep(10000);
@@ -54,8 +60,16 @@ async function newHackingServers(ns) {
   let toBeHacked = await dSe(ns, [["NAS", true]]);
   let color;
   const reset = "\u001b[0m";
-  if (toBeHacked.length === 0) { toBeHacked = "Nothing new to hack"; color = "\u001b[31m "; }
-  else { for (let i in toBeHacked) { toBeHacked[i] += "\n"; } color = "\u001b[36m "; }
+  if (toBeHacked.length === 0) {
+    toBeHacked = "Nothing new to hack";
+    color = "\u001b[31m ";
+  }
+  else {
+    for (let i in toBeHacked) {
+      toBeHacked[i] += "\n";
+    }
+    color = "\u001b[36m ";
+  }
   ns.tprint(color + toBeHacked + reset);
 }
 /**
@@ -66,11 +80,15 @@ async function newHackingServers(ns) {
  * */
 async function softResetManager(ns) {
   let awaken;
-  if ((ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname()) >= ns.getScriptRam("awakenV2.js")) && ns.scan().includes("Overseer") && ns.ls(ns.getHostname()).includes("Formulas.exe")) { awaken = "awakenV2.js" }
-  else { awaken = "awaken.js" }
+  if ((ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname()) >= ns.getScriptRam("awakenV2.js")) && ns.scan().includes("Overseer") && ns.ls(ns.getHostname()).includes("Formulas.exe")) {
+    awaken = "awakenV2.js";
+  }
+  else {
+    awaken = "awaken.js";
+  }
   if ((awakenAtStartOfScript !== awaken) && (awakenAtStartOfScript !== undefined)) {
     for (let i of await dSe(ns)) {
-      ns.ramOverride(ns.getScriptRam(ns.getScriptName()))
+      ns.ramOverride(ns.getScriptRam(ns.getScriptName()));
       ns.killall(i[0], true);
       ns.run("goPlayer.js");
       ns.run(ns.getScriptName(), { spawnDelay: 1 });

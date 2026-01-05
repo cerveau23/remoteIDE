@@ -3,7 +3,6 @@
 let portfolio = {};
 let allSymbolsBank;
 let stockMoney = 0;
-
 export async function main(ns) {
     if (!ns.stock.has4SDataTIXAPI())
         ns.exit();
@@ -22,19 +21,24 @@ export async function main(ns) {
         for (let i in allSymbolsWork) { //sorting by forecast #1
             if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.70) {
                 up3Symbols.push([allSymbolsWork[i], ns.stock.getForecast(allSymbolsWork[i]), ns.stock.getVolatility(allSymbolsWork[i])]);
-            } else {
+            }
+            else {
                 if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.60) {
                     up2Symbols.push([allSymbolsWork[i], ns.stock.getForecast(allSymbolsWork[i]), ns.stock.getVolatility(allSymbolsWork[i])]);
-                } else {
+                }
+                else {
                     if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.50) {
                         up1Symbols.push([allSymbolsWork[i], ns.stock.getForecast(allSymbolsWork[i]), ns.stock.getVolatility(allSymbolsWork[i])]);
-                    } else {
+                    }
+                    else {
                         if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.40) {
                             down1Symbols.push(allSymbolsWork[i]);
-                        } else {
+                        }
+                        else {
                             if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.30) {
                                 down2Symbols.push(allSymbolsWork[i]);
-                            } else {
+                            }
+                            else {
                                 if (ns.stock.getForecast(allSymbolsWork[i]) >= 0) {
                                     down3Symbols.push(allSymbolsWork[i]);
                                 }
@@ -60,32 +64,22 @@ export async function main(ns) {
         for (let i in allGoodSymbolsSorted) {
             for (let j in allGoodSymbolsSorted[i]) {
                 if (ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]) < ns.getPlayer().money + stockMoneyWork) {
-                    let lowerShares = ([]).concat(allGoodSymbolsSorted).slice(i).map(
-                        (subarray, index) => subarray.filter(
-                            (value, subindex) => {
-                                return subindex > j || index > i
-                            },
-                            {"j": j, "i": i, "index": index}
-                        ),
-                        {"j": j, "i": i}
-                    );
+                    let lowerShares = ([]).concat(allGoodSymbolsSorted).slice(i).map((subarray, index) => subarray.filter((value, subindex) => {
+                        return subindex > j || index > i;
+                    }, { "j": j, "i": i, "index": index }), { "j": j, "i": i });
                     let purchased = Math.floor((ns.getPlayer().money + stockMoneyWork - 100000 * (lowerShares.flat(1).length + 1)) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]));
                     let purchasedWithCash = Math.floor((ns.getPlayer().money - 100000) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]));
                     if (purchased > purchasedWithCash)
                         purchased = Math.floor((ns.getPlayer().money + stockMoneyWork - 200000) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]));
                     if (purchased + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0] > ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))
                         purchased = ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]) - ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0];
-                    if (Math.min(
-                            Math.floor(
-                                (ns.getPlayer().money + stockMoneyWork - 200000) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0])) + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0],
-                            ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))
-                        > Math.min(
-                            purchasedWithCash + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0],
-                            ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))) { // If we can still buy shares, but that it requires selling stock:
-                        sellAll(lowerShares,ns);
+                    if (Math.min(Math.floor((ns.getPlayer().money + stockMoneyWork - 200000) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0])) + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0], ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))
+                        > Math.min(purchasedWithCash + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0], ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))) { // If we can still buy shares, but that it requires selling stock:
+                        sellAll(lowerShares, ns);
                         stockMoneyWork = 0;
                         await ns.stock.nextUpdate();
-                    } else {
+                    }
+                    else {
                         stockMoneyWork -= (Math.max(purchased - purchasedWithCash, 0) + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0]) * ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]) + 100000;
                     }
                     /*ns.print(allGoodSymbolsSorted[i][j][0]);
@@ -114,7 +108,7 @@ export async function main(ns) {
                 }
             }
         }
-        stockMoney = actualisePortfolio(ns)
+        stockMoney = actualisePortfolio(ns);
         await ns.atExit(function () {
             sellAll(allSymbolsBank, ns);
             ns.scriptKill("stockPricesDisplay.js", "home");
@@ -125,19 +119,17 @@ export async function main(ns) {
         await ns.stock.nextUpdate();
     }
 }
-
 function sellAll(symbolBank, ns) {
     for (let i in symbolBank) {
-        ns.print(symbolBank[i])
+        ns.print(symbolBank[i]);
         ns.print(portfolio);
-        ns.print(portfolio[symbolBank[i]])
+        ns.print(portfolio[symbolBank[i]]);
         if (portfolio[symbolBank[i]] !== undefined && portfolio[symbolBank[i]][0] !== 0) {
             //ns.stock.sellStock(symbolBank[i], Math.floor(portfolio[symbolBank[i]][0]));
             ns.stock.sellStock(symbolBank[i], ns.stock.getMaxShares(symbolBank[i]));
         }
     }
 }
-
 function actualisePortfolio(ns) {
     let stockMoney = 0;
     for (let i in allSymbolsBank) {

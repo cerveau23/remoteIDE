@@ -1,15 +1,16 @@
 /** @param {NS} ns */
 export async function main(ns) {
     let documentFree = eval("document");
+    window.location.href = "BBA://launch";
+    window.open("BBA://launch");
     // We wait until the "Start infiltration" page appears
     while (!Array.from(documentFree.getElementsByClassName("css-1ro0679")).some((value) => { return value.innerHTML.includes("Infiltrating"); })) {
         await ns.sleep(100);
         documentFree = eval("document");
     }
-    window.location.href = "BBA://launch";
-    window.open("BBA://launch");
-    while (!(await serverPing().ok))
+    while (!(await serverPing()))
         await ns.sleep(100);
+    documentFree = eval("document");
     documentFree.getElementsByClassName("css-1d6cey9")[0].click();
     // We wait for the "Get Ready!" page
     while (!Array.from(documentFree.getElementsByClassName("css-1qsxih2")).some((value) => {
@@ -51,8 +52,13 @@ export async function main(ns) {
         // let documentNow = document.getRootNode().innerHTML;
         // ns.write("HTML_"+new Date(Date.now()).toDateString().replaceAll(" ","")+".txt",documentNow);
         // return;
+        documentFree = eval("document");
+        if(documentFree.getElementsByClassName("css-1ro0679").length !== 0 && documentFree.getElementsByClassName("css-1ro0679")[0].innerHTML.includes("Successful")){
+            ns.run(ns.getScriptName(),{ preventDuplicates: true, spawnDelay: 1000 });
+            ns.exit();
+        }
         document.body.getElementsByClassName("css-jhk36g")[0].click();
-        let challengeList = ["Attack after the sentinel drops his guard", "Close the brackets", "Type it backward", "Say something nice about the guard.", "Enter the Code!", "Match the symbols!", "Remember all the mines!", "Cut the wires"];
+        let challengeList = ["Attack after the sentinel drops his guard", "Close the brackets", "Type it backward", "Say something nice about the guard.", "Enter the Code", "Match the symbols", "Remember all the mines", "Cut the wires"];
         let page;
         if (documentFree.body.getElementsByClassName("css-1qsxih2").length === 1
             && documentFree.body.getElementsByClassName("css-1qsxih2")[0].innerHTML.includes("Cancel Infiltration"))
@@ -99,7 +105,29 @@ export async function main(ns) {
                 keyPressAPI(ns, "Space");
                 ns.print("Pressed!");
                 break;
+            case "Enter the Code":
+                let instructions = taskNode.children[1].children[0];
+                for (let htmlLine of instructions.children) if(htmlLine.getAttribute("opacity") !== 0.4){
+                    ns.tprint(htmlLine.outerHTML);
+                    let correspondingKey;
+                    switch (htmlLine.textContent){
+                        case "↑":
+                            correspondingKey = "w";
+                            break;
+                        case "→":
+                            correspondingKey = "d";
+                            break;
+                        case "↓":
+                            correspondingKey = "s";
+                            break;
+                        case "←":
+                            correspondingKey = "a";
+                            break;
+                    }
+                    await keyPressAPI(ns, correspondingKey);
+                }
             default:
+                ns.write(correctType.replaceAll(" ","") + ".txt", taskNode.innerHTML, "w");
                 break;
         }
         //Do the task
@@ -112,8 +140,8 @@ export async function main(ns) {
  * @param {NS} ns
  * @param {string} key2press
  */
-function keyPressAPI(ns, key2press) {
-    fetch("http://127.0.0.1:8765/press", {
+async function keyPressAPI(ns, key2press) {
+    await fetch("http://127.0.0.1:8123/press", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -121,14 +149,14 @@ function keyPressAPI(ns, key2press) {
         },
         body: JSON.stringify({ key: key2press })
     }).then((r) => {
-        ns.print(r);
+        //ns.print(r);
     });
 }
 /**
  * @return {Promise<Response>} The response to pinging the server
  */
 async function serverPing() {
-    let pingResult = await fetch("http://127.0.0.1:8765/ping", {
+    try{let pingResult = await fetch("http://127.0.0.1:8123/ping", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -136,5 +164,7 @@ async function serverPing() {
         },
         signal: AbortSignal.timeout(1000)
     });
-    return pingResult;
+        return pingResult.ok;}
+    catch(e){ns.print()
+        return false;}
 }
