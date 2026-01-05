@@ -258,3 +258,60 @@ export function stringToArray(string) {
 	}
 	return answer
 }
+
+/** @param {NS} ns
+ * @param {String} keyToPress
+ * @param {Number} keysCode
+ * @param {bool} upPress
+ */
+export async function simulateKey(ns, keyToPress,keysCode, upPress) {
+	let initDict = {
+		key: keyToPress,
+		keyCode: keysCode, // Enter key code
+		code: keyToPress,
+		which: keysCode,
+		type: "keydown",
+		metaKey: false,
+		altKey:
+			false,
+		cancelBubble:
+			false,
+		cancelable:
+			true,
+		charCode:
+			0,
+		timeStamp:
+			3208093,
+		ctrlKey:
+			false,
+		currentTarget:
+			null,
+		defaultPrevented:
+			true,
+		detail:
+			0,
+		eventPhase:
+			0,
+		isComposing:
+			false,
+		repeat:
+			false,
+		returnValue:
+			false,
+		shiftKey:
+			false,
+		bubbles: true, // Ensure the event bubbles up to trigger listeners
+		isTrusted: true,
+		composed: true
+	}
+
+	// Find the input element and dispatch the event
+	document.body.dispatchEvent(new KeyboardEvent('keydown', initDict));
+	initDict.type = "keypress";
+	document.body.dispatchEvent(new KeyboardEvent('keypress', initDict));
+	if(upPress) {
+		await ns.sleep(5);
+		initDict.type = "keyup";
+		document.body.dispatchEvent(new KeyboardEvent('keyup', initDict));
+	}
+}

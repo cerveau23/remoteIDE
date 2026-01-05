@@ -21,6 +21,7 @@ export async function testing(ns, name, server) {
 /**
  * This function acts as a hub for all the solving functions for the contracts
  * @param {NS} ns
+ * @param pid
  * @param {boolean} dev Whether or not to run functions that are in active development
  * @param {string} name The name of the targeted contract
  * @param {string} server The server hosting the targeted contract
@@ -34,7 +35,7 @@ export async function main(ns, dev = flag.dev, name = flag.name, server = flag.s
     flag = ns.flags([["dev", flag.dev], ["name", flag.name], ["server", flag.server]]);
 
     let windowSizes = ns.ui.windowSize();
-    ns.ui.moveTail(windowSizes[0] * 1.9 / 3, 0);
+    ns.ui.moveTail(windowSizes[0] * 1.8 / 3, 0);
     ns.ui.resizeTail(windowSizes[0] / 4, windowSizes[1] / 4);
 
 /**------------------------------------------------------------------
@@ -47,10 +48,7 @@ export async function main(ns, dev = flag.dev, name = flag.name, server = flag.s
     }
 
     if (ns.args[0] !== undefined) { // As an alternative to the flags and method calls, we allow the terminal to send the name and server as normal arguments. To verify which one it is, we have to check if dev is true or if the argument is a valid name. Otherwise, we stop the program
-        if (!flag.dev) {
-            ns.ui.closeTail(ns.args[0]);
-            return;
-        }else if ((typeof ns.args[0] == "string") && ns.args[0].lastIndexOf(".cct") !== -1) { // Will only try the second condition if the first is true
+        if ((typeof ns.args[0] == "string") && ns.args[0].lastIndexOf(".cct") !== -1) { // Will only try the second condition if the first is true
             await answering(ns, ns.args[0], ns.args[1]);
             return;
         }
@@ -83,9 +81,12 @@ export async function main(ns, dev = flag.dev, name = flag.name, server = flag.s
         results = null
     }
     ns.print("INFO Results: " + results);
+    let file = "cCV_log.txt";
+    ns.write(file,new Date().toDateString() + ":\nResults: " + results + "\n", "a");
     await ns.sleep(600000);
     ns.ui.closeTail();
-    ns.spawn(ns.getScriptName(), {preventDuplicates: true, spawnDelay: 1}, ns.pid);
+    ns.spawn(ns.getScriptName(), {preventDuplicates: true, spawnDelay: 1000});
+    ns.exit();
 }
 
 /**

@@ -4,7 +4,7 @@ export async function main(ns) {
   let purchaseCost = 0;
   const blap = [];
   while (i <= 1048576) {
-    purchaseCost = "" + ns.getPurchasedServerUpgradeCost(ns.args[0], i);
+    purchaseCost = "" + Math.floor(ns.getPurchasedServerUpgradeCost(ns.args[0], i));
     ns.tprint("" + i + " : " + purchaseCost.replace(/\B(?=(\d{3})+(?!\d))/g, "'"));
     blap.push(i);
     i = i * 2;

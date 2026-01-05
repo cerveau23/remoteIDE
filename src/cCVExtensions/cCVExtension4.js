@@ -1867,6 +1867,9 @@ export async function lZCompression(ns, contractName, serverName) {
     }
     ns.print("Correspondances established!");
     await ns.sleep(100)
+    ns.print("Sorting out the overly long correspondances");
+    ns.print(correspondances);
+    throw Error();
 
     /**@param {String[]} array - array to count
      * @return {String}

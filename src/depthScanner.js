@@ -101,7 +101,7 @@ It has 5 possible flags:
                 pathTarget = pathTarget.replaceAll(" --> ", "; connect ");
             }
             if (commandline) {
-                ns.tprintRaw(pathTarget);
+                ns.tprint(pathTarget);
             } else {
                 ns.printRaw(pathTarget);
             }

@@ -6,20 +6,27 @@ export async function main(ns) {
 	let mapp = await portReceiver(ns, "Server Map");
 	let serversWithoutBackdoors = [];
 	let serversWithBackdoors = [];
+	let others = [];
 	for (let i of mapp) {
 		if ((!ns.getServer(i[0]).backdoorInstalled) && (!ns.getServer(i[0]).purchasedByPlayer) && (ns.getServer(i[0]).hasAdminRights)) {
 			serversWithoutBackdoors.push(i[0]);
 		}
 		else {
-			if ((!ns.getServer(i[0]).backdoorInstalled) && (!ns.getServer(i[0]).purchasedByPlayer) && !(ns.getServer(i[0]).hasAdminRights)) {
+			if (ns.getServer(i[0]).backdoorInstalled && (!ns.getServer(i[0]).purchasedByPlayer)) {
 				serversWithBackdoors.push(i[0]);
 			}
+			else
+				others.push(i[0]);
 		}
 	}
-	ns.print(serversWithBackdoors);
-	serversWithoutBackdoors.splice(serversWithoutBackdoors.indexOf("home"), 1);
+	ns.print("Servers owned: " + serversWithBackdoors);
+	ns.print("Servers to hack: " + serversWithoutBackdoors);
+	ns.print("Other: " + others);
+	if(serversWithoutBackdoors.indexOf("home") !== -1)
+		serversWithoutBackdoors.splice(serversWithoutBackdoors.indexOf("home"), 1);
 	let previousServer = ns.getHostname();
 	for (let i of serversWithoutBackdoors) {
+		ns.print(i);
 		let command = await dSe(ns, [["d", i], ["connector", true]]) + "; backdoor";
 		ns.tprintRaw(command);
 		copyToClipboard(command);
@@ -32,7 +39,10 @@ export async function main(ns) {
 		//document.getElementById('terminal-input').addEventListener('keydown', onSpace);
 		ns.print("Finished")
 		let documentFree = eval("document");
-		await waitr(ns, 20, "Giving time to execute command", function () {if(documentFree.getElementById('terminal-input').value.trim()==="" || " "){documentFree.getElementById('terminal-input').value = command} return !ns.getServer(previousServer).isConnectedTo });
+		await waitr(ns, 20, "Giving time to execute command", function () { if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
+			documentFree.getElementById('terminal-input').value = command; /*ns.asleep(10);
+            simulateKey("Space", ?);simulateKey("Enter", 13);*/
+		} return !ns.getServer(previousServer).isConnectedTo; });
 		while (ns.getServer(previousServer).isConnectedTo) {
 			ns.toast("Backdoor finished, start new backdoor!", "error");
 			documentFree = eval("document");
@@ -76,25 +86,114 @@ function pasteFromClipboard() {
 }*/
 function onSpace(event){
 	//simulateKey("Space",32)
-	if(event.keyCode===32){simulateKey("Enter",13)}
+	if(event.keyCode===32){simulateKey(ns,"Enter",13, true)}
 }
 /** @param {String} keyToPress
  * @param {Number} keysCode
  */
-function simulateKey(keyToPress,keysCode) {
+function simulateKeyV1(keyToPress,keysCode) {
 	// Create a new KeyboardEvent for the 'Enter' key
 	const enterKeyEvent = new KeyboardEvent('keydown', {
 		key: keyToPress,
 		keyCode: keysCode, // Enter key code
 		code: keyToPress,
 		which: keysCode,
-		bubbles: true // Ensure the event bubbles up to trigger listeners
+		type: "keydown",
+		metaKey: false,
+		altKey:
+			false,
+		cancelBubble:
+			false,
+		cancelable:
+			true,
+		charCode:
+			0,
+		timeStamp:
+			3208093,
+		ctrlKey:
+			false,
+		currentTarget:
+			null,
+		defaultPrevented:
+			true,
+		detail:
+			0,
+		eventPhase:
+			0,
+		isComposing:
+			false,
+		repeat:
+			false,
+		returnValue:
+			false,
+		shiftKey:
+			false,
+		bubbles: true, // Ensure the event bubbles up to trigger listeners
+		isTrusted: true,
+		composed: true
 	});
 	let documentFree = eval("document");
 
 	// Find the input element and dispatch the event
 	const inputElement = documentFree.getElementById('terminal-input');
 	inputElement.dispatchEvent(enterKeyEvent);
+}
+
+/** @param {NS} ns
+ * @param {String} keyToPress
+ * @param {Number} keysCode
+ * @param {bool} upPress
+ */
+export async function simulateKey(ns, keyToPress,keysCode, upPress) {
+	let initDict = {
+		key: keyToPress,
+		keyCode: keysCode, // Enter key code
+		code: keyToPress,
+		which: keysCode,
+		type: "keydown",
+		metaKey: false,
+		altKey:
+			false,
+		cancelBubble:
+			false,
+		cancelable:
+			true,
+		charCode:
+			0,
+		timeStamp:
+			3208093,
+		ctrlKey:
+			false,
+		currentTarget:
+			null,
+		defaultPrevented:
+			true,
+		detail:
+			0,
+		eventPhase:
+			0,
+		isComposing:
+			false,
+		repeat:
+			false,
+		returnValue:
+			false,
+		shiftKey:
+			false,
+		bubbles: true, // Ensure the event bubbles up to trigger listeners
+		isTrusted: true,
+		composed: true
+	}
+
+	// Find the input element and dispatch the event
+	document.body.dispatchEvent(new KeyboardEvent('keydown', initDict));
+	initDict.type = "keypress";
+	document.body.dispatchEvent(new KeyboardEvent('keypress', initDict));
+	if(upPress) {
+		await ns.asleep(5);
+		initDict.type = "keyup";
+		document.body.dispatchEvent(new KeyboardEvent('keyup', initDict));
+	}
 }
 function triggerDivClick() {
 	let documentFree = eval("document");

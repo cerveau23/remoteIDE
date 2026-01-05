@@ -16,6 +16,10 @@ export async function main(ns) {
       if (ns.go.getCurrentPlayer() === "None") {
         ns.go.resetBoardState(data["o"], boardSize);
       }
+      if(data.o === "No AI"){
+        await ns.asleep(10000)
+        continue;
+      }
       let x = 0;
       let y = 2;
       do {

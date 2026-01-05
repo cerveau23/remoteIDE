@@ -5,24 +5,43 @@ async function sleep(ms) {
 /** @param {NS} ns */
 export async function main(ns) {
 	let documentFree = eval("document")
+	ns.print(ns.getHostname());
 	let stockMoney = parseInt(ns.args)
+	if (ns.getHostname() === "Overseer") {
+		let clones = ns.ps("Overseer").filter((a) => {
+			return a.filename === ns.getScriptName()
+		})
+		for(let i of clones) if(i.pid !== ns.pid) {
+			if(ns.kill(i.pid))
+				ns.print("Killed " + i.pid);
+			else
+				ns.print("Failed to kill " + i.pid);
+		}
+	}
 	if (documentFree.getElementsByClassName("css-01010101010101").length === 0) {
 		addElementV4(ns)
 	}
-	documentFree = eval("documentFree")
+	documentFree = eval("document");
 	documentFree.getElementsByClassName("css-01010101010101")[0].innerHTML = ns.formatNumber(stockMoney)
 	if ((ns.getHostname() === "Overseer") && ((ns.ps("Overseer").filter((a)=>{return a.filename === ns.getScriptName()}).length === 1) || stockMoney === 0)) {
-		let killinTime = false
-		function killer() { killinTime = true }
-		console.log(documentFree.getElementById("Stonks").innerHTML)
-		documentFree.getElementById("Stonks").onclick = killer
-		//documentFree.getElementById("Stonks").addEventListener("click",killer)
-		async function waitingTime() { while (!killinTime) { await sleep(500) } }
-		await waitingTime()
-		if (stockMoney !== 0) { ns.kill("wolf.js", "home") }
-		else { ns.exec("wolf.js", "home") }
-		documentFree.getElementById("Stonks").removeEventListener("click",killer)
+		function killer(ns) {
+			ns.print("killer");
+			if (ns.kill("wolf.js","home")) { ns.scriptKill("wolf.js", "home") }
+			else { ns.exec("wolf.js", "home") }
+		}
+		console.log(documentFree.getElementById("Stonks").innerHTML);
+		documentFree.getElementById("Stonks").onclick = ()=>killer(ns);
+		while(true)
+			await ns.asleep(1000);
+		// documentFree.getElementById("Stonks").addEventListener("click",killer)
+		// async function waitingTime() { while (!killinTime) { await sleep(500) } }
+		// await waitingTime()
+		// documentFree.getElementById("Stonks").removeEventListener("click",killer)
 	}
+	await ns.atExit(function () {
+		ns.scriptKill("wolf.js","home");
+		ns.run("stockPricesDisplay.js", 0);
+	});
 
 }/*
 function addElementV1() {
