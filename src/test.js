@@ -23,38 +23,63 @@ export async function main(ns) {
         ns.print("Finished")
     await ns.grafting.waitForOngoingGrafting();
     ns.grafting.graftAugmentation("Neurotrainer III")
-    for(let augm of ns.grafting.getGraftableAugmentations()){
+    for(let augm of ns.grafting.getGraftableAugmentations().filter((value)=>{return value.includes("Bionic")||value.includes("Graphene")})){
         await ns.grafting.waitForOngoingGrafting();
         ns.grafting.graftAugmentation(augm);
-    }*/
+    }
     //window.location.href = "BBA://launch";
     //while (!(await serverPing()))
     //    await ns.sleep(100);
-
-    fetch("http://127.0.0.1:8123/press", {
+    /*await ns.sleep(2000);
+    ns.tprint(await (await fetch("http://127.0.0.1:8123/press", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "X-Auth": "BoredAndReadyToCodeForGlory"
         },
-        body: JSON.stringify({ key: 'E' })
-    }).then((r) => {
-        ns.print(r);
-    });
+        body: JSON.stringify({ key: ">" })
+    })).text()); /*.then((r) => {
+        ns.tprint(r.body);
+    }));*/
+    let infiltrationsPlaces = ns.infiltration.getPossibleLocations();
+    let stats = [];
+    let max = 0;
+    let maxPlace
+    for (let place of infiltrationsPlaces) {
+        stats.push([place, ns.infiltration.getInfiltration(place.name)])
+        if ((ns.infiltration.getInfiltration(place.name).reward.tradeRep / ns.infiltration.getInfiltration(place.name).maxClearanceLevel) > max) {
+            max = (ns.infiltration.getInfiltration(place.name).reward.tradeRep / ns.infiltration.getInfiltration(place.name).maxClearanceLevel);
+            maxPlace = place;
+        }
+    }
+    ns.tprint("Rep : City: " + maxPlace.city + " Place: " + maxPlace.name + " Gain: " + max);
+    for (let place of infiltrationsPlaces) {
+        stats.push([place, ns.infiltration.getInfiltration(place.name)])
+        if ((ns.infiltration.getInfiltration(place.name).reward.sellCash / ns.infiltration.getInfiltration(place.name).maxClearanceLevel) > max) {
+            max = (ns.infiltration.getInfiltration(place.name).reward.sellCash / ns.infiltration.getInfiltration(place.name).maxClearanceLevel);
+            maxPlace = place;
+        }
+    }
+    ns.tprint("Money : City: " + maxPlace.city + " Place: " + maxPlace.name + " Gain: " + max);
+
     async function serverPing() {
-        try{let pingResult = await fetch("http://127.0.0.1:8123/ping", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Auth": "BoredAndReadyToCodeForGlory"
-            },
-            signal: AbortSignal.timeout(1000)
-        });
-            return pingResult.ok;}
-        catch(e){ns.print(e)
-            return false;}
+        try {
+            let pingResult = await fetch("http://127.0.0.1:8123/ping", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Auth": "BoredAndReadyToCodeForGlory"
+                },
+                signal: AbortSignal.timeout(1000)
+            });
+            return pingResult.ok;
+        } catch (e) {
+            ns.print(e)
+            return false;
+        }
     }
 }
+
 /*void ((function () {
     var e = document.createElement('script');
     let lc = new Date().getDate();
