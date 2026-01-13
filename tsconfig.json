@@ -20,6 +20,8 @@
       "/*": ["*"],
       "@ns": ["../NetscriptDefinitions.d.ts"],
       "@react": ["lib/react.ts"]
-    }
+    },
+    "types": ["bitburner"],
+    "noEmit": true
   }
 }
