@@ -1,5 +1,5 @@
-import part1 from "beeper/beepPart1";
-import part2 from "beeper/beepPart2";
+import part1 from "/beeper/beepPart1";
+import part2 from "/beeper/beepPart2";
 
 /**
  * Makes a sound

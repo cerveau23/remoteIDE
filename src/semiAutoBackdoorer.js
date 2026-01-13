@@ -1,9 +1,13 @@
 import {portReceiver} from "functions";
 import {dSe} from "depthScanner";
+import {keyPressAPI, serverPing, initialisation as serverInitialisation} from "BBA_API_handler"
 
-/** @param {NS} ns */
+// noinspection JSUnusedLocalSymbols
+/** @param {NS} ns **/
 export async function main(ns) {
-    //ns.tail();
+    await serverInitialisation(ns);
+/*    ns.tprint("Server initialised") */
+    /* ns.tail(); */
     let mapp = await portReceiver(ns, "Server Map");
     let serversWithoutBackdoors = [];
     let serversWithBackdoors = [];
@@ -31,30 +35,38 @@ export async function main(ns) {
         copyToClipboard(command);
         await ns.sleep(1);
         triggerDivClick();
-        //document.querySelector('.MuiInputBase-root').addEventListener('click', onClick);
+        /* document.querySelector('.MuiInputBase-root').addEventListener('click', onClick); */
         await ns.sleep(1);
-        //pasteFromClipboard();
-        //await ns.sleep(1);
-        //document.getElementById('terminal-input').addEventListener('keydown', onSpace);
+        /* pasteFromClipboard(); */
+        /* await ns.sleep(1); */
+        /* document.getElementById('terminal-input').addEventListener('keydown', onSpace); */
         ns.print("Finished");
         let documentFree = eval("document");
         await waitr(ns, 20, "Giving time to execute command", function () {
             if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
-                documentFree.getElementById('terminal-input').value = command; /*ns.asleep(10);
-                simulateKey("Space", ?);simulateKey("Enter", 13);*/
+                documentFree.getElementById('terminal-input').value = command;
+                /* ns.asleep(10);
+                simulateKey("Space", ?);simulateKey("Enter", 13); */
             }
             return !ns.getServer(previousServer).isConnectedTo;
         });
-        while (ns.getServer(previousServer).isConnectedTo) {
-            ns.toast("Backdoor finished, start new backdoor!", "error");
-            documentFree = eval("document");
-            await waitr(ns, 1, "Waiting for command to be executed", function () {
-                if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
-                    documentFree.getElementById('terminal-input').value = command;
-                }
-                return false;
-            });
-            ns.run("beep.js", 1, 1440);
+        if(! (await serverPing( true ))){
+            while (ns.getServer(previousServer).isConnectedTo) {
+                ns.toast("Backdoor finished, start new backdoor!", "error");
+                documentFree = eval("document");
+                await waitr(ns, 1, "Waiting for command to be executed", function () {
+                    if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
+                        documentFree.getElementById('terminal-input').value = command;
+                    }
+                    return false;
+                });
+                ns.run("beep.js", 1, 1440);
+                if( await serverPing( true ))
+                    await autoEnter(ns);
+            }
+        }
+        else if(documentFree.getElementById('terminal-input') !== undefined){
+            await autoEnter(ns)
         }
         while (!ns.getServer(i).backdoorInstalled) {
             ns.toast("Waiting on backdoor for " + i + "...", "info");
@@ -66,9 +78,10 @@ export async function main(ns) {
         ns.run("beep.js", 1, 440);
         previousServer = i;
     }
-    if (serversWithoutBackdoors.length === 0) {
-        ns.tprint("All servers backdoored!");
-    }
+    /* if (serversWithoutBackdoors.length === 0) { */
+    ns.tprint("All servers backdoored!");
+    /* } */
+    ns.write("lastHackingAtLevel.txt", ns.getHackingLevel().toString(), "w");
 }
 
 /** @param {String} text */
@@ -77,13 +90,18 @@ export function copyToClipboard(text) {
     navigator.clipboard.writeText(text)
         .then(() => {
             // Display success message
-            //alert('Text copied to clipboard!');
+            // alert('Text copied to clipboard!');
         })
         .catch(err => {
             // Handle errors
             console.error('Failed to copy: ', err);
         });
-} /*
+}
+
+// noinspection JSUnusedLocalSymbols
+/**
+ * @deprecated
+ */
 function pasteFromClipboard() {
     // Use the Clipboard API to read text from the clipboard
     navigator.clipboard.readText()
@@ -95,7 +113,12 @@ function pasteFromClipboard() {
             // Handle any errors (e.g., permission denied)
             console.error('Failed to read clipboard: ', err);
         });
-}*/
+}
+
+// noinspection JSUnusedLocalSymbols
+/**
+ * @deprecated
+ */
 function onSpace(event) {
     //simulateKey("Space",32)
     if (event.keyCode === 32) {
@@ -103,7 +126,9 @@ function onSpace(event) {
     }
 }
 
-/** @param {String} keyToPress
+// noinspection JSUnusedLocalSymbols
+/**
+ * @param {String} keyToPress
  * @param {Number} keysCode
  */
 function simulateKeyV1(keyToPress, keysCode) {
@@ -191,7 +216,7 @@ function triggerDivClick() {
     divElement.dispatchEvent(clickEvent);
 }
 
-//<div spellcheck="false" class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-1u3hywr-input"><p class="MuiTypography-root MuiTypography-body1 css-r3d8m1">[home&nbsp;/]&gt;&nbsp;</p><input aria-invalid="false" autocomplete="off" id="terminal-input" type="text" class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart css-1oaunmp" value=""></div>
+/* <div spellcheck="false" class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-1u3hywr-input"><p class="MuiTypography-root MuiTypography-body1 css-r3d8m1">[home&nbsp;/]&gt;&nbsp;</p><input aria-invalid="false" autocomplete="off" id="terminal-input" type="text" class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart css-1oaunmp" value=""></div> */
 /**
  * @param {NS} ns
  * @param {Number} seconds
@@ -209,4 +234,11 @@ async function waitr(ns, seconds, reason, breaker = function () {
         }
     }
     return 1;
+}
+
+async function autoEnter(ns){
+    if( ! await serverPing())
+        return;
+    await keyPressAPI(ns, "SPACE");
+    await keyPressAPI(ns, "ENTER");
 }

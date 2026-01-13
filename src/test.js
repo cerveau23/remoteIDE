@@ -1,3 +1,5 @@
+import "BBA_API_handler"
+
 /** @param {NS} ns */
 export async function main(ns) {
     //ns.exploit()
@@ -41,6 +43,13 @@ export async function main(ns) {
     })).text()); /*.then((r) => {
         ns.tprint(r.body);
     }));*/
+    ns.tprint(ns.bladeburner.getActionEstimatedSuccessChance("General", "Recruitment"))
+    let Noise = Date.now();
+    let before = Date.now()
+    await serverPing()
+    let after = Date.now();
+    ns.tprint("Base delay: " + (before - Noise))
+    ns.tprint("Ping: " + (after - before))
     let infiltrationsPlaces = ns.infiltration.getPossibleLocations();
     let stats = [];
     let max = 0;
@@ -61,8 +70,11 @@ export async function main(ns) {
         }
     }
     ns.tprint("Money : City: " + maxPlace.city + " Place: " + maxPlace.name + " Gain: " + max);
-
-    async function serverPing() {
+    let response = (await serverPing(true));
+    ns.tprint(response.ok.toString());
+    ns.tprint(response.text());
+    ns.tprint(response);
+    async function serverPing() { 
         try {
             let pingResult = await fetch("http://127.0.0.1:8123/ping", {
                 method: "GET",
@@ -72,7 +84,7 @@ export async function main(ns) {
                 },
                 signal: AbortSignal.timeout(1000)
             });
-            return pingResult.ok;
+            return pingResult;
         } catch (e) {
             ns.print(e)
             return false;
