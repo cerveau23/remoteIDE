@@ -8,38 +8,59 @@ export async function main(ns) {
 
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
-// export async function findLargestPrimeFactorObsolete(ns, contractName, serverName) {
-// 	let number = ns.codingcontract.getData(contractName, serverName);
-// 	//ns.tprint("1000 miles to go")
-// 	await ns.sleep(1000);
-// 	let primeArray;
-// 	if (primeNumbers[1] < number) {
-// 		primeArray = await sieveOfEratosthenes(ns, number);
-// 		primeArray = decompressPrimes(await runLengthDecode(primeArray))
-// 		let smolPrimes = [2, 3, 5, 7]
-// 		let bigPrimes = smolPrimes.filter((a) => { return number % a === 0 }).map((a) => { return number / a })
-// 		if (primeArray.length === 0) { primeArray = bigPrimes }
-// 		primeArray.unshift(smolPrimes)
-// 		//ns.tprint("Sieve obtained");
-// 		await ns.sleep(1000);
-// 		primeNumbers = [primeArray, number];
-// 	}
-// 	else { primeArray = primeNumbers[0] }
-// 	//ns.print(primeArray)
-// 	let maxPrime;
-// 	for (let p of primeArray) {
-// 		if (number % p === 0) { maxPrime = p }
-// 	}
-// 	ns.print(maxPrime)
-// 	if (maxPrime === undefined) { maxPrime = number }
-// 	ns.atExit(function () {
-// 		if (ns.fileExists("./PrimeNumbers.txt")) { ns.rm("PrimeNumbers.txt") }
-// 	})
-// 	//throw Error()
-// 	return maxPrime
-// }
+ *  @param {string} contractName
+ *  @param {string} serverName
+ *  @deprecated */
+export async function findLargestPrimeFactorObsolete(ns, contractName, serverName) {
+    let number = ns.codingcontract.getData(contractName, serverName);
+    //ns.tprint("1000 miles to go")
+    await ns.sleep(1000);
+    let primeArray;
+    let primeNumbers = [[], 0];
+    if (primeNumbers[1] < number) {
+        primeArray = await sieveOfEratosthenes(ns, number);
+        primeArray = decompressPrimes(await runLengthDecode(primeArray))
+        let smolPrimes = [2, 3, 5, 7]
+        let bigPrimes = smolPrimes.filter((a) => {
+            return number % a === 0
+        }).map((a) => {
+            return number / a
+        })
+        if (primeArray.length === 0) {
+            primeArray = bigPrimes
+        }
+        primeArray.unshift(smolPrimes)
+        //ns.tprint("Sieve obtained");
+        await ns.sleep(1000);
+        primeNumbers = [primeArray, number];
+    } else {
+        primeArray = primeNumbers[0]
+    }
+    //ns.print(primeArray)
+    let maxPrime;
+    for (let p of primeArray) {
+        if (number % p === 0) {
+            maxPrime = p
+        }
+    }
+    ns.print(maxPrime)
+    if (maxPrime === undefined) {
+        maxPrime = number
+    }
+    ns.atExit(function () {
+        if (ns.fileExists("./PrimeNumbers.txt")) {
+            ns.rm("PrimeNumbers.txt")
+        }
+    })
+    //throw Error()
+    return maxPrime
+}
+
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ */
 export async function findLargestPrimeFactor(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let maxPrime = 0;
@@ -60,55 +81,61 @@ export async function findLargestPrimeFactor(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
-// export async function hammingCodesIntegertoEncodedBinaryHomemade(ns, contractName, serverName) {
-// 	let contractData = ns.codingcontract.getData(contractName, serverName);
-// 	let binaryString = contractData.toString(2);
-// 	ns.print(`Binary Representation: ${binaryString}`);
-//
-// 	// Pad binary string to ensure it's of a manageable length
-// 	let binaryArray = binaryString.split("").map(Number);
-//
-// 	function initializeHammingCode() {
-// 		binaryArray.unshift(0);
-// 		let i = 0;
-// 		while (Math.pow(2, i) < binaryArray.length) {
-// 			binaryArray.splice(Math.pow(2, i), 0, 0);  // Add parity bits at power-of-2 positions
-// 			i++;
-// 		}
-// 	}
-// 	function setHammingCode() {
-// 		// Set each parity bit based on the bits it covers
-// 		for (let i = 0; i <= Math.log2(binaryArray.length); i++) {  // Use <= here
-// 			let position = Math.pow(2, i);
-// 			let sum = 0;
-// 			// Calculate parity bit by checking positions covered by the parity bit
-// 			for (let j = position; j < binaryArray.length; j++) {
-// 				if (((j + 1) & position) !== 0) {  // Check if bit is set in position
-// 					sum += binaryArray[j];
-// 				}
-// 			}
-// 			binaryArray[position] = sum % 2;
-// 		}
-// 		// Calculate overall parity bit at position 0
-// 		let overallSum = binaryArray.reduce((acc, val) => acc + val, 0);
-// 		binaryArray[0] = overallSum % 2;
-// 	}
-// 	initializeHammingCode();
-// 	ns.print(binaryArray);
-// 	setHammingCode();
-// 	ns.print(binaryArray);
-// 	let sum = 0;
-// 	binaryArray.forEach((value) => { sum += value })
-// 	ns.print(sum)
-// 	await ns.sleep(100);
-// 	//throw (Error);
-// 	return binaryArray;
-// }
+ *  @param {string} contractName
+ *  @param {string} serverName
+ *  @deprecated */
+export async function hammingCodesIntegertoEncodedBinaryHomemade(ns, contractName, serverName) {
+    let contractData = ns.codingcontract.getData(contractName, serverName);
+    let binaryString = contractData.toString(2);
+    ns.print(`Binary Representation: ${binaryString}`);
+
+    // Pad binary string to ensure it's of a manageable length
+    let binaryArray = binaryString.split("").map(Number);
+
+    function initializeHammingCode() {
+        binaryArray.unshift(0);
+        let i = 0;
+        while (Math.pow(2, i) < binaryArray.length) {
+            binaryArray.splice(Math.pow(2, i), 0, 0);  // Add parity bits at power-of-2 positions
+            i++;
+        }
+    }
+
+    function setHammingCode() {
+        // Set each parity bit based on the bits it covers
+        for (let i = 0; i <= Math.log2(binaryArray.length); i++) {  // Use <= here
+            let position = Math.pow(2, i);
+            let sum = 0;
+            // Calculate parity bit by checking positions covered by the parity bit
+            for (let j = position; j < binaryArray.length; j++) {
+                if (((j + 1) & position) !== 0) {  // Check if bit is set in position
+                    sum += binaryArray[j];
+                }
+            }
+            binaryArray[position] = sum % 2;
+        }
+        // Calculate overall parity bit at position 0
+        let overallSum = binaryArray.reduce((acc, val) => acc + val, 0);
+        binaryArray[0] = overallSum % 2;
+    }
+
+    initializeHammingCode();
+    ns.print(binaryArray);
+    setHammingCode();
+    ns.print(binaryArray);
+    let sum = 0;
+    binaryArray.forEach((value) => {
+        sum += value
+    })
+    ns.print(sum)
+    await ns.sleep(100);
+    //throw (Error);
+    return binaryArray;
+}
+
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName
+ *  @param {string} contractName
+ *  @param {string} serverName
  *  @param {Number} outsourced*/
 export async function hammingCodesIntegertoEncodedBinary(ns, contractName, serverName, outsourced = 0) {
     let contractData;
@@ -128,6 +155,10 @@ export async function hammingCodesIntegertoEncodedBinary(ns, contractName, serve
             return "001111"
     }
 
+    /**
+     * @param {Number} value
+     * @returns {string}
+     */
     function hammingEncode(value) {
         // Convert to binary string without leading zeroes
         const dataBits = parseInt(value).toString(2).split("");
@@ -144,7 +175,10 @@ export async function hammingCodesIntegertoEncodedBinary(ns, contractName, serve
             }
         }
 
-        // Function to calculate parity for each 2^N position
+        /**
+         * Function to calculate parity for each 2^N position
+         * @param {string[]} encodedBits
+         */
         function setParityBits(encodedBits) {
             for (let p = 0; p < numParityBits; p++) {
                 const position = Math.pow(2, p);
@@ -175,8 +209,8 @@ export async function hammingCodesIntegertoEncodedBinary(ns, contractName, serve
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName */
 export async function hammingCodesEncodedBinaryToInteger(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     // Convert to array
@@ -231,8 +265,8 @@ export async function hammingCodesEncodedBinaryToInteger(ns, contractName, serve
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName */
 export async function proper2ColoringOfAGraph(ns, contractName, serverName) {
     let [nbrOfVertex, edges] = ns.codingcontract.getData(contractName, serverName);
     let vertices = new Array(nbrOfVertex).fill(undefined);
@@ -264,29 +298,35 @@ export async function proper2ColoringOfAGraph(ns, contractName, serverName) {
             workInProgress = true
         }
     }
-    for (let i in vertices) if (vertices[i] === undefined) {vertices[i] = 0;}
+    for (let i in vertices) if (vertices[i] === undefined) {
+        vertices[i] = 0;
+    }
     ns.print("Vertices: " + vertices.toString());
     return vertices;
 }
+
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName */
 export async function proper2ColoringOfAGraphV2(ns, contractName, serverName) {
     let [nbrOfVertex, edgesTemp] = ns.codingcontract.getData(contractName, serverName);
     let vertices = new Array(nbrOfVertex);
     let stringEdges = edgesTemp.toString();
     let tempEdges = stringEdges.split(",")
     let edges = [[0]];
-    for(let i = 0; i < tempEdges.length; i += 2) edges[i/2] = [parseInt(tempEdges[i]),parseInt(tempEdges[i+1])];
-    for(let i = 0; i < vertices.length; i++) vertices[i] = i;
+    for (let i = 0; i < tempEdges.length; i += 2) edges[i / 2] = [parseInt(tempEdges[i]), parseInt(tempEdges[i + 1])];
+    for (let i = 0; i < vertices.length; i++) vertices[i] = i;
     let colors = new Array(nbrOfVertex).fill(undefined);
     colors[edges[0][0]] = 0;
     do {
-        if(coloring().length === 0) return [];
-        if(colors.some(x=>x===undefined)) colors[colors.indexOf(undefined)] = 0;
-    }while(colors.some(x=>x===undefined));
+        if (coloring().length === 0) return [];
+        if (colors.some(x => x === undefined)) colors[colors.indexOf(undefined)] = 0;
+    } while (colors.some(x => x === undefined));
     return colors;
 
+    /**
+     * @returns {Number[]}
+     */
     function coloring() {
         let didSomething = true;
         while (didSomething) {
@@ -300,8 +340,7 @@ export async function proper2ColoringOfAGraphV2(ns, contractName, serverName) {
                 if ((numberOfVerticesSet === 2) && (colors[i[0]] === colors[i[1]])) {
                     ns.print("Proper coloring of a graph is bugged in " + contractName);
                     return [];
-                }
-                else if (numberOfVerticesSet === 1) {
+                } else if (numberOfVerticesSet === 1) {
                     if (colors[i[0]] === undefined) colors[i[0]] = 1 - colors[i[1]];
                     else colors[i[1]] = 1 - colors[i[0]];
                     didSomething = true;
@@ -319,8 +358,8 @@ export async function proper2ColoringOfAGraphV2(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName */
 export async function rLECompression(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let answer = runLengthEncode(ns, contractData, "m");
@@ -328,10 +367,10 @@ export async function rLECompression(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param outsourced
- *  @param returnArray
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} outsourced
+ *  @param {boolean} returnArray
+ *  @param {string} serverName */
 export async function lZDecompression(ns, contractName, serverName, outsourced = "", returnArray = false) {
     let contractData = outsourced;
     let dev = false;
@@ -397,10 +436,10 @@ export async function lZDecompression(ns, contractName, serverName, outsourced =
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param outsourced
- *  @param returnArray
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} outsourced
+ *  @param {boolean} returnArray
+ *  @param {string} serverName */
 export async function lZDecompressionV2(ns, contractName, serverName, outsourced = "", returnArray = false) {
     let contractData = outsourced;
     let dev = false;
@@ -409,29 +448,28 @@ export async function lZDecompressionV2(ns, contractName, serverName, outsourced
     }
     contractData = contractData.split("");
     let data = [];
-    for(let i = 0; i < contractData.length; i++){
+    for (let i = 0; i < contractData.length; i++) {
         ns.print("Current letter:" + contractData[i])
         // If it's a digit and the first of the sentence or the last data is not a sole number(except if it's a 0), create a new index
-        if(
+        if (
             contractData[i].match(/\d/)
             && (
                 data.length === 0 // First iteration or
-                || data[data.length-1] === "0" // Current iteration is a 0
+                || data[data.length - 1] === "0" // Current iteration is a 0
                 || (data.length % 2 === 1 // Current iteration is L
-                    && data[data.length-1].length === parseInt(data[data.length-1].charAt(0)) + 1)
+                    && data[data.length - 1].length === parseInt(data[data.length - 1].charAt(0)) + 1)
                 || (data.length % 2 === 0 // Current iteration is LX
-                    && data[data.length-1].length === 2)
+                    && data[data.length - 1].length === 2)
             )
         ) {
-            if(data.length !== 0 && data[data.length-1] === "0"){
+            if (data.length !== 0 && data[data.length - 1] === "0") {
                 ns.print("(data.length % 2 === 1 && data[data.length-1].length === parseInt(data[data.length-1].charAt(0)) + 1) : " + (data.length % 2 === 1 // Current iteration is L
                     && data[data.length - 1].length === parseInt(data[data.length - 1].charAt(0)) + 1));
                 ns.print("(data.length % 2 === 0 && data[data.length-1].length === 2) : " + (data.length % 2 === 0 // Current iteration is LX
                     && data[data.length - 1].length === 2))
             }
             data[data.length] = contractData[i];
-        }
-        else{ // Otherwise, add to the previous data
+        } else { // Otherwise, add to the previous data
             data[data.length - 1] += contractData[i];
             ns.print("Normal letter")
         }
@@ -439,17 +477,16 @@ export async function lZDecompressionV2(ns, contractName, serverName, outsourced
     ns.print(data);
     let answer = "";
     let answerArray = [];
-    for(let i = 0; i < data.length; i++){
+    for (let i = 0; i < data.length; i++) {
         let currentMonome = data[i]
-        if(currentMonome === "0"){}
-        else if(i%2 === 1){ // Is an LX
+        if (currentMonome === "0") {
+        } else if (i % 2 === 1) { // Is an LX
             let length = parseInt(currentMonome.charAt(0));
             let index = parseInt(currentMonome.charAt(1));
-            for(let j = 0; j < length; j++){
+            for (let j = 0; j < length; j++) {
                 answer += answer.charAt(answer.length - index);
             }
-        }
-        else
+        } else
             answer += currentMonome.substring(1);
     }
     if (dev) {
@@ -462,8 +499,9 @@ export async function lZDecompressionV2(ns, contractName, serverName, outsourced
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName
+ *  @deprecated */
 export async function lZCompressionV1(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let unprocessed = contractData;
@@ -597,8 +635,9 @@ export async function lZCompressionV1(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName
+ *  @deprecated */
 export async function lZCompressionV2(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let unprocessed = contractData;
@@ -644,6 +683,12 @@ export async function lZCompressionV2(ns, contractName, serverName) {
                 ns.print(additions)
             }
 
+            /**
+             * @param {string} abbreviatedSection
+             * @param {string} unprocessedSlice
+             * @param {Number} firstTime
+             * @returns {((string|number)[]|number|number)[]}
+             */
             function repetition(abbreviatedSection, unprocessedSlice, firstTime = 8) {
                 for (let b = 1; b <= abbreviatedSection.length; b++) {
                     let caseInQuestion = abbreviatedSection.slice(abbreviatedSection.length - b);
@@ -652,7 +697,7 @@ export async function lZCompressionV2(ns, contractName, serverName) {
                     if (dev) {
                         ns.print("Case in question: " + caseInQuestion)
                     }
-                    /**for (let i = 0; i < abbreviatedSection.length/2; i++) {
+                    /*for (let i = 0; i < abbreviatedSection.length/2; i++) {
                      if (abbreviatedSection.at(0 + i) === abbreviatedSection.at(- 1 - i)) { padding = abbreviatedSection.at(0 + i)+padding; ns.print(padding); ns.print("Padding on!") }
                      else { break; }
                      }*/
@@ -1120,8 +1165,8 @@ export async function lZCompressionV2(ns, contractName, serverName) {
         lastChunkIsL = !lastChunkIsL;
         b++;
     }*/
-    /**@param {String[]} array - array to count
-     * @return {String}
+    /**@param {string[]} array - array to count
+     * @return {string}
      */
     function getString(array) {
         let answer = ""
@@ -1301,8 +1346,9 @@ export async function lZCompressionV2(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName
+ *  @deprecated */
 export async function lZCompressionV3(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let unprocessed = contractData;
@@ -1349,6 +1395,12 @@ export async function lZCompressionV3(ns, contractName, serverName) {
                 }
             }
 
+            /**
+             * @param {string} abbreviatedSection
+             * @param {string} unprocessedSlice
+             * @param {Number} firstTime
+             * @returns {((string|number)[]|number|number)[]}
+             */
             function repetition(abbreviatedSection, unprocessedSlice, firstTime = length) {
                 for (let b = 1; b <= abbreviatedSection.length; b++) {
                     let caseInQuestion = abbreviatedSection.slice(abbreviatedSection.length - b);
@@ -1662,8 +1714,8 @@ export async function lZCompressionV3(ns, contractName, serverName) {
         answerArray.pop()
     }
 
-    /**@param {String[]} array - array to count
-     * @return {String}
+    /**@param {string[]} array - array to count
+     * @return {string}
      */
     function getString(array) {
         let answer = ""
@@ -1848,8 +1900,9 @@ export async function lZCompressionV3(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName
+ *  @deprecated Still in development*/
 export async function lZCompression(ns, contractName, serverName) {
     let contractData = "";
     contractData = ns.codingcontract.getData(contractName, serverName);
@@ -1871,8 +1924,8 @@ export async function lZCompression(ns, contractName, serverName) {
     ns.print(correspondances);
     throw Error();
 
-    /**@param {String[]} array - array to count
-     * @return {String}
+    /**@param {string[]} array - array to count
+     * @return {string}
      */
     function getString(array) {
         let answer = ""
@@ -1889,7 +1942,7 @@ export async function lZCompression(ns, contractName, serverName) {
                         newZ = ""
                     }
                 }
-                answer = answer.slice(0, answer.length-1)//remove the final "0"
+                answer = answer.slice(0, answer.length - 1)//remove the final "0"
                 if (answer.slice(-1) === "0") {
                     answer = answer + "-"
                 }
@@ -2032,8 +2085,8 @@ export function compressLZStolen(str) {
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName */
 export async function caesarCypher(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let [pT, shift] = contractData;
@@ -2051,8 +2104,8 @@ export async function caesarCypher(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {String} contractName
- *  @param {String} serverName */
+ *  @param {string} contractName
+ *  @param {string} serverName */
 export async function vigenereCipher(ns, contractName, serverName) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let [pT, key] = contractData;
@@ -2077,23 +2130,23 @@ export async function vigenereCipher(ns, contractName, serverName) {
  *  Works by successively testing the powers of two until it becomes higher than the target;
  *  then, it goes back one lower and adds it to the answer. Repeat until we reach the end.
  *  @param {NS} ns
- *  @param {String} contractName
+ *  @param {string} contractName
  *  @param {boolean} dev
- *  @param {String} serverName */
+ *  @param {string} serverName */
 export async function squareRoot(ns, contractName, serverName, dev) {
     let contractData = ns.codingcontract.getData(contractName, serverName); // Get the string with the number
-    if(contractData === "0" || contractData === "1") // Handle simple edge cases
+    if (contractData === "0" || contractData === "1") // Handle simple edge cases
         return parseInt(contractData);
     let target = BigInt(contractData); // The number to root
     let answer = 0n;
     let previousAnswer = 0n;
-    while((answer * answer) < target){ // As long as we're lower than the target, we keep increasing
+    while ((answer * answer) < target) { // As long as we're lower than the target, we keep increasing
         let bit = 1n;
-        while( ((bit + answer) * (bit + answer)) <= target){ // While we're lower or equal to the target, we keep increasing
+        while (((bit + answer) * (bit + answer)) <= target) { // While we're lower or equal to the target, we keep increasing
             bit <<= 1n; // Shift the bits to the left, effectively doubling the value
         }
         bit >>= 1n; // Shift the bit to the right, effectively dividing by two, in order to go just before we overtook the target
-        if(bit === 0n) // If we reached 0 by shifting 0001 to the right (becoming 0000), this means we're equal to the target
+        if (bit === 0n) // If we reached 0 by shifting 0001 to the right (becoming 0000), this means we're equal to the target
             break;
         previousAnswer = answer.valueOf(); // Storing in case we overshoot the target by mistake
         answer += bit; // Adding the current value
@@ -2101,17 +2154,15 @@ export async function squareRoot(ns, contractName, serverName, dev) {
     // Testing for single digit mistakes
     if (target > (answer * answer)) { // If we're lower than the target, we must check if a higher number is better
         //Typically if the integer over the exact answer is closer to it than our current approximation
-        if(target < (answer + 1n) * (answer + 1n)) {  // In case the algorithm is bugged and doesn't give the closest value,
+        if (target < (answer + 1n) * (answer + 1n)) {  // In case the algorithm is bugged and doesn't give the closest value,
             // We make sure the next value is higher than the target
             while (target - (answer * answer) > (((answer + 1n) * (answer + 1n)) - target))
                 answer += 1n;
-        }
-        else while (target - (answer * answer) > (target - ((answer + 1n) * (answer + 1n))))
+        } else while (target - (answer * answer) > (target - ((answer + 1n) * (answer + 1n))))
             answer += 1n;
-    }
-    else if(target - (previousAnswer * previousAnswer) < (answer * answer) - target) // In the case of previousAnswer being closer to the target than answer
+    } else if (target - (previousAnswer * previousAnswer) < (answer * answer) - target) // In the case of previousAnswer being closer to the target than answer
         answer = previousAnswer;
-    if(dev) {
+    if (dev) {
         ns.print("Answer: " + answer.toString());
         ns.print("Square: " + (answer * answer).toString());
         ns.print("Difference: " + (target - (answer * answer)).toString());

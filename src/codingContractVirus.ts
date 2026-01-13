@@ -1,5 +1,5 @@
 import {portReceiver} from "functions";
-import * as extension1 from "cCVExtensions/cCVExtension1";
+import * as extension1 from "/cCVExtensions/cCVExtension1";
 import * as extension2 from "cCVExtensions/cCVExtension2";
 import * as extension3 from "cCVExtensions/cCVExtension3";
 import * as extension4 from "cCVExtensions/cCVExtension4";
@@ -38,9 +38,9 @@ export async function main(ns, dev = flag.dev, name = flag.name, server = flag.s
     ns.ui.moveTail(windowSizes[0] * 1.8 / 3, 0);
     ns.ui.resizeTail(windowSizes[0] / 4, windowSizes[1] / 4);
 
-/**------------------------------------------------------------------
- *                        Single contract answering
-   ------------------------------------------------------------------*/
+    /**------------------------------------------------------------------
+     *                        Single contract answering
+     ------------------------------------------------------------------*/
 
     if (name !== undefined && name.lastIndexOf(".cct") !== -1) { // In case we're using method arguments, we directly enter them
         await answering(ns, name, server);
@@ -82,7 +82,7 @@ export async function main(ns, dev = flag.dev, name = flag.name, server = flag.s
     }
     ns.print("INFO Results: " + results);
     let file = "cCV_log.txt";
-    ns.write(file,new Date().toDateString() + ":\nResults: " + results + "\n", "a");
+    ns.write(file, new Date().toDateString() + ":\nResults: " + results + "\n", "a");
     await ns.sleep(600000);
     ns.ui.closeTail();
     ns.spawn(ns.getScriptName(), {preventDuplicates: true, spawnDelay: 1000});
