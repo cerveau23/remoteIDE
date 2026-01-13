@@ -9,7 +9,7 @@ import { NS } from "@ns";
 export async function main(ns: NS) {
 	ns.flags([["ram-override", 26.6]]);
 	ns.ramOverride(26.6)
-	let arg = part1(<Number>ns.args[0])
+	let arg = part1(<number>ns.args[0])
 	ns.ramOverride(33.6)
 	part2(arg)
 }
