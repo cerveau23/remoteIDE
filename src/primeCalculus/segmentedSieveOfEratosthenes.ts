@@ -1,10 +1,13 @@
-import { compressPrimes, decompressPrimes, runLengthEncode, runLengthDecode } from "functions.js"
+import {NS} from "@ns";
+import {compressPrimes, decompressPrimes, runLengthEncode, runLengthDecode} from "functions.js"
+
 let done = false;
-/** @param {NS} ns */
-export async function main(ns) {
+
+/** @param {NS} [ns] */
+export async function main(ns: NS) {
     //ns.tail()
     let limit = ns.args[0];
-    let primesKnown = [];
+    let primesKnown: never[] | undefined = [];
     /*if (ns.fileExists("./PrimeNumbers.txt")) {
         let file = ns.read("./PrimeNumbers.txt");
         let primeList = decompressPrimes(await runLengthDecode(file));
@@ -18,17 +21,21 @@ export async function main(ns) {
     await ns.sleep(1000);
     //while (true) { await ns.asleep(1000) }
     let sPrimes = compressPrimes(primes);
-    let cPrimes = runLengthEncode(ns,sPrimes);
+    let cPrimes = runLengthEncode(ns, sPrimes);
     //ns.write("PrimeNumbers.txt", cPrimes, "w");
-    ns.writePort(1, { name: "Prime Numbers", data: cPrimes, loop: false });
+    ns.writePort(1, {name: "Prime Numbers", data: cPrimes, loop: false});
     //ns.tprint("Sieve stored")
 }
-/** @param {NS} ns 
+
+/**
  *  @param {Number} limit
- *  @param {Number[]} smallPrimes*/
-async function simpleSieve(ns, limit, smallPrimes) {
+ *  @param {Number[]} smallPrimes
+ *  @returns {Number[]}*/
+function simpleSieve(limit, smallPrimes) {
     let sieve = new Array(limit + 1);
-    smallPrimes.forEach(function (value) { sieve[value] = true })
+    smallPrimes.forEach(function (value) {
+        sieve[value] = true
+    })
     sieve[0] = sieve[1] = false; // 0 and 1 are not prime numbers
 
     for (let i = 2; i * i <= limit; i++) {
@@ -50,11 +57,13 @@ async function simpleSieve(ns, limit, smallPrimes) {
     return primes;
 }
 
-/** @param {NS} ns 
- *  @param {Number} n*/
+/** @param {NS} ns
+ * @param {Number[]} smallPrimes
+ * @param {Number} n
+ * @returns {Number[]} */
 async function segmentedSieve(ns, n, smallPrimes = []) {
     let limit = Math.floor(Math.sqrt(n)) + 1;
-    let primes = await simpleSieve(ns, limit, smallPrimes); // Step 1: Find small primes up to sqrt(n)
+    let primes = simpleSieve(limit, smallPrimes); // Step 1: Find small primes up to sqrt(n)
     let low = limit;
     let high = 2 * limit;
 
@@ -83,7 +92,9 @@ async function segmentedSieve(ns, n, smallPrimes = []) {
             // Mark all multiples of prime in the range [low..high]
             for (let j = base; j <= high; j += prime) {
                 sieve[j - low] = false;
-                if ((j % 1000000 === 0) && (i === 0)) { await ns.asleep(); }
+                if ((j % 1000000 === 0) && (i === 0)) {
+                    await ns.asleep();
+                }
                 if ((j % 10000000 === 0) && (i === 0)) {
                     ns.print(j + " " + i + " " + Math.floor(j / n * 100) + "%");
                     await ns.asleep(1000);
