@@ -1,8 +1,8 @@
 /**
- * @param tone
+ * @param {number} [tone = 440]
  * @returns {[AudioContext,OscillatorNode,GainNode]}
  */
-export default function part1(tone = 440): [AudioContext, OscillatorNode, GainNode] {
+export default function part1(tone: number = 440): [AudioContext, OscillatorNode, GainNode] {
 	// Create an audio context
 	/** @type{AudioContext} */
 	const audioCtx: AudioContext = new (window.AudioContext /*|| window.webkitAudioContext*/)();
