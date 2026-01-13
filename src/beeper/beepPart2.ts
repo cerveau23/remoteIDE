@@ -1,4 +1,9 @@
-export default function part2([audioCtx,oscillator,gainNode]) {
+/**
+ * @param [audioCtx]
+ * @param [oscillator]
+ * @param [gainNode]
+ */
+export default function part2([audioCtx, oscillator, gainNode] : [AudioContext, OscillatorNode, GainNode]) {
 	// Connect the oscillator to the gain node
 	oscillator.connect(gainNode);
 

@@ -1,14 +1,15 @@
 import part1 from "/beeper/beepPart1";
 import part2 from "/beeper/beepPart2";
+import { NS } from "@ns";
 
 /**
  * Makes a sound
  * @param {NS} ns
  * */
-export async function main(ns) {
+export async function main(ns: NS) {
 	ns.flags([["ram-override", 26.6]]);
 	ns.ramOverride(26.6)
-	let arg = part1(ns.args[0])
+	let arg = part1(<Number>ns.args[0])
 	ns.ramOverride(33.6)
 	part2(arg)
 }
