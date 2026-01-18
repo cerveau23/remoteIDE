@@ -16,7 +16,7 @@ export async function main(ns: NS) {
     //ns.tprint("Sieve about 2 start")
     //ns.tprint(primesKnown);
     //await ns.sleep(1000);
-    let primes = await segmentedSieve(ns, limit, primesKnown);
+    let primes = await segmentedSieve(ns, <number> limit, primesKnown);
     //ns.tprint("Sieve finished")
     await ns.sleep(1000);
     //while (true) { await ns.asleep(1000) }
@@ -31,9 +31,9 @@ export async function main(ns: NS) {
  *  @param {Number} limit
  *  @param {Number[]} smallPrimes
  *  @returns {Number[]}*/
-function simpleSieve(limit, smallPrimes) {
+function simpleSieve(limit: number, smallPrimes: number[]): number[] {
     let sieve = new Array(limit + 1);
-    smallPrimes.forEach(function (value) {
+    smallPrimes.forEach(function (value: number) {
         sieve[value] = true
     })
     sieve[0] = sieve[1] = false; // 0 and 1 are not prime numbers
@@ -60,8 +60,8 @@ function simpleSieve(limit, smallPrimes) {
 /** @param {NS} ns
  * @param {Number[]} smallPrimes
  * @param {Number} n
- * @returns {Number[]} */
-async function segmentedSieve(ns, n, smallPrimes = []) {
+ * @returns {Promise<number[]>} */
+async function segmentedSieve(ns: NS, n: number, smallPrimes: number[] = []): Promise<number[]> {
     let limit = Math.floor(Math.sqrt(n)) + 1;
     let primes = simpleSieve(limit, smallPrimes); // Step 1: Find small primes up to sqrt(n)
     let low = limit;
@@ -93,11 +93,11 @@ async function segmentedSieve(ns, n, smallPrimes = []) {
             for (let j = base; j <= high; j += prime) {
                 sieve[j - low] = false;
                 if ((j % 1000000 === 0) && (i === 0)) {
-                    await ns.asleep();
+                    await ns.asleep(10);
                 }
                 if ((j % 10000000 === 0) && (i === 0)) {
                     ns.print(j + " " + i + " " + Math.floor(j / n * 100) + "%");
-                    await ns.asleep(1000);
+                    await ns.asleep(100);
                 }
             }
         }

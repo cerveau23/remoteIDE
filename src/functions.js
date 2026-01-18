@@ -1,6 +1,30 @@
+//import type {BladeburnerActionType, BladeburnerCurAction, NS} from "@ns"
+
 /** @param {NS} ns */
 export async function main(ns) {
 
+}
+
+/**
+ * Gets the type of a bladeburner action.
+ * @param {NS} ns
+ * @param { string | BladeburnerCurAction } action
+ * @returns { string | BladeburnerActionType }
+ */
+export function getActionType(ns, action){
+	const type2function = {
+		"General" : 			ns.bladeburner.getGeneralActionNames,
+		"Contracts" : 			ns.bladeburner.getContractNames,
+		"Operations" : 			ns.bladeburner.getOperationNames,
+		"Black Operations" : 	ns.bladeburner.getBlackOpNames
+	}
+	if(typeof action === "string") {
+		for (const type of Object.values(BladeburnerActionType))
+			if (type2function[type]().includes(action))
+				return type;
+	}
+	else
+		return action.type;
 }
 
 /** @param {String} target - Designation to listen for. Must be a string.
@@ -230,9 +254,11 @@ export function factorial(number) {
 	}
 	return answer
 }
-/** @param {Array} array
- * @param {Number} startingPoint - Where the function will start removing the item (included)
- * @param {Number} endPoint - Where the function will stop removing the item (included)*/
+/** @param {Array<T>} array
+ * @param {T} itemToRemove
+ * @param {Number} [startingPoint=0] - Where the function will start removing the item (included)
+ * @param {Number} endPoint - Where the function will stop removing the item (included)
+ * @returns {Array<T>} */
 export function removeAll(array, itemToRemove, startingPoint = 0, endPoint = array.length - 1) {
 	let workingArray = array.slice(0);
 	for (let i = startingPoint; (i <= endPoint) && (i < workingArray.length); i++) {

@@ -1,12 +1,12 @@
 import {NS} from "@ns";
 
 /** @param {NS} ns */
-export async function main(ns) {
+export async function main(ns: NS) {
     //Function that returns an array with all the prime numbers under $limit
     ns.ui.openTail();
-    let limit = ns.args[0];
+    let limit : number = <number>ns.args[0];
     // Create an array of true values, each index corresponds to a number
-    let sieve = [[]];
+    let sieve : boolean [][] = [[]];
     ns.tprint("Sieve started");
     await ns.sleep(1000);
     if (ns.fileExists("PrimeNumbers.txt")) {
@@ -15,17 +15,17 @@ export async function main(ns) {
         primeList = primeList.map(element => element.trim());
         primeList = primeList.filter(element => element !== "");
         for (let n of primeList) {
-            if (sieve[Math.floor(n / 1000000)] === undefined) {
-                sieve[Math.floor(n / 1000000)] = []
+            if (sieve[Math.floor(parseInt(n) / 1000000)] === undefined) {
+                sieve[Math.floor(parseInt(n) / 1000000)] = []
             }
-            sieve[Math.floor(n / 1000000)][n % 1000000] = true
+            sieve[Math.floor(parseInt(n) / 1000000)][parseInt(n) % 1000000] = true
         }
     }
     sieve[0][0] = sieve[0][1] = false; // 0 and 1 are not prime numbers
 
     // Mark multiples of each prime starting from 2
     for (let i = 0; i * i <= limit; i++) {
-        if (sieve[Math.floor(i / 1000000)][i % 1000000] !== false) {
+        if (sieve[Math.floor(i / 1000000)][i % 1000000]) {
             for (let j = i * i; j <= limit; j += i) {/*ns.print(j);
 			ns.print("Math.floor(j / 1000000)="+Math.floor(j / 1000000))
 			ns.print("j % 1000000="+j % 1000000)*/

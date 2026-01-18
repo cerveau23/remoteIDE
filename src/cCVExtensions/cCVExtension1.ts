@@ -2,8 +2,9 @@ import {NS} from "@ns";
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function subarrayWithMaximumSum(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {Promise<number>} */
+export async function subarrayWithMaximumSum(ns: NS, contractName: string, serverName: string): Promise<number> {
     let data = ns.codingcontract.getData(contractName, serverName);
     //ns.tprint(data);
     let max = Math.max.apply(null, data);
@@ -15,7 +16,7 @@ export async function subarrayWithMaximumSum(ns, contractName, serverName) {
      * @param {Number} value
      * @returns {boolean}
      */
-    function remove0(value) {
+    function remove0(value: number): boolean {
         return value !== 0
     }
 
@@ -124,8 +125,9 @@ export async function subarrayWithMaximumSum(ns, contractName, serverName) {
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function totalWaysToSum(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {Promise<number>}*/
+export async function totalWaysToSum(ns: NS, contractName: string, serverName: string): Promise<number> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
 
     /**
@@ -134,8 +136,8 @@ export async function totalWaysToSum(ns, contractName, serverName) {
      * @param {Number} max
      * @returns {number}
      */
-    function countPartitionsObsolete(n, max) {
-        let memoization = ""; // Fake statement to avoid errors
+    function countPartitionsObsolete(n: number, max: number): number {
+        let memoization = []; // Fake statement to avoid errors
         if (n === 0) return 1;// Base case: if n is 0, we have found a valid partition
         if ((n < 0) || (max === 0)) return 0;// If n is negative or max is 0, no valid partition
         for (let i of [[n - max, max], [n, max - 1]]) {//Memoization
@@ -148,8 +150,8 @@ export async function totalWaysToSum(ns, contractName, serverName) {
                 memoization[i[0]] = Array(contractData + 1).fill(0)
             } else {
                 if (memoization[i[0]][i[1]] === undefined) {
-                    // eslint-disable-next-line no-undef
-                    memoization[i[0]][i[1]] = countPartitions(i[0], i[1]);
+                    // noinspection JSDeprecatedSymbols
+                    memoization[i[0]][i[1]] = countPartitionsObsolete(i[0], i[1]);
                 }
             }
         }
@@ -158,11 +160,12 @@ export async function totalWaysToSum(ns, contractName, serverName) {
     }
 
     // noinspection JSUnusedLocalSymbols
+    // noinspection TSUnusedLocalSymbols
     /**
      * @deprecated
      * @param {Number} n
-     eslint-disable-next-line @typescript-eslint/no-unused-vars*/
-    function numberOfPartitionsObsolete(n) {
+     * @returns {Number} */
+    function numberOfPartitionsObsolete(n: number): number {
         // Start counting partitions of n using numbers from n-1 downwards.
         return countPartitionsObsolete(n, n - 1);
     }
@@ -172,7 +175,7 @@ export async function totalWaysToSum(ns, contractName, serverName) {
      * @param {number} X - The target number
      * @return {number} - Number of distinct partitions with at least two integers
      */
-    function partitionSum(X) {
+    function partitionSum(X: number): number {
         // Initialize a DP array to store the number of partitions for each number from 0 to X
         let dp = Array(X + 1).fill(0);
         // Base case: there is 1 way to partition 0 (empty partition)
@@ -190,13 +193,16 @@ export async function totalWaysToSum(ns, contractName, serverName) {
     return partitionSum(contractData);
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function totalWaysToSumII(ns, contractName, serverName) {
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @returns {Promise<Number>}
+ */
+export async function totalWaysToSumII(ns: NS, contractName: string, serverName: string): Promise<number> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let target = contractData[0];
-    let authorizedG = contractData[1].toSorted(function (a, b) {
+    let authorizedG = contractData[1].toSorted(function (a: number, b: number) {
         return a - b
     });
     let maxIndex = 0;
@@ -208,7 +214,7 @@ export async function totalWaysToSumII(ns, contractName, serverName) {
      * @param {Number} index - Current index in authorizedG
      * @return {Number} - Number of ways to sum to 'n'
      */
-    function ways(n, index) {
+    function ways(n: number, index: number): number {
         let count;
         if (n === 0) {
             return 1
@@ -229,8 +235,9 @@ export async function totalWaysToSumII(ns, contractName, serverName) {
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function spiralizeMatrix(ns, contractName, serverName) {
+ *  @param {string} serverName
+ * @returns {Promise<string[]>} */
+export async function spiralizeMatrix(ns: NS, contractName: string, serverName: string): Promise<string[]> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let finished = false;
     let position = [0, 0];//[x,y]
@@ -274,18 +281,21 @@ export async function spiralizeMatrix(ns, contractName, serverName) {
     return answer
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function arrayJumpingGame(ns, contractName, serverName) {
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @returns {Promise<Number>} */
+export async function arrayJumpingGame(ns: NS, contractName: string, serverName: string): Promise<number> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let memoization = Array(contractData.length).fill(null).map(() => Array(contractData.length).fill(undefined))
 
     /**
      * @param {Number} n
      * @param {Number} jump
+     * @returns {Number}
      */
-    function jumping(n, jump) {
+    function jumping(n: number, jump: number): number {
         if (n + jump >= contractData.length - 1) {
             return 1
         }
@@ -305,19 +315,22 @@ export async function arrayJumpingGame(ns, contractName, serverName) {
     return jumping(0, contractData[0])
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function arrayJumpingGameIIAttempt(ns, contractName, serverName) {
+// noinspection JSUnusedGlobalSymbols
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @returns {Promise<Number>} */
+export async function arrayJumpingGameIIAttempt(ns: NS, contractName: string, serverName: string): Promise<number> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
-    let memoization = [];
+    let memoization: number[] = [];
 
     /**
      * Recursive function to check if we can reach the first index from position `n`
      * @param {Number} n
      * @returns {Number}
      */
-    function reverseJumping(n) {
+    function reverseJumping(n: number): number {
         // Base case: if we are at position 0, we can successfully reach the start
         if (n === 0) {
             return 1;
@@ -342,10 +355,12 @@ export async function arrayJumpingGameIIAttempt(ns, contractName, serverName) {
     return reverseJumping(contractData.length - 1);
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function arrayJumpingGameII(ns, contractName, serverName) {
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @returns {Promise<Number>} */
+export async function arrayJumpingGameII(ns: NS, contractName: string, serverName: string): Promise<number> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let n = contractData.length;
 
