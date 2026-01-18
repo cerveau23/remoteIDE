@@ -5,7 +5,8 @@ import {NS} from "@ns";
 export async function main(ns: NS) {
     //@ignore-infinite
     while(true){
-        let threads = Math.floor((ns.getServerMaxRam("Saboter") - ns.getServerUsedRam("Saboter")) / ns.getScriptRam("grower.js"));
+        const host = "Saboteur";
+        let threads = Math.floor((ns.getServerMaxRam(host) - ns.getServerUsedRam(host)) / ns.getScriptRam("grower.js"));
         if(threads > 0){
             ns.exec("grower.js","Saboter", threads, "computek");
         }
