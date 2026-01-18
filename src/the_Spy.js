@@ -69,7 +69,7 @@ export async function main(ns) {
             ns.print("Distracted! Will press!");
             ns.tprint("Distracted! Will press!");
             //await simulateKey(ns, "Space", 32, true);
-            keyPressAPI(ns, "Space");
+            await keyPressAPI(ns, "Space");
             ns.print("Pressed!");
         }
 
@@ -365,7 +365,7 @@ export async function main(ns) {
                     break;
                 case "Remember all the mines":
                     // If there is already a path stored, break
-                    if (minePath === [])
+                    if (minePath == [])
                         break;
 
                     // Make a matrix using the class MuiTypography-body1
@@ -400,7 +400,7 @@ export async function main(ns) {
                     break;
                 case "Mark all the mines":
                     // If there is no path stored, throw an error
-                    if (minePath === [])
+                    if (minePath == [])
                         throw GeolocationPositionError;
                     // Follow the best path
                     for (let oneMinePath of minePath) {
