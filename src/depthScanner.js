@@ -31,7 +31,7 @@ It has 5 possible flags:
     }
     let file = ns.read("targetsNew.txt");
     let map = [];
-    let newServs = [];
+    let newServers = [];
     let startLocation = ns.getHostname();
     let currentLocation = startLocation;
     let id = 0;
@@ -65,7 +65,7 @@ It has 5 possible flags:
                 map.push([touched[i], id, copy(path), false]);
                 map[cLI][3] = true;
                 if (flag["NAS"] && ns.getServerRequiredHackingLevel(touched[i]) > lastLevel && ns.getServerRequiredHackingLevel(touched[i]) <= ns.getHackingLevel()) {
-                    newServs.push(touched[i] + ": " + ns.getServerRequiredHackingLevel(touched[i]));
+                    newServers.push(touched[i] + ": " + ns.getServerRequiredHackingLevel(touched[i]));
                 }
             }
         }
@@ -82,11 +82,11 @@ It has 5 possible flags:
     while (position !== map.length);
     if (flag["NAS"]) {
         if (!commandline) {
-            ns.tprint(newServs);
+            ns.tprint(newServers);
         } else {
-            ns.print(newServs);
+            ns.print(newServers);
         }
-        return newServs;
+        return newServers;
     } else {
         if (flag.d !== "-") {
             let pathTarget = "";
