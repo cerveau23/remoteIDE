@@ -8,7 +8,7 @@ export async function main(ns : NS ) {
         let waitingTime = await ns.bladeburner.nextUpdate();
         if(ns.bladeburner.getActionCurrentTime() > waitingTime + 500)
             continue;
-        while((ns.bladeburner.getCityEstimatedPopulation(ns.bladeburner.getCity()) < 750 * 1000 * 1000)
+        while((ns.bladeburner.getCityEstimatedPopulation(ns.bladeburner.getCity()) < 1000 * 1000 * 1000)
         && ns.bladeburner.getActionEstimatedSuccessChance("Operations", "Assassination")[0] // Minimum chance < maximum chance
         === ns.bladeburner.getActionEstimatedSuccessChance("Operations", "Assassination")[1]) {
             const cityNames = Object.values(ns.enums.CityName);
@@ -65,7 +65,7 @@ export async function main(ns : NS ) {
                     break;
                 }
             await ns.bladeburner.nextUpdate();*/
-            let contractsSortedBySuccess: [`${BladeburnerActionType}`, `${BladeburnerActionName}`][] = [["Contracts","Tracking"], ["Contracts","Bounty Hunter"], ["Contracts","Retirement"], ["Operations", "Investigation"], ["Operations", "Undercover Operation"]]
+            let contractsSortedBySuccess: [`${BladeburnerActionType}`, `${BladeburnerActionName}`][] = [["Contracts","Tracking"], ["Contracts","Bounty Hunter"], ["Contracts","Retirement"], ["Operations", "Investigation"], ["Operations", "Undercover Operation"], ["Operations", "Assassination"]]
             contractsSortedBySuccess.sort(
                 (a,b)=> {
                     return Math.pow(ns.bladeburner.getActionEstimatedSuccessChance(b[0], b[1])[0], 3) * ns.bladeburner.getActionRepGain(b[0], b[1]) / (ns.bladeburner.getActionTime(b[0], b[1])/1000)
