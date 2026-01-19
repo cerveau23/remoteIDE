@@ -12,6 +12,8 @@ let targetCompany
 
 /** @param {NS} ns */
 export async function main(ns) {
+    let moneyRatherThanRep = ns.args.length >= 2 ? ns.args[1] : undefined
+        moneyRatherThanRep ??= await ns.prompt("Do you want Money (Yes) or Rep (No)?", {type: "boolean", choices: ["money", "reputation"]})
     try{
         let minePath = [];
         let documentFree = eval("document");
@@ -291,9 +293,8 @@ export async function main(ns) {
                     await ns.sleep(100);
                     documentFree = eval("document");
                 }
-                Array.from(documentFree.getElementsByClassName("css-lg118y")).find((element) => element.textContent.includes("Sell for")).click();
-                ns.run(ns.getScriptName(), {spawnDelay: 1000}, targetCompany);
-                ns.exit();
+                if(moneyRatherThanRep) Array.from(documentFree.getElementsByClassName("css-lg118y")).find((element) => element.textContent.includes("Sell for")).click();
+                ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
             }
             documentFree.body.getElementsByClassName("css-jhk36g")[0].click();
             let challengeList = [

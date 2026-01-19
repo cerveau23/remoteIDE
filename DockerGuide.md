@@ -63,7 +63,7 @@ You may want to use an isolated docker container for the Remote API instead of i
 - Edit the message in the original `src/template.ts` file in your local workspace (using your preferred text editor) and and save the file. 
 - The change should automatically sync to bitburner. In bitburner repeat `run template.js` and it should print your new message. 
 
-### 8. Thats it!
+### 8. That's it!
 - You can now make and edit the files in your local `src` workspace, and they will be synced to Bitburner automatically.
 > NOTE: do not use the internal bitburner 'nano' editor to change the files. You can use the 'nano' editor to view files but the remote API file sync is one way only, changes made in the bitburner 'nano' editor are not synced back to your local `src` workspace.
 - You may want to manually stop the docker filesync container when you are done playing bitburner:

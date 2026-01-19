@@ -2,9 +2,9 @@
 
 The official template for synchronizing Typescript/Javascript from your computer to the game.
 
-[Step by step install](BeginnersGuide.md)
+[Step by step install](../BeginnersGuide.md)
 
-[Docker install guide](DockerGuide.md) (optional) 
+[Docker install guide](../DockerGuide.md) (optional) 
 
 [Learn more about Typescript](https://www.typescriptlang.org/docs/)
 
@@ -17,9 +17,9 @@ Due to the usage of the RFA system, it works with Web and Electron (Steam) versi
 
 [Node.js](https://nodejs.org/en/download/) is needed for compiling typescript and installing dependencies.
 
-[See here for step by step installation](BeginnersGuide.md) if you'd like help with installing Node and/or connecting to the game.
+[See here for step by step installation](../BeginnersGuide.md) if you'd like help with installing Node and/or connecting to the game.
 
-Alternatively see [Docker install guide](DockerGuide.md) (optional) that installs nodejs and the Remote File API in an isolated container.
+Alternatively see [Docker install guide](../DockerGuide.md) (optional) that installs nodejs and the Remote File API in an isolated container.
 
 ## Quick start
 
@@ -40,9 +40,9 @@ Have it running in the background so that it all happens automatically.
 For Bitburner to receive any files, you need to enter the port `npm run watch` logs to the terminal
 in the Remote API section of the game settings, and press the connect button.
 
-[See here for step by step installation](BeginnersGuide.md) if you'd like help with installing Node and/or connecting to the game.
+[See here for step by step installation](../BeginnersGuide.md) if you'd like help with installing Node and/or connecting to the game.
 
-Alternatively see [Docker install guide](DockerGuide.md) (optional) that installs nodejs and the Remote File API in an isolated container.
+Alternatively see [Docker install guide](../DockerGuide.md) (optional) that installs nodejs and the Remote File API in an isolated container.
 
 ## Advanced
 ### Imports

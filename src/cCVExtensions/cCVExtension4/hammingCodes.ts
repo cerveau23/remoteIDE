@@ -5,7 +5,7 @@ import {NS} from "@ns";
  *  @param {string} serverName
  *  @param {Number} [outsourced = 0]
  *  @returns {string} */
-export function hammingCodesIntegertoEncodedBinary(ns: NS, contractName: string, serverName: string, outsourced: number = 0): string {
+export function hammingCodesIntegerToEncodedBinary(ns: NS, contractName: string, serverName: string, outsourced: number = 0): string {
     let contractData;
     if (outsourced !== 0) {
         contractData = outsourced;
@@ -81,7 +81,7 @@ export function hammingCodesIntegertoEncodedBinary(ns: NS, contractName: string,
  *  @param {string} contractName
  *  @param {string} serverName
  *  @deprecated */
-export async function hammingCodesIntegertoEncodedBinaryHomemade(ns: NS, contractName: string, serverName: string) {
+export async function hammingCodesIntegerToEncodedBinaryHomemade(ns: NS, contractName: string, serverName: string) {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let binaryString = contractData.toString(2);
     ns.print(`Binary Representation: ${binaryString}`);

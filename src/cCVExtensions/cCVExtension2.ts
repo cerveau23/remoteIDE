@@ -49,7 +49,7 @@ export async function mergeOverlappingIntervals(ns: NS, contractName: string, se
  * @param {string} serverName
  * @returns {Promise<string[]>}
  * @deprecated */
-export async function generateIPAdressesSelfMade(ns: NS, contractName: string, serverName: string): Promise<string[]> {
+export async function generateIPAddressesSelfMade(ns: NS, contractName: string, serverName: string): Promise<string[]> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let answer: string[] = [];
     let contractArray = [];
@@ -76,24 +76,24 @@ export async function generateIPAdressesSelfMade(ns: NS, contractName: string, s
             }
             let nope = false;
             let megaNope = false
-            let insurranceArray = string.split(".");
-            for (let i in insurranceArray) {
-                if (parseInt(insurranceArray[i]) > 255) {
-                    if (parseInt(i) !== insurranceArray.length - 1) {
+            let insuranceArray = string.split(".");
+            for (let i in insuranceArray) {
+                if (parseInt(insuranceArray[i]) > 255) {
+                    if (parseInt(i) !== insuranceArray.length - 1) {
                         megaNope = true;
                     }
                     nope = true;
                 }
-                if (parseInt(insurranceArray[i]) + "" !== insurranceArray[i]) {
+                if (parseInt(insuranceArray[i]) + "" !== insuranceArray[i]) {
                     nope = megaNope = true
                 }
             }
-            if (insurranceArray.length !== 4) {
+            if (insuranceArray.length !== 4) {
                 nope = true;
-                if (insurranceArray.length > 4) {
+                if (insuranceArray.length > 4) {
                     megaNope = true;
                 }
-            } else if (parseInt(insurranceArray[insurranceArray.length - 1]) > 255) {
+            } else if (parseInt(insuranceArray[insuranceArray.length - 1]) > 255) {
                 nope = megaNope = true;
             }
             if (!nope) {
@@ -114,21 +114,21 @@ export async function generateIPAdressesSelfMade(ns: NS, contractName: string, s
             }
             let nope = false;
             let megaNope = false
-            let insurranceArray = string.split(".");
-            for (let i : number = 0 ; i < insurranceArray.length; ++i) {
-                if (parseInt(insurranceArray[i]) > 255) {
-                    if (i !== insurranceArray.length - 1) {
+            let insuranceArray = string.split(".");
+            for (let i : number = 0 ; i < insuranceArray.length; ++i) {
+                if (parseInt(insuranceArray[i]) > 255) {
+                    if (i !== insuranceArray.length - 1) {
                         megaNope = true;
                     }
                     nope = true;
                 }
             }
-            if (insurranceArray.length !== 4) {
+            if (insuranceArray.length !== 4) {
                 nope = true;
-                if (insurranceArray.length > 4) {
+                if (insuranceArray.length > 4) {
                     megaNope = true;
                 }
-            } else if (parseInt(insurranceArray[insurranceArray.length - 1]) > 255) {
+            } else if (parseInt(insuranceArray[insuranceArray.length - 1]) > 255) {
                 nope = megaNope = true;
             }
             if (!nope) {
@@ -150,7 +150,7 @@ export async function generateIPAdressesSelfMade(ns: NS, contractName: string, s
  *  @param {string} contractName
  *  @param {string} serverName
  *  @return {string[]} */
-export function generateIPAdresses(ns: NS, contractName: string, serverName: string): string[] {
+export function generateIPAddresses(ns: NS, contractName: string, serverName: string): string[] {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let answer : string[] = [];
 
