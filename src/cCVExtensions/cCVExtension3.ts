@@ -86,7 +86,7 @@ export function uniquePathsInAGridII(ns: NS, contractName: string, serverName: s
     //Calculations
     for (let i = 1; i < n; i++) {
         for (let j = 1; j < contractData[i].length; j++) {
-            dp[i][j] += dp[i - 1][j] * contractData[i - 1][j] + dp[i][j - 1] * contractData[i][j - 1] //If [i-1][j] is an obstacle(simbolyzed by a 0), it will result in a 0 and not contribute to the value
+            dp[i][j] += dp[i - 1][j] * contractData[i - 1][j] + dp[i][j - 1] * contractData[i][j - 1] //If [i-1][j] is an obstacle(symbolized by a 0), it will result in a 0 and not contribute to the value
         }
     }
     ns.print(dp)
@@ -364,10 +364,10 @@ export async function deathToParenthesesBroken(ns: NS, contractName: string, ser
 
     await ns.sleep(10);
     ns.print(arrayToString(arrayData))
-    let newarrayData = parenthesesMatcher(arrayToString(arrayData));
+    let newArrayData = parenthesesMatcher(arrayToString(arrayData));
     console.log("----------------")
-    ns.print(newarrayData);
-    let answer = parenthesesWeddinger(newarrayData);
+    ns.print(newArrayData);
+    let answer = parenthesesWeddinger(newArrayData);
     ns.print(answer)
     //throw (Error);
     return answer;

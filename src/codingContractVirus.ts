@@ -5,7 +5,7 @@ import * as extension2 from "cCVExtensions/cCVExtension2";
 import * as extension3 from "cCVExtensions/cCVExtension3";
 import {Lib} from "cCVExtensions/cCVExtension4";
 /* import findLargestPrimeFactor from "/cCVExtensions/cCVExtension4/findLargestPrimeFactor";
-import {hammingCodesEncodedBinaryToInteger, hammingCodesIntegertoEncodedBinary} from "/cCVExtensions/cCVExtension4/hammingCodes";
+import {hammingCodesEncodedBinaryToInteger, hammingCodesIntegerToEncodedBinary} from "/cCVExtensions/cCVExtension4/hammingCodes";
 import {proper2ColoringOfAGraph} from "/cCVExtensions/cCVExtension4/proper2ColoringOfAGraph";
 import {
     compressLZStolen,
@@ -143,7 +143,7 @@ async function answering(ns: NS, contractName: string, serverName: string) {
             answer = await extension2.mergeOverlappingIntervals(ns, contractName, serverName);
             break;
         case "Generate IP Addresses":
-            answer = extension2.generateIPAdresses(ns, contractName, serverName);
+            answer = extension2.generateIPAddresses(ns, contractName, serverName);
             break;
         case "Algorithmic Stock Trader I":
             answer = extension2.algoStonksI(ns, contractName, serverName);
@@ -176,7 +176,7 @@ async function answering(ns: NS, contractName: string, serverName: string) {
             answer = extension3.findAllValidMathExpressions(ns, contractName, serverName);
             break;
         case "HammingCodes: Integer to Encoded Binary":
-            answer = Lib.HammingCodes.hammingCodesIntegertoEncodedBinary(ns, contractName, serverName);
+            answer = Lib.HammingCodes.hammingCodesIntegerToEncodedBinary(ns, contractName, serverName);
             break;
         case "HammingCodes: Encoded Binary to Integer":
             answer = Lib.HammingCodes.hammingCodesEncodedBinaryToInteger(ns, contractName, serverName);

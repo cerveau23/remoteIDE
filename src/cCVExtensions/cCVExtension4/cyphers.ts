@@ -1,3 +1,5 @@
+// noinspection SpellCheckingInspection
+
 import {NS} from "@ns";
 
 export interface Cypher {

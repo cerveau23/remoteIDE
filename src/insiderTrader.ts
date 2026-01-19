@@ -8,7 +8,7 @@ export async function main(ns: NS) {
         const host = "Saboteur";
         let threads = Math.floor((ns.getServerMaxRam(host) - ns.getServerUsedRam(host)) / ns.getScriptRam("grower.js"));
         if(threads > 0){
-            ns.exec("grower.js","Saboter", threads, "computek");
+            ns.exec("grower.js",host, threads, "computek");
         }
         await ns.sleep(1000);
     }

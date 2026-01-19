@@ -6,14 +6,17 @@ import {keyPressAPI, serverPing, initialisation as serverInitialisation} from "B
 /** @param {NS} ns **/
 export async function main(ns) {
     await serverInitialisation(ns);
-/*    ns.tprint("Server initialised") */
+    /*    ns.tprint("Server initialised") */
     /* ns.tail(); */
     let mapp = await portReceiver(ns, "Server Map");
+    ns.tprint(mapp.toString());
+    ns.tprint(typeof mapp)
+    ns.tprint(mapp[0])
     let serversWithoutBackdoors = [];
     let serversWithBackdoors = [];
     let others = [];
     for (let i of mapp) {
-        if ((!ns.getServer(i[0]).backdoorInstalled) && (!ns.getServer(i[0]).purchasedByPlayer) && (ns.getServer(i[0]).hasAdminRights)) {
+        if ((!ns.getServer(i[0]).backdoorInstalled) && (!ns.getServer(i[0]).purchasedByPlayer) && (ns.getServer(i[0]).hasAdminRights) && (ns.getServerRequiredHackingLevel(i[0])<=ns.getHackingLevel())) {
             serversWithoutBackdoors.push(i[0]);
         } else {
             if (ns.getServer(i[0]).backdoorInstalled && (!ns.getServer(i[0]).purchasedByPlayer)) {
@@ -30,7 +33,7 @@ export async function main(ns) {
     let previousServer = ns.getHostname();
     for (let i of serversWithoutBackdoors) {
         ns.print(i);
-        let command = await dSe(ns, [["d", i], ["connector", true]]) + "; backdoor";
+        let command = dSe(ns, [["d", i], ["connector", true]]) + "; backdoor";
         ns.tprintRaw(command);
         copyToClipboard(command);
         await ns.sleep(1);
@@ -50,7 +53,7 @@ export async function main(ns) {
             }
             return !ns.getServer(previousServer).isConnectedTo;
         });
-        if(! (await serverPing( true ))){
+        if (!(await serverPing(true))) {
             while (ns.getServer(previousServer).isConnectedTo) {
                 ns.toast("Backdoor finished, start new backdoor!", "error");
                 documentFree = eval("document");
@@ -61,12 +64,11 @@ export async function main(ns) {
                     return false;
                 });
                 ns.run("beep.js", 1, 1440);
-                if( await serverPing( true ))
-                    await autoEnter(ns);
+                // if (await serverPing(true))
+                //     await autoEnter(ns);
             }
-        }
-        else if(documentFree.getElementById('terminal-input') !== undefined){
-            await autoEnter(ns)
+        } else if (documentFree.getElementById('terminal-input') !== undefined) {
+            // await autoEnter(ns)
         }
         while (!ns.getServer(i).backdoorInstalled) {
             ns.toast("Waiting on backdoor for " + i + "...", "info");
@@ -236,9 +238,10 @@ async function waitr(ns, seconds, reason, breaker = function () {
     return 1;
 }
 
-async function autoEnter(ns){
-    if( ! await serverPing())
+async function autoEnter(ns) {
+    if (!await serverPing())
         return;
+    await keyPressAPI(ns, "SPACE");
     await keyPressAPI(ns, "SPACE");
     await keyPressAPI(ns, "ENTER");
 }

@@ -1,3 +1,5 @@
+import {NS} from "@ns";
+
 /**
  * Requires: 7.25 GB of ram (self), no other program needed on home
  * A basic function that will launch automatic and simple hacking processes on all backdoored servers
@@ -5,7 +7,7 @@
  * Should be replaced by awakenV2.js as soon as possible
  * @param {NS} ns
  * */
-export async function main(ns) {
+export async function main(ns: NS) {
   let file = ns.read("targetsNew.txt");
   let business_list = file.split(',');
   business_list = business_list.map(element => element.trim());

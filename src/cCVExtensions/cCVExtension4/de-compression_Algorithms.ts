@@ -1,4 +1,4 @@
-// noinspection DuplicatedCode
+// noinspection DuplicatedCode,SpellCheckingInspection
 
 import {runLengthEncode} from "/functions";
 import {NS} from "@ns";
@@ -1570,20 +1570,20 @@ export function lZCompression(ns: NS, contractName: string, serverName: string):
     let contractData = "";
     contractData = ns.codingcontract.getData(contractName, serverName);
     let answer = "";
-    let correspondances = new Array(contractData.length).fill([]);
+    let correspondences = new Array(contractData.length).fill([]);
     for (let i = contractData.length - 1; i > 0; i--) {//Finding correspondences in the text
         let character = contractData[i]
         let firstPresenceKnown = i + 1;
         while ((contractData.lastIndexOf(character, firstPresenceKnown - 1) > -1) && (contractData.lastIndexOf(character, firstPresenceKnown - 1) > i - 10)) {
             //while (contractData.lastIndexOf(character, firstPresenceKnown) > -1 && i - 10)) {
             firstPresenceKnown = contractData.lastIndexOf(character, firstPresenceKnown - 1);
-            ns.print("i: " + i + " firstPresenceKnown: " + firstPresenceKnown + " correspondances[i] length: " + correspondances[i].length);
-            correspondances[i].push(firstPresenceKnown);
+            ns.print("i: " + i + " firstPresenceKnown: " + firstPresenceKnown + " correspondences[i] length: " + correspondences[i].length);
+            correspondences[i].push(firstPresenceKnown);
         }
     }
     ns.print("Correspondances established!");
-    ns.print("Sorting out the overly long correspondances");
-    ns.print(correspondances);
+    ns.print("Sorting out the overly long correspondences");
+    ns.print(correspondences);
     throw Error();
 
     /**@param {string[]} array - array to count
@@ -1624,7 +1624,7 @@ export function lZCompression(ns: NS, contractName: string, serverName: string):
     }
 
     let testingString;
-    let length = correspondances.length
+    let length = correspondences.length
     for (let combination = 0; combination < (10 ** length) / 5; combination++) {
         let arrayCombination = combination.toString().split("").map((v) => parseInt(v));
         ns.print("Combination: " + arrayCombination);
@@ -1635,7 +1635,7 @@ export function lZCompression(ns: NS, contractName: string, serverName: string):
             break;
         }//if we're over the number of characters, we stop
         for (let i = 0; i < arrayCombination.length; i++) {//if we're over the number of connections for one character, we advance the next by 1, starting with the first character
-            if (correspondances[i].length <= arrayCombination[i]) {
+            if (correspondences[i].length <= arrayCombination[i]) {
                 combination = (arrayCombination[i] + 1) * (10 ** (length - i - 1));
                 break;
             }
