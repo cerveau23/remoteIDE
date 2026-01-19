@@ -7,7 +7,7 @@ import {proper2ColoringOfAGraph} from "./cCVExtension4/proper2ColoringOfAGraph";
 import {NS} from "@ns";
 
 export interface CcvExtensionLib {
-    bigIntSquareRoot(ns: NS, contractName: string, serverName: string, dev?: boolean,): string;
+    bigIntSquareRoot(ns: NS, contractName: string, serverName: string, dev?: boolean): string;
     Cypher: Cypher.Cypher;
     CompressionAlgorithms: typeof CompressionAlgorithms;
     findLargestPrimeFactor(ns: NS, contractName: string, serverName: string): number;

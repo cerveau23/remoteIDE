@@ -1,7 +1,7 @@
 import {testing} from "codingContractVirus"
 import {average, sum} from "functions"
 
-let endl = "\n";
+let endLine = "\n";
 let tab = "\t";
 
 // noinspection JSUnusedGlobalSymbols
@@ -41,11 +41,11 @@ export async function main(ns, type = "-", massTest = false, ultimateTest = fals
  */
 function helpInfo(ns) {
     ns.tprint(
-        "The cCVTester script is used to test the capabilities of the coding contract virus or cCV.", endl,
-        "Not setting a parameter will, in most cases, result in a prompt to request the user's input", endl,
-        "The different parameters are the following:", endl,
-        tab, "type", tab, tab, "followed by a string with the name of a contract type, it determines which type is tested", endl,
-        tab, "massTest", tab, "a boolean, it determines whether or not to test the algorithm 1000 times", endl,
+        "The cCVTester script is used to test the capabilities of the coding contract virus or cCV.", endLine,
+        "Not setting a parameter will, in most cases, result in a prompt to request the user's input", endLine,
+        "The different parameters are the following:", endLine,
+        tab, "type", tab, tab, "followed by a string with the name of a contract type, it determines which type is tested", endLine,
+        tab, "massTest", tab, "a boolean, it determines whether or not to test the algorithm 1000 times", endLine,
         tab, "ultimateTest", tab, "a boolean, it will test the coding contract virus against every type of contract. Good PC recommended");
 }
 

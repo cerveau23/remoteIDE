@@ -1,3 +1,5 @@
+import { NS } from "@ns";
+
 /**
  * Requires: 6.2 GB of ram (self), Overseer server
  * Automatically tries to hack into available servers and boots up the VaultOverseer and
@@ -6,7 +8,7 @@
  * Should be launched by beholder.js if possible
  * @param {NS} ns
  * */
-export async function main(ns) {
+export async function main(ns: NS) {
   //ns.tail();
 
   let file = ns.read("targetsNew.txt");
@@ -20,13 +22,13 @@ export async function main(ns) {
   for (let i in business_list) {
     let tServer = ns.getServer(business_list[i]);
     if (!tServer.hasAdminRights) {
-      if (tServer.requiredHackingSkill <= ns.getHackingLevel()) {
+      if (tServer.requiredHackingSkill ?? 0 <= ns.getHackingLevel()) {
         if (ns.fileExists("Brutessh.exe")) { ns.brutessh(tServer.hostname); }
         if (ns.fileExists("FTPcrack.exe")) { ns.ftpcrack(tServer.hostname); }
         if (ns.fileExists("relaySMTP.exe")) { ns.relaysmtp(tServer.hostname); }
         if (ns.fileExists("HTTPWorm.exe")) { ns.httpworm(tServer.hostname); }
         if (ns.fileExists("SQLInject.exe")) { ns.sqlinject(tServer.hostname); }
-        if (tServer.numOpenPortsRequired <= ns.getServer(tServer.hostname).openPortCount) {
+        if (tServer.numOpenPortsRequired ?? 0 <= (ns.getServer(tServer.hostname).openPortCount ?? 0)) {
           ns.nuke(tServer.hostname);
         } else { continue; }
       }

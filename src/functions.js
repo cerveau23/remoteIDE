@@ -66,7 +66,7 @@ export async function sieveOfEratosthenes(ns, limit) {
 		if (primeList[primeList.length - 1] >= limit) { primeEnough = true; primes = primeList }
 	}*/
 	if (!primeEnough) {
-		//ns.tprint("Hasn't calaculatad yet");
+		//ns.tprint("Hasn't calculated yet");
 		let smallPrimes = [2, 3, 5, 7]
 		let rest = limit
 		let divided = true;

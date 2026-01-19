@@ -48,7 +48,7 @@ Alternatively if you are familiar with docker, see [Docker install guide](Docker
 ### 9. Try some other files too!
 - Copy/create a .js or .ts file to the `src` folder on your computer and check Bitburner. The file should be transferred!
 	
-### 10. Thats it!
+### 10. That's it!
 - You can now make and edit the files in the `src` directory to your liking, and have them be changed in Bitburner automatically.
 <br />
 <br />
