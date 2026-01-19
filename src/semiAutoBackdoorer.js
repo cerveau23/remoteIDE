@@ -1,5 +1,5 @@
 import {portReceiver} from "functions";
-import {dSe} from "depthScanner";
+import {dSe} from "depthScannerV2";
 import {keyPressAPI, serverPing, initialisation as serverInitialisation} from "BBA_API_handler"
 
 // noinspection JSUnusedLocalSymbols
@@ -33,7 +33,7 @@ export async function main(ns) {
     let previousServer = ns.getHostname();
     for (let i of serversWithoutBackdoors) {
         ns.print(i);
-        let command = dSe(ns, [["d", i], ["connector", true]]) + "; backdoor";
+        let command = dSe(ns, Object.fromEntries([["d", i], ["connector", true]])) + "; backdoor";
         ns.tprintRaw(command);
         copyToClipboard(command);
         await ns.sleep(1);
