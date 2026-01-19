@@ -1,8 +1,10 @@
 // noinspection InfiniteLoopJS
 
 import { NS } from "@ns";
-import { dSe , Map, Location} from "depthScanner";
-function scanner(ns : NS,...arg: any[]) { return dSe(ns,arg); }
+import { dSe , Map, Location, PartialFlag} from "depthScannerV2";
+function scanner(ns : NS, arg?: PartialFlag) {
+	return dSe(ns,arg);
+}
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
