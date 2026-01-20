@@ -1,9 +1,4 @@
-//import type {BladeburnerActionType, BladeburnerCurAction, NS} from "@ns"
-
-/** @param {NS} ns */
-export async function main(ns) {
-
-}
+import type {BladeburnerActionType, BladeburnerCurAction, NS} from "@ns"
 
 /**
  * Gets the type of a bladeburner action.
@@ -11,27 +6,34 @@ export async function main(ns) {
  * @param { string | BladeburnerCurAction } action
  * @returns { string | BladeburnerActionType }
  */
-export function getActionType(ns, action){
+export function getActionType(ns: NS, action: string | BladeburnerCurAction): string | BladeburnerActionType | void{
 	const type2function = {
-		"General" : 			ns.bladeburner.getGeneralActionNames,
-		"Contracts" : 			ns.bladeburner.getContractNames,
-		"Operations" : 			ns.bladeburner.getOperationNames,
-		"Black Operations" : 	ns.bladeburner.getBlackOpNames
+		"General" : 			ns.bladeburner.getGeneralActionNames(),
+		"Contracts" : 			ns.bladeburner.getContractNames(),
+		"Operations" : 			ns.bladeburner.getOperationNames(),
+		"Black Operations" : 	ns.bladeburner.getBlackOpNames()
 	}
 	if(typeof action === "string") {
-		for (const type of Object.values(BladeburnerActionType))
-			if (type2function[type]().includes(action))
-				return type;
+		const arrayType2Function: [string, any[]][] = Object.entries(type2function)
+		for (const type in arrayType2Function) {
+			if (arrayType2Function[type][1].includes(action))
+				return arrayType2Function[type][0];
+		}
+		return;
 	}
 	else
 		return action.type;
 }
 
 /** @param {String} target - Designation to listen for. Must be a string.
- * @param {NS} ns 
+ * @param {NS} ns
+ * @param {number} [portID = 1] The port's ID
  * @remarks
  * RAM cost: 0 GB*/
-export async function portReceiver(ns, target) {
+export async function portReceiver(ns: NS, target: string, portID: number = 1) {
+	let targetPort = ns.getPortHandle(portID);
+	if(targetPort.empty())
+		return false;
 	let portData;
 	do {
 		if (portData === "NULL PORT DATA") { await ns.sleep(1000); ns.print(portData) }
@@ -41,7 +43,7 @@ export async function portReceiver(ns, target) {
 				case false:
 				case undefined:
 					portData["loop"] = false;
-					ns.writePort(1, portData);
+					targetPort.write(portData);
 					await ns.sleep(1);
 					break;
 				case true:
@@ -49,14 +51,15 @@ export async function portReceiver(ns, target) {
 					break;
 			}
 		}
-		portData = ns.readPort(1);
+		portData = targetPort.read();
 	}
 	while (portData.name !== target)
 	return portData.data;
 }
+
 /** @param {NS} ns 
  * @param {Number} limit */
-export async function sieveOfEratosthenes(ns, limit) {
+export async function sieveOfEratosthenes(ns: NS, limit: number) {
 	let primeEnough = false;
 	let primes;
 	/*if (ns.fileExists("./PrimeNumbers.txt")) {
@@ -84,9 +87,10 @@ export async function sieveOfEratosthenes(ns, limit) {
 	}
 	return primes
 }
-export function compressPrimes(primes) {
 
-	function eliasGammaEncode(n) {
+export function compressPrimes(primes:number[]) {
+
+	function eliasGammaEncode(n:number) {
 		// Step 1: Compute binary representation without leading zero
 		let binary = n.toString(2);
 
@@ -95,7 +99,7 @@ export function compressPrimes(primes) {
 		return zeroPadding + binary;
 	}
 
-	function deltaEncode(primes) {
+	function deltaEncode(primes: number[]) {
 		let deltas = [];
 		for (let i = 1; i < primes.length; i++) {
 			deltas.push(primes[i] - primes[i - 1]);
@@ -107,9 +111,9 @@ export function compressPrimes(primes) {
 	let encodedDeltas = deltas.map(delta => eliasGammaEncode(delta));
 	return encodedDeltas.join(''); // Join as a single binary string for storage
 }
-export function decompressPrimes(encodedBitString) {
+export function decompressPrimes(encodedBitString : string) {
 
-	function eliasGammaDecode(bitString) {
+	function eliasGammaDecode( bitString: string) {
 		let index = 0;
 		let result = [];
 
@@ -131,7 +135,7 @@ export function decompressPrimes(encodedBitString) {
 		return result;
 	}
 
-	function deltaDecode(deltas) {
+	function deltaDecode(deltas: any[]) {
 		let primes = [2]; // The first prime is 2
 		for (let i = 0; i < deltas.length; i++) {
 			primes.push(primes[primes.length - 1] + deltas[i]);
@@ -143,22 +147,23 @@ export function decompressPrimes(encodedBitString) {
 	return deltaDecode(deltas);
 }
 // Saving primes in binary format
-export function saveBinaryFile(ns, primes, filename) {
+export function saveBinaryFile(ns : NS, primes: number, filename: string) {
 	const buffer = new Uint32Array(primes);  // Create a typed array (32-bit unsigned integer)
 	const blob = new Blob([buffer.buffer], { type: 'application/octet-stream' });
-	ns.write(filename, blob);
+	ns.write(filename, blob.toString());
 }
 
 // Reading primes from binary format
-export function readBinaryFile(ns, filename) {
+export function readBinaryFile(ns : NS, filename: string) {
 	let buffer = ns.read(filename)
 	const primes = Array.from(buffer);  // Convert the typed array back to a regular array
 	return primes;
 }
 
-/** @param {String} input 
+/** @param ns
+ @param {String} input
  * @param {"n"|"m"} characterType */
-export function runLengthEncode(ns, input, characterType = "m") {
+export function runLengthEncode(ns : NS, input: string, characterType: "n" | "m" = "m") {
 	let encoded = '';
 	let count = 1;
 	if (input === undefined) { return undefined }
@@ -171,7 +176,7 @@ export function runLengthEncode(ns, input, characterType = "m") {
 				count++;
 			} else {
 				// Otherwise, append the count and the character to the result
-				encoded += count + code[input[i].toString()];
+				encoded += count + code[<"1"> input[i].toString()];
 				count = 1;  // Reset the count for the next run
 			}
 		}
@@ -193,7 +198,7 @@ export function runLengthEncode(ns, input, characterType = "m") {
 }
 /** @param {String} encoded 
  * @param {"n"|"m"} characterType */
-export async function runLengthDecode(encoded, characterType = "m") {
+export async function runLengthDecode(encoded: string, characterType: "n" | "m" = "m") {
 	let decoded = '';
 	let count = '';
 
@@ -215,7 +220,7 @@ export async function runLengthDecode(encoded, characterType = "m") {
 				count += encoded[i];
 			}
 			else {
-				decoded += code[encoded[i].toString()].repeat(parseInt(count));
+				decoded += code[<"A">encoded[i].toString()].repeat(parseInt(count));
 				count = '';
 			}
 		}
@@ -237,29 +242,30 @@ export async function runLengthDecode(encoded, characterType = "m") {
 	return decoded;
 }
 /**@param {Number[]} argument*/
-export function average(argument) {
-	return sum(argument) / argument.length;
+export function average(...argument: number[]) {
+	return sum(...argument) / argument.length;
 }
 /**@param {Number[]} argument*/
-export function sum(argument) {
+export function sum(...argument: number[]) {
 	let sum = 0;
 	for (let i of argument) { sum += i }
 	return sum
 }
 /** @param {Number} number */
-export function factorial(number) {
+export function factorial(number: number) {
 	let answer = 1;
 	for (let i = number; i > 0; i--) {
 		answer = answer * i;
 	}
 	return answer
 }
-/** @param {Array<T>} array
+/** @template T
+ * @param {Array<T>} array
  * @param {T} itemToRemove
  * @param {Number} [startingPoint=0] - Where the function will start removing the item (included)
  * @param {Number} endPoint - Where the function will stop removing the item (included)
  * @returns {Array<T>} */
-export function removeAll(array, itemToRemove, startingPoint = 0, endPoint = array.length - 1) {
+export function removeAll<T>(array: Array<T>, itemToRemove: T, startingPoint: number = 0, endPoint: number = array.length - 1): Array<T> {
 	let workingArray = array.slice(0);
 	for (let i = startingPoint; (i <= endPoint) && (i < workingArray.length); i++) {
 		while (workingArray[i] === itemToRemove) { workingArray.splice(i, 1) }
@@ -268,7 +274,7 @@ export function removeAll(array, itemToRemove, startingPoint = 0, endPoint = arr
 }
 
 /** @param {Array} array*/
-export function arrayToString(array) {
+export function arrayToString(array: Array<any>) {
 	let answer = "";
 	for (let i of array) {
 		answer += i;
@@ -277,7 +283,7 @@ export function arrayToString(array) {
 }
 
 /** @param {String} string*/
-export function stringToArray(string) {
+export function stringToArray(string: string) {
 	let answer = [];
 	for (let i = 0; i < string.length; i++) {
 		answer.push(string.charAt(i));
@@ -288,9 +294,10 @@ export function stringToArray(string) {
 /** @param {NS} ns
  * @param {String} keyToPress
  * @param {Number} keysCode
- * @param {bool} upPress
+ * @param {boolean} upPress
+ * @deprecated
  */
-export async function simulateKey(ns, keyToPress,keysCode, upPress) {
+export async function simulateKey(ns : NS, keyToPress: string, keysCode: number, upPress: boolean) {
 	let initDict = {
 		key: keyToPress,
 		keyCode: keysCode, // Enter key code
