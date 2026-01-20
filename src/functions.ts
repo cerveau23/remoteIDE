@@ -1,4 +1,5 @@
 import type {BladeburnerActionType, BladeburnerCurAction, NS} from "@ns"
+import type {PortData, Geography} from "/typeLib/index"
 
 /**
  * Gets the type of a bladeburner action.
@@ -25,24 +26,28 @@ export function getActionType(ns: NS, action: string | BladeburnerCurAction): st
 		return action.type;
 }
 
+type receiverReturn<t extends "Server Map" | string> =
+	t extends "Server Map" ? Geography.Map : any;
+
 /** @param {String} target - Designation to listen for. Must be a string.
  * @param {NS} ns
  * @param {number} [portID = 1] The port's ID
  * @remarks
  * RAM cost: 0 GB*/
-export async function portReceiver(ns: NS, target: string, portID: number = 1) {
+export async function portReceiver<T extends string>(ns: NS, target: T, portID: number = 1) : Promise<receiverReturn<T>|boolean> {
 	let targetPort = ns.getPortHandle(portID);
 	if(targetPort.empty())
 		return false;
-	let portData;
-	do {
+	let portData : PortData<receiverReturn<T>>|"NULL PORT DATA"|undefined = undefined;
+	while (portData == "NULL PORT DATA"
+	|| portData?.name !== target) {
 		if (portData === "NULL PORT DATA") { await ns.sleep(1000); ns.print(portData) }
 		else if (portData === undefined) { }
-		else {
+		else if( portData?.kind === "PortData"){
 			switch (portData.loop) {
 				case false:
 				case undefined:
-					portData["loop"] = false;
+					portData.loop = false;
 					targetPort.write(portData);
 					await ns.sleep(1);
 					break;
@@ -53,7 +58,6 @@ export async function portReceiver(ns: NS, target: string, portID: number = 1) {
 		}
 		portData = targetPort.read();
 	}
-	while (portData.name !== target)
 	return portData.data;
 }
 

@@ -1,46 +1,13 @@
-// noinspection DuplicatedCode
-
 import {NS} from "@ns";
+import {Geography} from "/typeLib/Geography";
 
-
-/**
- * Represents a location on the net.
- * @property {Hostname} ServerName - The location's name.
- * @property {Number} ServerID - The location's UID.
- * @property {Path} Path - The path to the location.
- * @property {Boolean} HasChildren - Whether the location has children locations.
- * @property {Boolean} [Backdoored] - Whether the server has been backdoored in the past.
- */
-export type Location = [
-    /** Server Name */
-    ServerName: Hostname, // Test
-    /** Server ID */
-    ServerID: number,
-    /** Path to the Server via IDs */
-    Path: Path,
-    /** Whether the server has "children" */
-    HasChildren: boolean,
-    /** whether the server has been backdoored in the past */
-    Backdoored?: boolean
-]
-
-type Hostname = string;
-
-/** An array of {@link Location locations}.*/
-export type Map = Location[];
-
-/**
- * The path to a {@link ``Location``}, represented as an array of ``UIDs`` from ``Home`` to the ``Location``
- */
-interface Path extends Array<number> {
-}
 
 type DSeReturn<T> =
     T extends Help ? void :
         T extends NAS ? string[] :
             T extends Connector ? string :
                 T extends Destination ? string :
-                    Map;
+                    Geography.Map;
 
 export interface FromCLI {
     _: any[]
@@ -103,7 +70,7 @@ let flagTemp = new Flag({"_": [], "NAS": false, "d": "", "connector": false, "he
 let commandline = false;
 
 /** @param {NS} ns*/
-export function main(ns: NS): string[] | Location[] | string | void {//exemple: dSe(ns, [["d", i], ["connector", true]])
+export function main(ns: NS): string[] | Geography.Map | string | void {//exemple: dSe(ns, [["d", i], ["connector", true]])
     commandline = true;
     flagTemp.parseFlags(ns.flags([["NAS", flagTemp.NAS], ["d", flagTemp.d], ["connector", flagTemp.connector], ["help", flagTemp.help], ["o", flagTemp.o]]));//if called by the terminal
     /** @const {Flag} */
@@ -156,7 +123,7 @@ export function dSe<T extends PartialFlag>( ns: NS, partialFlag?: T): DSeReturn<
     return hub(ns, flags) as DSeReturn<T>;
 }
 
-function hub(ns: NS, Flags: Flag): string[] | Map | string | void {
+function hub(ns: NS, Flags: Flag): string[] | Geography.Map | string | void {
     if (Flags.help)
         return help(ns);
     const map = WholeMap(ns);
@@ -191,9 +158,9 @@ It has 5 possible flags:
     return;
 }
 
-function WholeMap(ns: NS) : Map{
+function WholeMap(ns: NS) : Geography.Map{
 
-    let map: Map = [];
+    let map: Geography.Map = [];
     let startLocation = ns.getHostname();
 
     if(startLocation !== "home")
@@ -208,7 +175,7 @@ function WholeMap(ns: NS) : Map{
     let id: number = 0;
     /** @type {number[]}
      * The path to the {@link currentLocation ``current location``}, formed by the {@link id ``UIDs``} of each location starting from {@link startLocation ``home``}. */
-    let path: Path = [];
+    let path: Geography.Path = [];
 
     // Writing of the starting location as example: [Server's Name, Server's ID, Path to the Server via IDs, Whether or not the server has "children", whether or not the server has been backdoored in the past (Optional)]
     map.push([currentLocation, id, path, false, true]);
@@ -254,7 +221,7 @@ function WholeMap(ns: NS) : Map{
 
         /** @const {Hostname[]} touched
          * The list of all adjacent {@link Location ``locations``} to the current location. */
-        const touched: Hostname[] = ns.scan(currentLocation);
+        const touched: Geography.Hostname[] = ns.scan(currentLocation);
         ns.print(touched);
 
         for (const i in touched) {
@@ -282,7 +249,7 @@ function WholeMap(ns: NS) : Map{
     return map;
 }
 
-function nas(ns: NS, map: Map) {
+function nas(ns: NS, map: Geography.Map) {
     const lastHackAtLevel = Number.parseInt(ns.read("lastHackAtLevel.txt"));
     let newServers = map.filter((value)=>
                     (ns.getServerRequiredHackingLevel(value[0]) > lastHackAtLevel
@@ -294,7 +261,7 @@ function nas(ns: NS, map: Map) {
     return newServers;
 }
 
-function pathing(ns: NS, map: Map, destination: string) {
+function pathing(ns: NS, map: Geography.Map, destination: string) {
     let pathTarget = "";
     let targetPosition = sIIS(map, 0, destination);
     try {
