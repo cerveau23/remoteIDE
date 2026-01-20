@@ -2,8 +2,8 @@
 
 import { NS } from "@ns";
 import { dSe , PartialFlag} from "depthScannerV2";
-import {Location, Map} from "/typeLib/Geography";
-function scanner(ns : NS, arg?: PartialFlag) : Map {
+import {PortData, Geography} from "/typeLib";
+function scanner(ns : NS, arg?: PartialFlag) : Geography.Map {
 	return dSe(ns,arg);
 }
 
@@ -15,9 +15,10 @@ export async function main(ns: NS) {
 	while (true) {
 		let portHandle = ns.getPortHandle(1);
 		while (!portHandle.full()) {
-			scanMap = <Map>scanner(ns);
+			scanMap = <Geography.Map>scanner(ns);
 			if(previousMap != scanMap) {
-				portHandle.tryWrite({name: "Server Map", data: scanMap, loop: true});
+				let data : PortData<Geography.Map> = {kind: "PortData", name: "Server Map", data: scanMap, loop: true}
+				portHandle.tryWrite(data);
 				previousMap = scanMap;
 			}
 		}
