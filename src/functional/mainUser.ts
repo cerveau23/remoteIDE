@@ -63,7 +63,6 @@ export async function main(ns:NS, recurse = 0){
     depthS.main(ns)
     depthS2.main(ns)
     await eM.main(ns)
-    await functions.main(ns)
     await gardener.main(ns)
     await googleMaps.main(ns)
     await goPlayer.main(ns)
