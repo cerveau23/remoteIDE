@@ -251,12 +251,14 @@ export async function deathToParenthesesBroken(ns: NS, contractName: string, ser
         console.log(workingArray)
         for (let i in closers) {//Remove unmatched closers
             let subarray = workingArray.splice(0, firstIndexesOpeners[i]);
+            // @ts-ignore
             workingArray.unshift(removeAll(subarray, closers[i]));
             workingArray = workingArray.flat()
         }
         console.log(workingArray)
         for (let i in openers) {//Remove unmatched openers
             let subarray = workingArray.splice(lastIndexesClosers[i], workingArray.length - lastIndexesClosers[i]);
+            // @ts-ignore
             workingArray.push(removeAll(subarray, openers[i]));
             workingArray = workingArray.flat()
         }
