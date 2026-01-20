@@ -26,19 +26,27 @@ export function getActionType(ns: NS, action: string | BladeburnerCurAction): st
 		return action.type;
 }
 
-type receiverReturn<t extends "Server Map" | string> =
-	t extends "Server Map" ? Geography.Map : any;
+type receiverReturn<t extends "Server Map" | string, y extends boolean> =
+	y extends false ? ((t extends "Server Map" ? Geography.Map : any) | false) : (t extends "Server Map" ? Geography.Map : any);
 
 /** @param {String} target - Designation to listen for. Must be a string.
  * @param {NS} ns
  * @param {number} [portID = 1] The port's ID
+ * @param {boolean} [force = false]
  * @remarks
  * RAM cost: 0 GB*/
-export async function portReceiver<T extends string>(ns: NS, target: T, portID: number = 1) : Promise<receiverReturn<T>|boolean> {
+export async function portReceiver<T extends string, Y extends boolean>(ns: NS, target: T, portID: number = 1, force: Y = (false as Y)) : Promise<receiverReturn<T, Y>> {
 	let targetPort = ns.getPortHandle(portID);
-	if(targetPort.empty())
-		return false;
-	let portData : PortData<receiverReturn<T>>|"NULL PORT DATA"|undefined = undefined;
+	if(targetPort.empty()) {
+		if (force === false)
+			return false as receiverReturn<string, false>;
+		else {
+			ns.exec("googleMaps.js", "home", {preventDuplicates: true})
+			while (targetPort.empty())
+				await ns.sleep(1000)
+		}
+	}
+	let portData : PortData<receiverReturn<T, true>>|"NULL PORT DATA"|undefined = undefined;
 	while (portData == "NULL PORT DATA"
 	|| portData?.name !== target) {
 		if (portData === "NULL PORT DATA") { await ns.sleep(1000); ns.print(portData) }
