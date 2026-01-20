@@ -73,7 +73,7 @@ export async function main(ns: NS, dev: boolean = flag.dev, name: string = flag.
      *-----------------------------------------------------------------*/
 
     /** The map of all the servers */
-    let serverMap = await portReceiver(ns, "Server Map");
+    let serverMap = await portReceiver(ns, "Server Map", 1, true);
     //Swap between servers
     for (let s of serverMap) {
         let serverName = s[0];
