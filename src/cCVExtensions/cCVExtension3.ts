@@ -79,7 +79,7 @@ export function uniquePathsInAGridII(ns: NS, contractName: string, serverName: s
         contractData[i][j] = 1 - contractData[i][j]
     }
 
-    //DP initialisation
+    //DP initialization
     let dp = Array(n).fill(0).map(() => Array(m).fill(0));
     dp[1][1] = 1;
 
@@ -124,7 +124,7 @@ export function shortestPathInAGridSelfMade(ns: NS, contractName: string, server
     n = contractData.length
     m = contractData[0].length
 
-    //DP initialisation
+    //DP initialization
     let dp : string[][][] = Array(n).fill(undefined).map(() => Array(m).fill([""]));
     dp[1][1] = ["O"];
 
