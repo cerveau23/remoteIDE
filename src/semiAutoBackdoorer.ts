@@ -1,10 +1,11 @@
 import {portReceiver} from "functions";
 import {dSe} from "depthScannerV2";
 import {keyPressAPI, serverPing, initialisation as serverInitialisation} from "BBA_API_handler"
+import { NS } from "@ns";
 
 // noinspection JSUnusedLocalSymbols
 /** @param {NS} ns **/
-export async function main(ns) {
+export async function main(ns: NS) {
     await serverInitialisation(ns);
     /*    ns.tprint("Server initialised") */
     /* ns.tail(); */
@@ -73,7 +74,7 @@ export async function main(ns) {
         while (!ns.getServer(i).backdoorInstalled) {
             ns.toast("Waiting on backdoor for " + i + "...", "info");
             await waitr(ns, 11, "Waiting during installation", function () {
-                return ns.getServer(i).backdoorInstalled;
+                return ns.getServer(i).backdoorInstalled ?? true;
             });
         }
         ns.toast("Backdoor finished!", "success");
@@ -87,7 +88,7 @@ export async function main(ns) {
 }
 
 /** @param {String} text */
-export function copyToClipboard(text) {
+export function copyToClipboard(text: string) {
     // Use the Clipboard API to copy the text
     navigator.clipboard.writeText(text)
         .then(() => {
@@ -109,7 +110,8 @@ function pasteFromClipboard() {
     navigator.clipboard.readText()
         .then(text => {
             // Set the pasted text into the textarea
-            document.getElementById('terminal-input').value = text;
+            let s = document.getElementById('terminal-input');
+                if(s!==null) s.innerText = text;
         })
         .catch(err => {
             // Handle any errors (e.g., permission denied)
@@ -121,10 +123,10 @@ function pasteFromClipboard() {
 /**
  * @deprecated
  */
-function onSpace(event) {
+function onSpace(ns:NS, event: { keyCode: number; }) {
     //simulateKey("Space",32)
     if (event.keyCode === 32) {
-        simulateKey(ns, "Enter", 13, true);
+        simulateKey(ns, "Enter", 13, true).then(()=> {return});
     }
 }
 
@@ -133,31 +135,31 @@ function onSpace(event) {
  * @param {String} keyToPress
  * @param {Number} keysCode
  */
-function simulateKeyV1(keyToPress, keysCode) {
+function simulateKeyV1(keyToPress: string, keysCode: number) {
     // Create a new KeyboardEvent for the 'Enter' key
     const enterKeyEvent = new KeyboardEvent('keydown', {
         key: keyToPress,
         keyCode: keysCode,
         code: keyToPress,
         which: keysCode,
-        type: "keydown",
+        //type: string,
         metaKey: false,
         altKey: false,
-        cancelBubble: false,
+        //cancelBubble: false,
         cancelable: true,
         charCode: 0,
-        timeStamp: 3208093,
+        //timeStamp: 3208093,
         ctrlKey: false,
-        currentTarget: null,
-        defaultPrevented: true,
+        //currentTarget: null,
+        //defaultPrevented: true,
         detail: 0,
-        eventPhase: 0,
+        //eventPhase: 0,
         isComposing: false,
         repeat: false,
-        returnValue: false,
+        //returnValue: false,
         shiftKey: false,
         bubbles: true,
-        isTrusted: true,
+        //isTrusted: true,
         composed: true
     });
     let documentFree = eval("document");
@@ -169,9 +171,9 @@ function simulateKeyV1(keyToPress, keysCode) {
 /** @param {NS} ns
  * @param {String} keyToPress
  * @param {Number} keysCode
- * @param {bool} upPress
+ * @param {boolean} upPress
  */
-export async function simulateKey(ns, keyToPress, keysCode, upPress) {
+export async function simulateKey(ns: NS, keyToPress: string, keysCode: number, upPress: boolean) {
     let initDict = {
         key: keyToPress,
         keyCode: keysCode,
@@ -225,7 +227,7 @@ function triggerDivClick() {
  * @param {String} reason
  * @param {Function} breaker - A function which, when returning true, will stop the wait
  */
-async function waitr(ns, seconds, reason, breaker = function () {
+async function waitr(ns: NS, seconds: number, reason: string, breaker: Function = function () {
     return false;
 }) {
     for (let i = 0; i < seconds; i++) {
@@ -238,7 +240,7 @@ async function waitr(ns, seconds, reason, breaker = function () {
     return 1;
 }
 
-async function autoEnter(ns) {
+async function autoEnter(ns:NS) {
     if (!await serverPing())
         return;
     await keyPressAPI(ns, "SPACE");
