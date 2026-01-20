@@ -111,11 +111,12 @@ export function dSe(ns: NS, help: Help): void*/
 /** @function dSe
  * @param {NS} ns
  * @param {PartialFlag} partialFlag
+ * @param {Geography.Map} [uploadedMap] If we already have a map, we can upload it to skip the delay of generating it.
  * @returns <p>A ``string[]`` if ``NAS == true``. </p>
  * <p> A ``string`` if we pass a destination. </p>
  * <p> A {@link Map ``Map``} if we don't pass a destination. </p>
  */
-export function dSe<T extends PartialFlag>( ns: NS, partialFlag?: T): DSeReturn<T>{
+export function dSe<T extends PartialFlag>( ns: NS, partialFlag?: T, uploadedMap?: Geography.Map): DSeReturn<T>{
 //export function dSe(ns: NS, partialFlag?: PartialFlag): string[] | Map | string | void {
     commandline = false;
 
@@ -123,10 +124,10 @@ export function dSe<T extends PartialFlag>( ns: NS, partialFlag?: T): DSeReturn<
     return hub(ns, flags) as DSeReturn<T>;
 }
 
-function hub(ns: NS, Flags: Flag): string[] | Geography.Map | string | void {
+function hub(ns: NS, Flags: Flag, uploadedMap?: Geography.Map): string[] | Geography.Map | string | void {
     if (Flags.help)
         return help(ns);
-    const map = WholeMap(ns);
+    const map = uploadedMap ?? WholeMap(ns);
     if(Flags.NAS)
         return nas(ns, map);
     if(Flags.d !== undefined && Flags.d.length > 0){
