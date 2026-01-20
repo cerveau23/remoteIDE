@@ -3,54 +3,70 @@
 import {portReceiver} from "functions";
 import {dSe} from "depthScannerV2";
 import {keyPressAPI, serverPing, initialization as serverInitialization} from "BBA_API_handler"
-import { NS } from "@ns";
+import {NS} from "@ns";
 
 // noinspection JSUnusedLocalSymbols
 /** @param {NS} ns **/
 export async function main(ns: NS) {
+
+    // ---------------------------------
+    //         Initialization
+    // ---------------------------------
+
     await serverInitialization(ns, true);
     /*    ns.tprint("Server initialised") */
     /* ns.tail(); */
-    let mapp = await portReceiver(ns, "Server Map");
-    ns.tprint(mapp.toString());
-    ns.tprint(typeof mapp)
-    ns.tprint(mapp[0])
+    let mapp = await portReceiver(ns, "Server Map", 1, true);
+    // ns.tprint(mapp.toString());
+    // ns.tprint(typeof mapp)
+    // ns.tprint(mapp[0])
     let serversWithoutBackdoors = [];
     let serversWithBackdoors = [];
     let others = [];
     for (let i of mapp) {
-        if ((!ns.getServer(i[0]).backdoorInstalled) && (!ns.getServer(i[0]).purchasedByPlayer) && (ns.getServer(i[0]).hasAdminRights) && (ns.getServerRequiredHackingLevel(i[0])<=ns.getHackingLevel())) {
-            serversWithoutBackdoors.push(i[0]);
+        const serverName = i[0];
+        const server = ns.getServer(serverName);
+        if ((!server.backdoorInstalled) && (!server.purchasedByPlayer) && (server.hasAdminRights) && (ns.getServerRequiredHackingLevel(serverName) <= ns.getHackingLevel())) {
+            serversWithoutBackdoors.push(serverName);
         } else {
-            if (ns.getServer(i[0]).backdoorInstalled && (!ns.getServer(i[0]).purchasedByPlayer)) {
-                serversWithBackdoors.push(i[0]);
+            if (server.backdoorInstalled && (!server.purchasedByPlayer)) {
+                serversWithBackdoors.push(serverName);
             } else
-                others.push(i[0]);
+                others.push(serverName);
         }
     }
     ns.print("Servers owned: " + serversWithBackdoors);
     ns.print("Servers to hack: " + serversWithoutBackdoors);
     ns.print("Other: " + others);
-    if (serversWithoutBackdoors.indexOf("home") !== -1)
+
+    if (serversWithoutBackdoors.indexOf("home") !== -1) // If home is in sWoB, we remove it
         serversWithoutBackdoors.splice(serversWithoutBackdoors.indexOf("home"), 1);
-    let previousServer = ns.getHostname();
+    let previousServer = ns.getHostname(); // Start with home
+
+    // ---------------------------------
+    //              Loop
+    // ---------------------------------
+
     for (let i of serversWithoutBackdoors) {
         ns.print(i);
-        let command = dSe(ns, Object.fromEntries([["d", i], ["connector", true]])) + "; backdoor";
+        let command = dSe(ns, Object.fromEntries([["d", i], ["connector", true]]), mapp) + "; backdoor";
         ns.tprintRaw(command);
         copyToClipboard(command);
         await ns.sleep(1);
-        triggerDivClick();
+        // triggerDivClick();
         /* document.querySelector('.MuiInputBase-root').addEventListener('click', onClick); */
         await ns.sleep(1);
         /* pasteFromClipboard(); */
         /* await ns.sleep(1); */
         /* document.getElementById('terminal-input').addEventListener('keydown', onSpace); */
         ns.print("Finished");
-        let documentFree = eval("document");
+        let documentFree: Document = eval("document");
         await waitr(ns, 20, "Giving time to execute command", function () {
-            if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
-                documentFree.getElementById('terminal-input').value = command;
+            let terminal = documentFree.getElementById('terminal-input');
+            if (terminal === null)
+                throw new Error("No terminal")
+            if (terminal.innerText.trim() === "" || " ") {
+                terminal.innerText = command;
                 /* ns.asleep(10);
                 simulateKey("Space", ?);simulateKey("Enter", 13); */
             }
@@ -61,17 +77,20 @@ export async function main(ns: NS) {
                 ns.toast("Backdoor finished, start new backdoor!", "error");
                 documentFree = eval("document");
                 await waitr(ns, 1, "Waiting for command to be executed", function () {
-                    if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
-                        documentFree.getElementById('terminal-input').value = command;
+                    let terminal = documentFree.getElementById('terminal-input');
+                    if (terminal === null)
+                        throw new Error("No terminal")
+                    if (terminal.innerText.trim() === "" || " ") {
+                        terminal.innerText = command;
                     }
                     return false;
                 });
-                ns.run("beep.js", 1, 1440);
-                // if (await serverPing(true))
-                //     await autoEnter(ns);
+                // ns.run("beep.js", 1, 1440);
+                if (await serverPing(true))
+                    await autoEnter(ns);
             }
         } else if (documentFree.getElementById('terminal-input') !== undefined) {
-            // await autoEnter(ns)
+            await autoEnter(ns)
         }
         while (!ns.getServer(i).backdoorInstalled) {
             ns.toast("Waiting on backdoor for " + i + "...", "info");
@@ -80,7 +99,7 @@ export async function main(ns: NS) {
             });
         }
         ns.toast("Backdoor finished!", "success");
-        ns.run("beep.js", 1, 440);
+        // ns.run("beep.js", 1, 440); TODO: This generates a mega freeze. Let's fix it.
         previousServer = i;
     }
     /* if (serversWithoutBackdoors.length === 0) { */
@@ -113,7 +132,7 @@ function pasteFromClipboard() {
         .then(text => {
             // Set the pasted text into the textarea
             let s = document.getElementById('terminal-input');
-                if(s!==null) s.innerText = text;
+            if (s !== null) s.innerText = text;
         })
         .catch(err => {
             // Handle any errors (e.g., permission denied)
@@ -125,10 +144,12 @@ function pasteFromClipboard() {
 /**
  * @deprecated
  */
-function onSpace(ns:NS, event: { keyCode: number; }) {
+function onSpace(ns: NS, event: { keyCode: number; }) {
     //simulateKey("Space",32)
     if (event.keyCode === 32) {
-        simulateKey(ns, "Enter", 13, true).then(()=> {return});
+        simulateKey(ns, "Enter", 13, true).then(() => {
+            return
+        });
     }
 }
 
@@ -242,10 +263,17 @@ async function waitr(ns: NS, seconds: number, reason: string, breaker: Function 
     return 1;
 }
 
-async function autoEnter(ns:NS) {
+async function autoEnter(ns: NS) {
     if (!await serverPing())
         return;
-    await keyPressAPI(ns, "SPACE");
-    await keyPressAPI(ns, "SPACE");
+
+    let documentFree: Document = eval("document");
+    let terminal = documentFree.getElementById('terminal-input');
+    if (terminal === null)
+        throw new Error("No terminal")
+    while (terminal.textContent.trim() === terminal.textContent) {
+        await keyPressAPI(ns, "SPACE");
+        await ns.sleep(50);
+    }
     await keyPressAPI(ns, "ENTER");
 }
