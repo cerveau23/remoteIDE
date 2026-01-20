@@ -12,26 +12,42 @@ let serverLaunched: boolean = false;
  */
 let knownServerStatus: boolean = false;
 
+/**
+ * Contains whether {@link ``initialization``} is currently being called
+ * @type {boolean}
+ */
+let currentlyInitialising: boolean = false;
+
 /** ------------------------------------
  *          Initialisation
  * ------------------------------------ */
-await initialisation();
+await initialization();
 
 /**
  * @param {null|NS} ns
+ * @param {boolean} [waiting4ready = false]
  * @returns {Promise<void>}
  */
-export async function initialisation(ns: null | NS = null): Promise<void> {
-    if ( ! (await serverPing(true))) { // If we can't reach a server, we launch one.
-        serverLauncher();
-        if(ns !== null)
-            ns.tprint("Launched a server")
-    } else { // Else, we store that knowledge
-        if(ns !== null)
-            ns.tprint("Server already up")
+export async function initialization(ns?: NS, waiting4ready:boolean = false): Promise<void> {
+    while(currentlyInitialising) // To prevent a script from calling this function while it is pinging, we set a lock
+        await serverPing(true);
+    currentlyInitialising = true; // Lock the function in this call only.
+    if ( ! (await serverPing(true))) { // If we can't reach a server, we need to check if one is waking up.
+        if(!serverLaunched) { // First call of this function, when we have not yet launched a server
+            serverLauncher();
+            ns?.tprint("Launched a server")
+        }
+        else { // Subsequent calls of this function, while the server is waking up (Should only be used to await server initialization)
+            ns?.tprint("Server waking up")
+            while((!(await serverPing(true))) && waiting4ready)
+                await serverPing(true);
+        }
+    } else { // If a server can be reached, we store that knowledge
+        ns?.tprint("Server already up")
         knownServerStatus = true;
-        serverLaunched = true;
     }
+    serverLaunched = true;
+    currentlyInitialising = false;
 }
 
 /**

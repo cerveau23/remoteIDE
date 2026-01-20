@@ -1,12 +1,12 @@
 import {portReceiver} from "functions";
 import {dSe} from "depthScannerV2";
-import {keyPressAPI, serverPing, initialisation as serverInitialisation} from "BBA_API_handler"
+import {keyPressAPI, serverPing, initialization as serverInitialization} from "BBA_API_handler"
 import { NS } from "@ns";
 
 // noinspection JSUnusedLocalSymbols
 /** @param {NS} ns **/
 export async function main(ns: NS) {
-    await serverInitialisation(ns);
+    await serverInitialization(ns, true);
     /*    ns.tprint("Server initialised") */
     /* ns.tail(); */
     let mapp = await portReceiver(ns, "Server Map");
