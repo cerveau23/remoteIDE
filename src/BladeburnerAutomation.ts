@@ -3,6 +3,10 @@ import {BladeburnerActionType, BladeburnerActionName, NS} from "@ns";
 export async function main(ns : NS ) {
     if (!ns.bladeburner.inBladeburner()) // TODO: Attempt to join BBDivision test
         ns.exit();
+    let targetGain = await ns.prompt("Target", {type: "select", choices: ["Money", "Rep"]})
+    // let functionGain = targetGain == "Money"? ns.bladeburner.get
+    //                                 : targetGain == "Rep"?
+    //                                     : ns.print;
     // noinspection InfiniteLoopJS
     while (true) {
         let waitingTime = await ns.bladeburner.nextUpdate();
@@ -65,7 +69,9 @@ export async function main(ns : NS ) {
                     break;
                 }
             await ns.bladeburner.nextUpdate();*/
-            let contractsSortedBySuccess: [`${BladeburnerActionType}`, `${BladeburnerActionName}`][] = [["Contracts","Tracking"], ["Contracts","Bounty Hunter"], ["Contracts","Retirement"], ["Operations", "Investigation"], ["Operations", "Undercover Operation"], ["Operations", "Assassination"]]
+            let contractsSortedBySuccess: [`${BladeburnerActionType}`, `${BladeburnerActionName}`][] = [["Contracts","Tracking"], ["Contracts","Bounty Hunter"], ["Contracts","Retirement"]]
+            if(targetGain === "Rep")
+                contractsSortedBySuccess = contractsSortedBySuccess.concat([["Operations", "Investigation"], ["Operations", "Undercover Operation"], ["Operations", "Assassination"]]);
             contractsSortedBySuccess.sort(
                 (a,b)=> {
                     return Math.pow(ns.bladeburner.getActionEstimatedSuccessChance(b[0], b[1])[0], 3) * ns.bladeburner.getActionRepGain(b[0], b[1]) / (ns.bladeburner.getActionTime(b[0], b[1])/1000)
