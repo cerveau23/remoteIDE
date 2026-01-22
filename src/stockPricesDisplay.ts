@@ -1,12 +1,14 @@
-async function sleep(ms) {
+import { NS } from "@ns";
+import {ui} from "/functional/UIGetter";
+
+async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /** @param {NS} ns */
-export async function main(ns) {
-    let documentFree = eval("document");
+export async function main(ns: NS) {
     ns.print(ns.getHostname());
-    let stockMoney = parseInt(ns.args);
+    let stockMoney = parseInt(ns.args[0].toString());
     if (ns.getHostname() === "Overseer") {
         let clones = ns.ps("Overseer").filter((a) => {
             return a.filename === ns.getScriptName();
@@ -19,15 +21,14 @@ export async function main(ns) {
                     ns.print("Failed to kill " + i.pid);
             }
     }
-    if (documentFree.getElementsByClassName("css-01010101010101").length === 0) {
-        addElementV4(ns);
+    if (ui.document.getElementsByClassName("css-01010101010101").length === 0) {
+        addElementV4();
     }
-    documentFree = eval("document");
-    documentFree.getElementsByClassName("css-01010101010101")[0].innerHTML = ns.formatNumber(stockMoney);
+    ui.document.getElementsByClassName("css-01010101010101")[0].innerHTML = ns.formatNumber(stockMoney);
     if ((ns.getHostname() === "Overseer") && ((ns.ps("Overseer").filter((a) => {
         return a.filename === ns.getScriptName();
     }).length === 1) || stockMoney === 0)) {
-        function killer(ns) {
+        function killer(ns: NS) {
             ns.print("killer");
             if (ns.kill("wolf.js", "home")) {
                 ns.scriptKill("wolf.js", "home");
@@ -36,14 +37,14 @@ export async function main(ns) {
             }
         }
 
-        console.log(documentFree.getElementById("Stonks").innerHTML);
-        documentFree.getElementById("Stonks").onclick = () => killer(ns);
+        console.log(ui.document.getElementById("Stonks")?.innerHTML);
+        (<HTMLElement>ui.document.getElementById("Stonks")).onclick = () => killer(ns);
         while (true)
             await ns.asleep(1000);
-        // documentFree.getElementById("Stonks").addEventListener("click",killer)
+        // ui.document.getElementById("Stonks").addEventListener("click",killer)
         // async function waitingTime() { while (!killinTime) { await sleep(500) } }
         // await waitingTime()
-        // documentFree.getElementById("Stonks").removeEventListener("click",killer)
+        // ui.document.getElementById("Stonks").removeEventListener("click",killer)
     }
 } /*
 function addElementV1() {
@@ -80,9 +81,8 @@ function addElementV3() {
     });
 }*/
 function addElementV4() {
-    const documentFree = eval("document");
     // Get the table element by ID
-    let table = documentFree.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0];
+    let table = ui.document.getElementsByClassName(/*"MuiTableBody-root",*/ "css-1xnox0e")[0] as HTMLTableElement;
     // Insert a new row
     let newRow = table.insertRow(2);
     newRow.classList.add("MuiTableRow-root", "css-1dix92e");
