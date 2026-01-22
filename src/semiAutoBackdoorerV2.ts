@@ -53,7 +53,7 @@ export async function main(ns: NS) {
             for(let step of path.split(",").filter((name) => name!==""))
                 if(!ns.singularity.connect(step))
                     throw Error(step);
-            ns.tprint("Starting backdoor")
+            ns.tprint("Starting backdoor on " + server)
             await ns.singularity.installBackdoor();
             ns.tprint("Installed backdoor")
         }
