@@ -5,6 +5,7 @@ import * as beep from "../beep"
 import * as beholder from "../beholder"
 import * as bTS from "../bestTrainingServers"
 import * as bTS2 from "../bestTrainingServersV2"
+import * as buySkills from "../buySkills"
 import * as BBA from "../BladeburnerAutomation"
 import * as ccvt from "../cCVTester"
 import * as cCV from "../codingContractVirus"
@@ -53,6 +54,7 @@ export async function main(ns:NS, recurse = 0){
     await beholder.main(ns)
     await bTS.main(ns)
     await bTS2.main(ns)
+    await buySkills.main(ns)
     await BBA.main(ns)
     await ccvt.main(ns)
     await cCV.main(ns)
