@@ -15,7 +15,6 @@ import * as dataS from "../dataScruber"
 import * as depthS from "../depthScanner"
 import * as depthS2 from "../depthScannerV2"
 import * as eM from "../extraMuros"
-import * as functions from "../functions"
 import * as gardener from "../gardener"
 import * as googleMaps from "../googleMaps"
 import * as goPlayer from "../goPlayer"
@@ -30,6 +29,7 @@ import * as openAllScripts from "../openAllScripts"
 import * as purchaseCatalog from "../purchaseCatalog"
 import * as r4men from "../r4men"
 import * as semiAutoBackdoorer from "../semiAutoBackdoorer"
+import * as semiAutoBackdoorerV2 from "../semiAutoBackdoorerV2"
 import * as SharingIsCaring from "../SharingIsCaring"
 import * as sleeveAutomation from "../sleeveAutomation"
 import * as start from "../start"
@@ -77,6 +77,7 @@ export async function main(ns:NS, recurse = 0){
     await purchaseCatalog.main(ns)
     await r4men.main(ns)
     await semiAutoBackdoorer.main(ns)
+    await semiAutoBackdoorerV2.main(ns)
     await SharingIsCaring.main(ns)
     await sleeveAutomation.main(ns)
     await statistics.main(ns)
