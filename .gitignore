@@ -1,3 +1,9 @@
 node_modules/
 dist/
+html/
 nsdef/NetscriptDefinitions.d.ts
+/backup.zip
+/nsdef/fixedNetscriptDefinitions.d.ts
+/.idea/inspectionProfiles/Project_Default.xml
+/src/template.js
+/.idea/webResources.xml
