@@ -9,7 +9,7 @@ export async function main(ns: NS) {
     await serverInitialization(ns, true);
     /*    ns.tprint("Server initialised") */
     /* ns.tail(); */
-    let mapp = await portReceiver(ns, "Server Map");
+    let mapp = await portReceiver(ns, "Server Map", 1, true);
     ns.tprint(mapp.toString());
     ns.tprint(typeof mapp)
     ns.tprint(mapp[0])
