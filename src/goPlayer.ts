@@ -1,16 +1,23 @@
 // noinspection InfiniteLoopJS
+
+import {GoOpponent, NS } from "@ns";
+
 /** @param {NS} ns */
-export async function main(ns) {
+export async function main(ns: NS) {
     let z = 0;
     let maxTry = 20;
-    let boardSize = 13;
-    let data = ns.flags([["o", "-"]]);
+    let boardSize: 5 | 7 | 9 | 13 = 13;
+    let data = ns.flags([["o", "-"]]) as {o: GoOpponent};
     ns.tprint(data);
     if (["-", "", false].includes(data.o)) {
-        data["o"] = await ns.prompt("Opponent:", {
-            type: "select",
-            choices: ["No AI", "Netburners", "Slum Snakes", "The Black Hand", "Tetrads", "Daedalus", "Illuminati", "????????????"]
-        });
+        let choice;
+        do{
+            choice = await ns.prompt("Opponent:", {
+                type: "select",
+                choices: ["No AI", "Netburners", "Slum Snakes", "The Black Hand", "Tetrads", "Daedalus", "Illuminati", "????????????"]
+            });
+        }while (typeof choice === "boolean")
+        data.o = <GoOpponent>choice;
     }
     if (["-", "", false].includes(data.o)) {
         ns.exit();
@@ -50,7 +57,7 @@ export async function main(ns) {
     } catch (err) {
         ns.toast("Restarting goPlayer.js", "error", 3000);
         if (!["-", "", false].includes(data.o)) {
-            ns.spawn(ns.getScriptName(), {threads: 1, spawnDelay: 100}, ns.args);
+            ns.spawn(ns.getScriptName(), {threads: 1, spawnDelay: 100}, ...ns.args);
         }
     }
 }
