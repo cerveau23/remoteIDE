@@ -1,6 +1,8 @@
+import { NS } from "@ns";
+
 /** @param {NS} ns */
-export async function main(ns) {
-	let flag = ns.flags([["c", ".js"], ["u", "Nope"], ["help", false]]);
+export async function main(ns: NS) {
+	let flag = ns.flags([["c", ".js"], ["u", "Nope"], ["help", false]]) as {c: string, u: string, help: boolean};
 	if (flag.help) {
 		ns.tprintRaw(`The openAllScripts script is used to get a command line to open all scripts in the editor, as the name suggests.
 It has 3 possible flags:
