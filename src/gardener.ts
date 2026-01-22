@@ -1,7 +1,9 @@
 // noinspection InfiniteLoopJS
 
+import { NS } from "@ns";
+
 /** @param {NS} ns */
-export async function main(ns) {
+export async function main(ns: NS) {
   while(true) { //@ignore-infinite
     let file = ns.read("targets.txt");
     let business_list = file.split(',');
