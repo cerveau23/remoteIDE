@@ -12,12 +12,16 @@ export async function main(ns: NS) {
     while(
         ns.bladeburner.getSkillUpgradeCost(target) < ns.bladeburner.getSkillPoints()
         || continuous){
-        if(ns.bladeburner.getSkillUpgradeCost(target) < ns.bladeburner.getSkillPoints())
+        if(ns.bladeburner.getSkillUpgradeCost(target) < ns.bladeburner.getSkillPoints()) {
+            ns.print("Points: " + ns.bladeburner.getSkillPoints())
+            ns.print("Skill cost:" + ns.bladeburner.getSkillUpgradeCost(target))
+            ns.print("Number: " + Math.floor(ns.bladeburner.getSkillPoints() / ns.bladeburner.getSkillUpgradeCost(target)))
             ns.print(
                 ns.bladeburner.upgradeSkill(
                     target,
-                    Math.floor(ns.bladeburner.getSkillPoints() / ns.bladeburner.getSkillUpgradeCost(target) ))
-                ? "Upgraded "+target : "Failed to upgrade");
+                    Math.floor(ns.bladeburner.getSkillPoints() / (ns.bladeburner.getSkillUpgradeCost(target) * 2)) + 1)
+                    ? "Upgraded " + target : "Failed to upgrade");
+        }
         else{
             ns.print("Not enough points")
         }
