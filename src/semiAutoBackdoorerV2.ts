@@ -3,6 +3,8 @@ import {dSe} from "depthScannerV2";
 import {keyPressAPI, serverPing, initialization as serverInitialization} from "BBA_API_handler"
 import {NS} from "@ns";
 import {ui} from "/functional/UIGetter"
+import {Geography} from "/typeLib";
+import {SourceFile_State} from "/functional/Source-File_State";
 
 /** @param {NS} ns **/
 export async function main(ns: NS) {
@@ -12,6 +14,9 @@ export async function main(ns: NS) {
     // ---------------------------------
 
     await serverInitialization(ns, true);
+
+    let source_file_state = new SourceFile_State(ns, {singularity: true});
+
     let mapp = await portReceiver(ns, "Server Map", 1, true);
     let serversWithoutBackdoors = [];
     let serversWithBackdoors = [];
@@ -39,9 +44,27 @@ export async function main(ns: NS) {
     // ---------------------------------
     //              Loop
     // ---------------------------------
+    if(!source_file_state.singularity){
+        await loopNoSingularity(ns, mapp, serversWithoutBackdoors, previousServer);
+    }
+    else{
+        for(let server of serversWithoutBackdoors){
+            let path = dSe(ns, {d:server}, mapp);
+            for(let step of path.split(",").filter((name) => name!==""))
+                if(!ns.singularity.connect(step))
+                    throw Error(step);
+            ns.tprint("Starting backdoor")
+            await ns.singularity.installBackdoor();
+            ns.tprint("Installed backdoor")
+        }
+        ns.singularity.connect("home");
+    }
+    ns.tprint("All servers backdoored!");
+    ns.write("lastHackingAtLevel.txt", ns.getHackingLevel().toString(), "w");
+}
 
+async function loopNoSingularity(ns : NS, mapp: Geography.Map, serversWithoutBackdoors: string[], previousServer: string) {
     for (let i of serversWithoutBackdoors) {
-
         ns.print(i);
 
         // Generate path command
@@ -50,18 +73,18 @@ export async function main(ns: NS) {
         copyToClipboard(command);
         await ns.sleep(1);
 
-        if(i !== serversWithoutBackdoors[0])
+        if (i !== serversWithoutBackdoors[0])
             ns.print("Finished");
 
         await commandWaitr(ns, command, previousServer, 20, "Giving time to execute command");
         if (!(await serverPing(true))) {
             while (ns.getServer(previousServer).isConnectedTo) {
                 ns.toast("Backdoor finished, start new backdoor!", "error");
-                await commandWaitr(ns,command, previousServer, 1, "Waiting for command to be executed", true);
+                await commandWaitr(ns, command, previousServer, 1, "Waiting for command to be executed", true);
             }
-        } else while ( ui.document.getElementById('terminal-input') !== undefined && ns.getServer(previousServer).isConnectedTo){
+        } else while (ui.document.getElementById('terminal-input') !== undefined && ns.getServer(previousServer).isConnectedTo) {
             await ns.sleep(50);
-            if(ui.isUserActive())
+            if (ui.isUserActive())
                 await autoEnter(ns)
         }
         while (!ns.getServer(i).backdoorInstalled) {
@@ -74,8 +97,6 @@ export async function main(ns: NS) {
         // ns.run("beep.js", 1, 440); TODO: This generates a mega freeze. Let's fix it.
         previousServer = i;
     }
-    ns.tprint("All servers backdoored!");
-    ns.write("lastHackingAtLevel.txt", ns.getHackingLevel().toString(), "w");
 }
 
 /** @param {String} text */
@@ -145,4 +166,8 @@ async function autoEnter(ns: NS) {
         await ns.sleep(50);
     }
     await keyPressAPI(ns, "ENTER");
+}
+
+function async() {
+    throw new Error("Function not implemented.");
 }
