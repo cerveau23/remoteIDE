@@ -1,6 +1,8 @@
+import { NS } from "@ns"
+
 /** @param {NS} ns */
-export async function main(ns) {
-	let flag = ns.flags([["destination", ""], ["script", ""], ["args", ""]])
+export async function main(ns: NS) {
+	let flag = ns.flags([["destination", ""], ["script", ""], ["args", ""]]) as {destination: string, script: string, args: string}
 	if (flag.destination === "" && ns.serverExists("Overseer")) { flag.destination = "Overseer" }
 	else if(flag.destination === ""){flag.destination = "home"}
 	if(!flag.script.endsWith(".js")){flag.script+=".js"}
