@@ -13,7 +13,7 @@ export async function main(ns: NS) {
   business_list = business_list.map(element => element.trim());
   business_list = business_list.filter(element => element !== "");
   for (let i in business_list) {
-    ns.run("mitosis.js", 1, business_list[i])
+    ns.run("mitosis.js", 1, business_list[i], true)
     for (let o of ns.ps()) {
       if (o.filename === "mitosis.js") { await ns.sleep(10) }
     }
