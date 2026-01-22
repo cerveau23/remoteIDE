@@ -41,46 +41,23 @@ export async function main(ns: NS) {
     // ---------------------------------
 
     for (let i of serversWithoutBackdoors) {
+
         ns.print(i);
+
+        // Generate path command
         let command = dSe(ns, Object.fromEntries([["d", i], ["connector", true]]), mapp) + "; backdoor";
         ns.tprintRaw(command);
         copyToClipboard(command);
         await ns.sleep(1);
-        // triggerDivClick();
-        /* document.querySelector('.MuiInputBase-root').addEventListener('click', onClick); */
-        await ns.sleep(1);
-        /* pasteFromClipboard(); */
-        /* await ns.sleep(1); */
-        /* document.getElementById('terminal-input').addEventListener('keydown', onSpace); */
-        ns.print("Finished");
-        await waitr(ns, 20, "Giving time to execute command", async function () {
-            let terminal = ui.document.getElementById('terminal-input');
-            if (terminal === null)
-                throw new Error("No terminal")
-            if ((<HTMLInputElement>ui.document.getElementById('terminal-input')).value.trim() === "" || " ") {
-                (<HTMLInputElement>ui.document.getElementById('terminal-input')).value = command;
-                /* ns.asleep(10);
-                simulateKey("Space", ?);simulateKey("Enter", 13); */
-            }
-            if(ui.isUserActive()) await autoEnter(ns)
-            return !ns.getServer(previousServer).isConnectedTo;
-        });
+
+        if(i !== serversWithoutBackdoors[0])
+            ns.print("Finished");
+
+        await commandWaitr(ns, command, previousServer, 20, "Giving time to execute command");
         if (!(await serverPing(true))) {
             while (ns.getServer(previousServer).isConnectedTo) {
                 ns.toast("Backdoor finished, start new backdoor!", "error");
-                await waitr(ns, 1, "Waiting for command to be executed", function () {
-                    let terminal = ui.document.getElementById('terminal-input');
-                    if (terminal === null)
-                        throw new Error("No terminal")
-                    if ((<HTMLInputElement>ui.document.getElementById('terminal-input')).value.trim() === "" || " ") {
-                        // @ts-ignore
-                        (<HTMLInputElement>ui.document.getElementById('terminal-input')).value = command;
-                    }
-                    return false;
-                });
-                // ns.run("beep.js", 1, 1440);
-                if (await serverPing(true) && ui.isUserActive())
-                    await autoEnter(ns);
+                await commandWaitr(ns,command, previousServer, 1, "Waiting for command to be executed", true);
             }
         } else while ( ui.document.getElementById('terminal-input') !== undefined && ns.getServer(previousServer).isConnectedTo){
             await ns.sleep(50);
@@ -132,6 +109,27 @@ async function waitr(ns: NS, seconds: number, reason: string, breaker: Function 
         }
     }
     return 1;
+}
+
+/**
+ * @param {NS} ns
+ * @param {string} command
+ * @param {string} previousServer
+ * @param {number} delay
+ * @param {string} reason
+ */
+async function commandWaitr(ns : NS, command: string, previousServer : string, delay: number, reason: string, beeper = false) {
+    await waitr(ns, delay, reason, async function () {
+        let terminal = ui.document.getElementById('terminal-input');
+        if (terminal === null)
+            throw new Error("No terminal")
+        if ((<HTMLInputElement>ui.document.getElementById('terminal-input')).value.trim() === "" || " ") {
+            (<HTMLInputElement>ui.document.getElementById('terminal-input')).value = command;
+        }
+        if (ui.isUserActive() && await serverPing(true)) await autoEnter(ns)
+        // if(beeper) ns.run("beep.js", 1, 1440);
+        return !ns.getServer(previousServer).isConnectedTo;
+    });
 }
 
 async function autoEnter(ns: NS) {
