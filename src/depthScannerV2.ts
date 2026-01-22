@@ -134,7 +134,7 @@ function hub(ns: NS, Flags: Flag, uploadedMap?: Geography.Map): string[] | Geogr
         let path = pathing(ns, map, Flags.d);
         if(Flags.connector)
             path = connector(path);
-        else path = path.replace(" --> ", "") // Should happen after we checked if we need connector
+        else path = path.replaceAll(" --> ", ",") // Should happen after we checked if we need connector
         if (commandline) {
             ns.tprint("Path to the target: " + path);
         } else {
