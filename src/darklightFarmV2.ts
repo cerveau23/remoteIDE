@@ -1,9 +1,10 @@
-// noinspection InfiniteLoopJS
-let ramUsed = {weaker: 1.75, grower: 1.75, hacker: 1.7};
+import type { NS, ProcessInfo } from "@ns";
+
+const ramUsed = {weaker: 1.75, grower: 1.75, hacker: 1.7};
 
 /** @param {NS} ns */
-export async function main(ns) {
-    let flag = ns.flags([["v", "darkweb"], ["h", "Darklight_Farm"]]);
+export async function main(ns: NS) {
+    let flag = ns.flags([["v", "darkweb"], ["h", "Darklight_Farm"]]) as {v: string, h: string};
     let operators = ["hacker.js", "grower.js", "weaker.js"];
     if (!ns.getServer(flag["v"]).hasAdminRights) {
         ns.exit();
@@ -15,6 +16,7 @@ export async function main(ns) {
     }
     let i = 0;
     let currentNbrHackers = 0;
+    // noinspection InfiniteLoopJS
     while (true) {
         let exp = ns.formulas.hacking.hackExp(ns.getServer(flag["v"]), ns.getPlayer());
         let growthFactor = exp / ns.getGrowTime(flag["v"]);
@@ -53,7 +55,7 @@ export async function main(ns) {
     }
 }
 
-function counting(total, value) {
+function counting(total: number, value: ProcessInfo) {
     if (value["filename"] === "weaker.js") {
         return total++;
     } else {
@@ -61,11 +63,11 @@ function counting(total, value) {
     }
 }
 
-/** @param {string} ammo
+/** @param {"weaker"|"hacker"|"grower"} ammo
  *  @param {string} canon
  * @param {string} target
  * @param {NS} ns*/
-function launcher(ammo, canon, target, ns) {
+function launcher(ammo: "weaker"|"hacker"|"grower", canon: string, target: string, ns: NS) {
     let usedCartridges = Math.floor((ns.getServerMaxRam(canon) - ns.getServerUsedRam(canon)) / ramUsed[ammo]);
     if (usedCartridges > 0) {
         ns.print(ammo + " deployed");
