@@ -13,9 +13,9 @@ export async function main(ns: NS) {
     //         Initialization
     // ---------------------------------
 
-    await serverInitialization(ns, true);
-
     let source_file_state = new SourceFile_State(ns, {singularity: true});
+
+    if(!source_file_state.singularity)await serverInitialization(ns, true);
 
     let mapp = await portReceiver(ns, "Server Map", 1, true);
     let serversWithoutBackdoors = [];
