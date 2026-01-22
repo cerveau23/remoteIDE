@@ -1,10 +1,10 @@
+import { NS } from "@ns";
 import {testing} from "codingContractVirus"
 import {average, sum} from "functions"
 
 let endLine = "\n";
 let tab = "\t";
 
-// noinspection JSUnusedGlobalSymbols
 /**
  * The cCVTester script is used to test the capabilities of the coding contract virus or cCV.
  * @param {NS} ns
@@ -12,8 +12,8 @@ let tab = "\t";
  * @param massTest Whether or not to test the algorithm 1000 times
  * @param ultimateTest Tests the coding contract virus against every type of contract
  */
-export async function main(ns, type = "-", massTest = false, ultimateTest = false) {
-    let data = ns.flags([["type", type], ["massTest", massTest], ["ultimateTest", ultimateTest], ["help", false]]);
+export async function main(ns: NS, type = "-", massTest = false, ultimateTest = false) {
+    let data = ns.flags([["type", type], ["massTest", massTest], ["ultimateTest", ultimateTest], ["help", false]]) as {type:string,massTest:boolean,ultimateTest:boolean, help:boolean};
     ns.tprint(data);
 
     if(data.help){
@@ -39,7 +39,7 @@ export async function main(ns, type = "-", massTest = false, ultimateTest = fals
  * Contains the code for displaying the help message
  * @param {NS} ns
  */
-function helpInfo(ns) {
+function helpInfo(ns: NS) {
     ns.tprint(
         "The cCVTester script is used to test the capabilities of the coding contract virus or cCV.", endLine,
         "Not setting a parameter will, in most cases, result in a prompt to request the user's input", endLine,
@@ -53,10 +53,10 @@ function helpInfo(ns) {
  * Goes through all the types of CC and triggers a mass test for each of them.
  * @param {NS} ns
  */
-async function ultimate(ns) {
-    let tests = [];
+async function ultimate(ns: NS) {
+    let tests: Promise<void>[] = [];
     let success = true;
-    let failedTests = [];
+    let failedTests: string[] = [];
 
     for (let type in ns.enums.CodingContractName) {
 //        const promise = massTesting(ns, ns.enums.CodingContractName[type])
@@ -73,6 +73,7 @@ async function ultimate(ns) {
 
         if (tests.length >= 4) {
             await Promise.race(tests);
+            // @ts-ignore
             tests = tests.filter(p => !p.done);
         }
         await ns.asleep(100)
@@ -87,7 +88,7 @@ async function ultimate(ns) {
  * @param {{[p: string]: string | number | boolean}} data
  * @param {NS} ns
  */
-async function dataPrompter(data, ns) {
+async function dataPrompter(data: { [p: string]: string | number | boolean; }, ns: NS) {
     if (data.type === "-") {
         data.type = await ns.prompt("Type:", {type: "select", choices: ns.codingcontract.getContractTypes()})
     }
@@ -103,7 +104,7 @@ async function dataPrompter(data, ns) {
  * @param {string} type the type of CC to test
  * @param {NS} ns
  */
-async function massTesting(ns, type) {
+async function massTesting(ns: NS, type: string) {
     let lastTimePercent = Date.now();
     let allTimesPercent = [];
     let lastTime = Date.now();
@@ -119,8 +120,8 @@ async function massTesting(ns, type) {
         //if(i%10==0){await ns.sleep();}
         if ((i % 100 === 0) && (i !== 0)) {
             allTimesPercent.push(Date.now() - lastTimePercent);
-            ns.print(average(allTimesPercent) * (100 - i / 10) / 1000)
-            ns.tprint(i / 10 + "% finished, Time used: " + ns.formatNumber((Date.now() - lastTimePercent) / 1000) + "s, Estimated time remaining: " + ns.formatNumber(average(allTimesPercent) * (10 - i / 100) / 1000) + "s");
+            ns.print(average(...allTimesPercent) * (100 - i / 10) / 1000)
+            ns.tprint(i / 10 + "% finished, Time used: " + ns.formatNumber((Date.now() - lastTimePercent) / 1000) + "s, Estimated time remaining: " + ns.formatNumber(average(...allTimesPercent) * (10 - i / 100) / 1000) + "s");
             lastTimePercent = Date.now();
         }
         if ((Date.now() - lastTime) > 10) {
@@ -129,7 +130,7 @@ async function massTesting(ns, type) {
         }
         //await ns.sleep();
     }
-    ns.tprint("Success! Total time: " + ns.formatNumber(sum(allTimesPercent) / 1000) + "s");
+    ns.tprint("Success! Total time: " + ns.formatNumber(sum(...allTimesPercent) / 1000) + "s");
 }
 
 /**
@@ -137,7 +138,7 @@ async function massTesting(ns, type) {
  * @param {string} type the type of CC to test
  * @param {NS} ns
  */
-async function singleTesting(ns, type) {
+async function singleTesting(ns: NS, type: string) {
     let CC = ns.codingcontract.createDummyContract(type);
     await testing(ns, CC, "home");
     return CC;
