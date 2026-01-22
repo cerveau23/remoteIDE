@@ -5,9 +5,11 @@ export async function main(ns: NS) {
   let target = ns.args[0].toString();
   if(
       (target === "darkweb"
-      && !ns.hasTorRouter()
-      || !ns.serverExists(target))){
-    ns.tprint("Server not available: " + (!ns.hasTorRouter() ? "No tor router" : ("Server not found: " + target)));
+      && !ns.hasTorRouter())
+      || target === undefined
+      || !ns.serverExists(target)){
+    if(ns.args[1] === undefined)
+      ns.tprint("Server not available: " + (!ns.hasTorRouter() ? "No tor router" : ("Server not found: " + target)));
     return}
   let tServer = ns.getServer(target);
   if (!tServer.hasAdminRights) {
