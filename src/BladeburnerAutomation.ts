@@ -1,4 +1,4 @@
-import {BladeburnerActionType, BladeburnerActionName, NS} from "@ns";
+import type {BladeburnerActionType, BladeburnerActionName, NS} from "@ns";
 
 export async function main(ns : NS ) {
     if (!ns.bladeburner.inBladeburner()) // TODO: Attempt to join BBDivision test
