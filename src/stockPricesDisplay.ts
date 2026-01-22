@@ -1,4 +1,4 @@
-import { NS } from "@ns";
+import {NS} from "@ns";
 import {ui} from "/functional/UIGetter";
 
 async function sleep(ms: number) {
