@@ -1,8 +1,10 @@
 // noinspection InfiniteLoopJS
 
+import { NS } from "@ns";
+
 let target = ('');
-export async function main(ns) {
-  target = ns.args[0];
+export async function main(ns: NS) {
+  target = ns.args[0].toString();
   while (true) {
     await ns.hack(target);
     await ns.grow(target);
