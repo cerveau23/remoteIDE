@@ -1,5 +1,7 @@
+import { NS, Skills } from "@ns";
+
 /** @param {NS} ns */
-export async function main(ns) {
+export async function main(ns: NS) {
     //@ignore-infinite
     while(true){
         for(let sleeveNbr = 0; sleeveNbr < ns.sleeve.getNumSleeves(); ++sleeveNbr){
@@ -8,9 +10,9 @@ export async function main(ns) {
                 ns.sleeve.setToSynchronize(sleeveNbr);
             else if(sleeveStats.shock < 100)
                 ns.sleeve.setToShockRecovery(sleeveNbr);
-            else if(Object.keys(ns.getPlayer().skills).some((value)=>value<100))
-                for(let stat of Object.keys(ns.getPlayer().skills)) if(stat < 100){
-                    ns.sleeve.setToGymWorkout(sleeveNbr, "Powerhouse Gym", ns.enums.GymType[stat]);
+            else if(Object.values(ns.getPlayer().skills).some((value)=>value<100))
+                for(let stat of Object.entries(ns.getPlayer().skills)) if(stat[1] < 100 && Object.keys(ns.enums.GymType).includes(stat[0])){
+                    ns.sleeve.setToGymWorkout(sleeveNbr, "Powerhouse Gym", ns.enums.GymType[<"strength"|"defense"|"dexterity"|"agility">stat[0]]);
                 }
                 else
                 if(!ns.sleeve.setToBladeburnerAction(sleeveNbr,"Field Analysis"))
