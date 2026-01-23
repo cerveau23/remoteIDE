@@ -369,12 +369,13 @@ export async function main(ns: NS) {
                     break;
                 case "Remember all the mines":
                     // If there is already a path stored, break
-                    if (minePath.length === 0)
+                    if (minePath.length !== 0)
                         break;
 
                     // Make a matrix using the class MuiTypography-body1
                     let linearMatrix = Array.from(taskNode.getElementsByClassName("MuiTypography-body1"));
                     let side = Math.sqrt(linearMatrix.length);
+                    //ns.tprint(side)
                     let matrix: Element[][] = [];
                     for (let lineNbr = 0; lineNbr < side; lineNbr++) {
                         matrix[lineNbr] = [];
@@ -384,6 +385,7 @@ export async function main(ns: NS) {
                         let y = (parseInt(nodeIndex) - x) / side;
                         matrix[y][x] = linearMatrix[nodeIndex];
                     }
+                    //ns.tprint(linearMatrix.toString())
 
                     // Locate the indexes with the class css-6zml06 for the mines
                     let mineList: Coordinates[] = [];
@@ -428,6 +430,7 @@ export async function main(ns: NS) {
             ns.print("Prout");
         }
     } catch (Exception) {
+        ns.tprint(Exception)
         ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany);
     }
 }
