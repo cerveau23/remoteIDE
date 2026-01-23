@@ -39,13 +39,13 @@ export async function main(ns: NS) {
         copyToClipboard(command);
         await ns.sleep(1);
         triggerDivClick();
-        /* document.querySelector('.MuiInputBase-root').addEventListener('click', onClick); */
+        /* doCument.querySelector('.MuiInputBase-root').addEventListener('click', onClick); */
         await ns.sleep(1);
         /* pasteFromClipboard(); */
         /* await ns.sleep(1); */
-        /* document.getElementById('terminal-input').addEventListener('keydown', onSpace); */
+        /* doCument.getElementById('terminal-input').addEventListener('keydown', onSpace); */
         ns.print("Finished");
-        let documentFree = eval("document");
+        let documentFree = eval("doCument");
         await waitr(ns, 20, "Giving time to execute command", function () {
             if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
                 documentFree.getElementById('terminal-input').value = command;
@@ -57,7 +57,7 @@ export async function main(ns: NS) {
         if (!(await serverPing(true))) {
             while (ns.getServer(previousServer).isConnectedTo) {
                 ns.toast("Backdoor finished, start new backdoor!", "error");
-                documentFree = eval("document");
+                documentFree = eval("doCument");
                 await waitr(ns, 1, "Waiting for command to be executed", function () {
                     if (documentFree.getElementById('terminal-input').value.trim() === "" || " ") {
                         documentFree.getElementById('terminal-input').value = command;
@@ -162,7 +162,7 @@ function simulateKeyV1(keyToPress: string, keysCode: number) {
         //isTrusted: true,
         composed: true
     });
-    let documentFree = eval("document");
+    let documentFree = eval("doCument");
     // Find the input element and dispatch the event
     const inputElement = documentFree.getElementById('terminal-input');
     inputElement.dispatchEvent(enterKeyEvent);
@@ -211,7 +211,7 @@ export async function simulateKey(ns: NS, keyToPress: string, keysCode: number, 
 }
 
 function triggerDivClick() {
-    let documentFree = eval("document");
+    let documentFree = eval("doCument");
     // Select the div using its class name
     const divElement = documentFree.querySelector('.MuiInputBase-root');
     // Create a new click event

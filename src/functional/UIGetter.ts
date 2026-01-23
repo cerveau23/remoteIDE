@@ -1,8 +1,8 @@
 export const ui = {
-    get document() : Document {
+    get doCument() : Document {
         return eval("document");
     },
     isUserActive() {
-        return ui.document.visibilityState === "visible" && ui.document.hasFocus();
+        return ui.doCument.visibilityState === "visible" && ui.doCument.hasFocus();
     }
 };

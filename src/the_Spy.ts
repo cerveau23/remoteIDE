@@ -1,6 +1,9 @@
+import {NS} from "@ns";
 import {keyPressAPI, serverUpWaiter} from "/BBA_API_handler";
+import {ui} from "/functional/UIGetter";
+import {getHTML} from "/functional/HtmlGetter"
 
-async function navigatePath(ns, route) {
+async function navigatePath(ns: NS, route: PathPoints) {
     ns.tprint("Route: " + route.toString());
     for (let direction of route[0])
         await keyPressAPI(ns, direction);
@@ -8,62 +11,55 @@ async function navigatePath(ns, route) {
     //    return;
     //await stringPressAPI(ns, route[0]);
 }
-let targetCompany
+
+let targetCompany: string;
 
 /** @param {NS} ns */
-export async function main(ns) {
+export async function main(ns: NS) {
     let moneyRatherThanRep = ns.args.length >= 2 ? ns.args[1] : undefined
-        moneyRatherThanRep ??= await ns.prompt("Do you want Money (Yes) or Rep (No)?", {type: "boolean", choices: ["money", "reputation"]})
-    try{
-        let minePath = [];
-        let documentFree = eval("document");
-
+    moneyRatherThanRep ??= await ns.prompt("Do you want Money (Yes) or Rep (No)?", {
+        type: "boolean",
+        choices: ["money", "reputation"]
+    })
+    try {
+        let minePath: PathPoints[] = [];
         if (ns.args.length !== 0) { // A target company has been passed to the script
-            if (documentFree.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(documentFree.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) //TODO: Logic to act whether we're on the terminal or on a success screen
-                while (documentFree.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(documentFree.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) {
+            if (ui.doCument.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(ui.doCument.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) //TODO: Logic to act whether we're on the terminal or on a success screen
+                while (ui.doCument.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(ui.doCument.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) {
                     await ns.asleep(100);
-                    documentFree = eval("document");
                 }
             await ns.asleep(200);
-            documentFree = eval("document");
-            documentFree.querySelector('[aria-label="' + ns.args[0] + '"]').click();
-            while (!Array.from(documentFree.getElementsByClassName("css-1d6cey9")).some((element) => element.textContent.includes("Infiltrate Company"))) {
+            (<HTMLElement>ui.doCument.querySelector('[aria-label="' + ns.args[0] + '"]')).click();
+            while (!Array.from(ui.doCument.getElementsByClassName("css-1d6cey9")).some((element) => element.textContent.includes("Infiltrate Company"))) {
                 await ns.asleep(200);
-                documentFree = eval("document");
             }
-            while (Array.from(documentFree.getElementsByClassName("css-1d6cey9")).some((element) => element.textContent.includes("Infiltrate Company"))) {
+            while (Array.from(ui.doCument.getElementsByClassName("css-1d6cey9")).some((element) => element.textContent.includes("Infiltrate Company"))) {
                 await ns.asleep(200);
-                documentFree = eval("document");
-                Array.from(documentFree.getElementsByClassName("css-1d6cey9")).filter((element) => element.textContent.includes("Infiltrate Company")).forEach((element) => element.click());
-                /** <span aria-label="Alpha Enterprises" class="css-wfzdsz-location"><b>T</b></span> */
+                Array.from(ui.doCument.getElementsByClassName("css-1d6cey9")).filter((element) => element.textContent.includes("Infiltrate Company")).forEach((element) => (<HTMLElement>element).click());
             }
         }
         // We wait until the "Start infiltration" page appears
-        while (!Array.from(documentFree.getElementsByClassName("css-1ro0679")).some((value) => {
+        while (!Array.from(ui.doCument.getElementsByClassName("css-1ro0679")).some((value) => {
             return value.innerHTML.includes("Infiltrating");
         })) {
             await ns.sleep(100);
-            documentFree = eval("document");
         }
-        targetCompany = documentFree.getElementsByClassName("css-1ro0679")[0].children[0].textContent;
+        targetCompany = ui.doCument.getElementsByClassName("css-1ro0679")[0].children[0].textContent;
         await serverUpWaiter(ns);
-        documentFree = eval("document");
         // Store the target company
 
-        while (documentFree.getElementsByClassName("css-1d6cey9").length === 0) {
+        while (ui.doCument.getElementsByClassName("css-1d6cey9").length === 0) {
             await ns.sleep(100);
-            documentFree = eval("document");
         }
-        documentFree.getElementsByClassName("css-1d6cey9")[0].click();
+        (<HTMLElement>ui.doCument.getElementsByClassName("css-1d6cey9")[0]).click();
         // We wait for the "Get Ready!" page
-        while (!Array.from(documentFree.getElementsByClassName("css-1qsxih2")).some((value) => {
+        while (!Array.from(ui.doCument.getElementsByClassName("css-1qsxih2")).some((value) => {
             return value.innerHTML.includes("Get Ready!");
         })) {
             await ns.sleep(10);
-            documentFree = eval("document");
         }
 
-        async function attackSentinel(taskNode) {
+        async function attackSentinel(taskNode: Element) {
             ns.print("Found a guard!");
             while (!taskNode.textContent.includes("Distracted")) {
                 await ns.sleep(10);
@@ -75,10 +71,12 @@ export async function main(ns) {
             ns.print("Pressed!");
         }
 
-        async function enterCode(taskNode) {
+        async function enterCode(taskNode: Element) {
             let instructions = taskNode.children[1].children[0];
+            ns.tprint(instructions.innerHTML);
+            ns.tprint(Array.from(instructions.children).toString())
             for (let htmlLine of instructions.children)
-                if (htmlLine.getAttribute("opacity") !== 0.4) {
+                if (parseInt(getHTML("opacity", "attribute", htmlLine as HTMLElement)) !== 0.4) {
                     ns.tprint(htmlLine.outerHTML);
                     let correspondingKey;
                     switch (htmlLine.textContent) {
@@ -94,12 +92,16 @@ export async function main(ns) {
                         case "←":
                             correspondingKey = "a";
                             break;
+                        default:
+                            throw Error("Impossible key: " + htmlLine.textContent)
                     }
                     await keyPressAPI(ns, correspondingKey);
+                }else{
+                    ns.tprint(parseInt(getHTML("opacity", "attribute", htmlLine as HTMLElement)))
                 }
         }
 
-        async function typeBackward(taskNode) {
+        async function typeBackward(taskNode: Element) {
             let sentence = taskNode.getElementsByClassName("css-1vn74cx")[0];
             for (let letter of sentence.textContent) {
                 let targetKey = letter === " " ? "Space" : letter;
@@ -107,9 +109,11 @@ export async function main(ns) {
             }
         }
 
-        async function closeBrackets(taskNode) {
+        async function closeBrackets(taskNode: Element) {
             let opening = taskNode.getElementsByClassName("css-1vn74cx")[0].textContent;
             let arrayOpeningChars = opening.match(/[\[(<{]/gm);
+            if(arrayOpeningChars === null)
+                return;
             arrayOpeningChars.reverse();
             let invertor = new Map();
             invertor.set("[", "]");
@@ -126,9 +130,9 @@ export async function main(ns) {
             }
         }
 
-        async function wireCutter(taskNode) {
+        async function wireCutter(taskNode: Element) {
             // Array.from(taskNode.children).forEach((value)=>ns.tprint(value.outerHTML.toString()));
-            let wires2cut = Array.from(taskNode.children).filter((element) => {
+            let wires2cut = Array.from(taskNode.children).filter((element: Element) => {
                 return element.className.includes("css-1vn74cx");
             });
             ns.tprint("Wires to cut: " + wires2cut.toString());
@@ -141,21 +145,23 @@ export async function main(ns) {
                     ns.tprint("Key pressed : " + number2cut);
                     await keyPressAPI(ns, number2cut);
                 } else if (currentInstruction.includes("colored")) {
-                    let wires = Array.from(taskNode.lastElementChild.getElementsByClassName("css-1vn74cx"));
+                    let wires = Array.from(getHTML("", "lastChild", taskNode as HTMLElement).getElementsByClassName("css-1vn74cx"));
                     let nbrWires = wires.filter((value) => value.innerHTML.match(/\d/)).length;
                     // let wireArray = [[]];
-                    ns.tprint(wires.toString());
+                    ns.tprint("Wires: " + wires.toString());
                     ns.tprint("Nbr of wires: " + nbrWires);
-                    let wireMap = [];
+                    let wireMap: Set<string>[] = [];
                     for (let i = 0; i < nbrWires; ++i) {
                         wireMap[i] = new Set();
                     }
                     wires.forEach((wireSegment, index) => {
                         // wireArray[Math.floor(index / nbrWires)][index % nbrWires] = wireSegment;
-                        wireMap[index % nbrWires].add(wireSegment.getAttribute("style").substring("color: ".length).replace(";", ""));
-                        ns.tprint(wireSegment.attributes.getNamedItemNS(null, "style"));
-                        ns.tprint(wireSegment.getAttributeNode("style").toString());
+                        ns.tprint((<HTMLElement>wireSegment).outerHTML)
+                        wireMap[index % nbrWires].add(getHTML("style", "attribute", wireSegment as HTMLElement).substring("color: ".length).replace(";", ""));
+                        ns.tprint(wireSegment.attributes.getNamedItemNS(null, "style")); // TODO: Bugged
+                        ns.tprint(getHTML("style", "attribute", wireSegment as HTMLElement).toString());
                         ns.tprint(wireSegment.getAttribute("style"));
+                        ns.tprint(Object.entries(wireMap[index % nbrWires]).toString())
                         // wireSegment.getAttributeNode("style").childNodes.forEach((value)=> {
                         //     ns.tprint(value)
                         // })
@@ -169,7 +175,7 @@ export async function main(ns) {
                     let desiredColor = currentInstruction.slice(currentInstruction.lastIndexOf(" "), currentInstruction.length - 1).toLowerCase().trim();
                     ns.tprint("Raw desired color: " + desiredColor);
                     let colorDict = new Map([["yellow", "rgb(255, 193, 7)"], ["green", "rgb(0, 204, 0)"]]);
-                    desiredColor = colorDict.has(desiredColor) ? colorDict.get(desiredColor) : desiredColor;
+                    desiredColor = colorDict.has(desiredColor) ? colorDict.get(desiredColor)! : desiredColor;
                     ns.tprint("Desired color: " + desiredColor);
                     for (let i in wireMap) {
                         ns.tprint("#: " + i + " Wiremap[#]: " + wireMap[i].toLocaleString());
@@ -183,7 +189,7 @@ export async function main(ns) {
             }
         }
 
-        async function complimenter(taskNode) {
+        async function complimenter(taskNode: Element) {
             let initialWord = taskNode.getElementsByClassName("css-eg010m")[1].textContent;
             let first = true;
             let compliments = [
@@ -220,15 +226,15 @@ export async function main(ns) {
             await keyPressAPI(ns, "Space");
         }
 
-        async function symbolMatcher(taskNode) {
+        async function symbolMatcher(taskNode: Element) {
             ns.write("Match the symbols".replaceAll(" ", "") + ".txt", taskNode.innerHTML, "w");
             let targets = Array.from(taskNode.getElementsByClassName("css-eg010m")[0].children).map((value) => value.textContent.trim());
             ns.tprint("Targets: " + targets.toString());
             let currentCoords = new Coordinates(0, 0);
-            let matrixElement = taskNode.lastElementChild;
+            let matrixElement = getHTML("", "lastChild", taskNode as HTMLElement);
             let side = Math.sqrt(matrixElement.children.length);
             /**@type {[String[]]}*/
-            let matrix = [];
+            let matrix: [string[]] = [[]];
             for (let i = 0; i < side; ++i)
                 matrix[i] = [];
             let matrixDimensions = new Coordinates(side, side);
@@ -255,48 +261,45 @@ export async function main(ns) {
         }
 
 // We wait during the "Get Ready!" page
-        while (documentFree.getElementsByClassName("css-1qsxih2").length !== 0) {
-            while (Array.from(documentFree.body.getElementsByClassName("css-1qsxih2")).some(
-                // while (Array.from(document.children) === null ? true : Array.from(document.children).some(
+        while (ui.doCument.getElementsByClassName("css-1qsxih2").length !== 0) {
+            while (Array.from(ui.doCument.body.getElementsByClassName("css-1qsxih2")).some(
+                // while (Array.from(doCument.children) === null ? true : Array.from(doCument.children).some(
                 (value) => {
                     return value === null ? true : value.innerHTML.includes("Get Ready!");
                 })) {
                 await ns.sleep(100);
-                documentFree = eval("document");
-                // ns.tprint(document.textContent);
-                // if(document.body.textContent.includes("wires")) {
-                //     copyToClipboard(document.getRootNode().textContent)
+                // ns.tprint(doCument.textContent);
+                // if(doCument.body.textContent.includes("wires")) {
+                //     copyToClipboard(doCument.getRootNode().textContent)
                 //     ns.tprint("Document: ")
-                //     ns.tprint(document);
-                //     ns.tprint(document.body.innerHTML);
-                //     ns.tprint(documentFree.getElementsByClassName("css-1bfln7c").innerHTML);
+                //     ns.tprint(doCument);
+                //     ns.tprint(doCument.body.innerHTML);
+                //     ns.tprint(ui.doCument.getElementsByClassName("css-1bfln7c").innerHTML);
                 //     return;
                 // }
             }
             // copyToClipboard("Test");
-            // copyToClipboard(Array.from(documentFree.getElementsByClassName("css-1qsxih2")).filter((
+            // copyToClipboard(Array.from(ui.doCument.getElementsByClassName("css-1qsxih2")).filter((
             //     (value) => {
             //         return value.innerHTML.includes("Cancel Infiltration")
             //     }))[0].innerHTML)
             await ns.sleep(100);
-            // ns.tprint(Array.from(documentFree.body.getElementsByClassName("css-1qsxih2")).length);
-            // ns.tprint(Array.from(documentFree.body.getElementsByClassName("css-1qsxih2")).filter((
+            // ns.tprint(Array.from(ui.doCument.body.getElementsByClassName("css-1qsxih2")).length);
+            // ns.tprint(Array.from(ui.doCument.body.getElementsByClassName("css-1qsxih2")).filter((
             //     (value) => {
             //         return value.innerHTML.includes("Cancel Infiltration")
             //     }))[0].innerHTML);
-            // let documentNow = document.getRootNode().innerHTML;
+            // let documentNow = doCument.getRootNode().innerHTML;
             // ns.write("HTML_"+new Date(Date.now()).toDateString().replaceAll(" ","")+".txt",documentNow);
             // return;
-            documentFree = eval("document");
-            if (documentFree.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(documentFree.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) {
-                while (documentFree.getElementsByClassName("css-lg118y").length === 0) {
+            if (ui.doCument.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(ui.doCument.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) {
+                while (ui.doCument.getElementsByClassName("css-lg118y").length === 0) {
                     await ns.sleep(100);
-                    documentFree = eval("document");
                 }
-                if(moneyRatherThanRep) Array.from(documentFree.getElementsByClassName("css-lg118y")).find((element) => element.textContent.includes("Sell for")).click();
+                if (moneyRatherThanRep) (<HTMLElement> Array.from(ui.doCument.getElementsByClassName("css-lg118y")).find((element) => element.textContent.includes("Sell for"))).click();
                 ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
             }
-            documentFree.body.getElementsByClassName("css-jhk36g")[0].click();
+            (<HTMLElement> getHTML("css-jhk36g", "class")[0]).click();
             let challengeList = [
                 "Attack after the sentinel drops his guard",    // Done
                 "Close the brackets",                           //
@@ -309,13 +312,13 @@ export async function main(ns) {
                 "Cut the wires"                                 // Done
             ];
             let page;
-            if (documentFree.body.getElementsByClassName("css-1qsxih2").length === 1
-                && documentFree.body.getElementsByClassName("css-1qsxih2")[0].innerHTML.includes("Cancel Infiltration"))
-                page = documentFree.body.getElementsByClassName("css-1qsxih2")[0];
-            else if (documentFree.body.getElementsByClassName("css-1qsxih2").length === 0)
+            if (ui.doCument.body.getElementsByClassName("css-1qsxih2").length === 1
+                && ui.doCument.body.getElementsByClassName("css-1qsxih2")[0].innerHTML.includes("Cancel Infiltration"))
+                page = ui.doCument.body.getElementsByClassName("css-1qsxih2")[0];
+            else if (ui.doCument.body.getElementsByClassName("css-1qsxih2").length === 0)
                 throw Error("Wrong window, does not have css-1qsxih2!");
             else
-                page = Array.from(documentFree.body.getElementsByClassName("css-1qsxih2")).filter(((value) => {
+                page = Array.from(ui.doCument.body.getElementsByClassName("css-1qsxih2")).filter(((value) => {
                     return value.innerHTML.includes("Cancel Infiltration");
                 }))[0];
             // Find the right child that has the task
@@ -335,8 +338,8 @@ export async function main(ns) {
                 }
             ns.tprint("Type: " + correctType);
             ns.toast("Type: " + correctType, "info");
-            // ns.tprint(document);
-            // ns.tprint(document.body.innerHTML);
+            // ns.tprint(doCument);
+            // ns.tprint(doCument.body.innerHTML);
             if (correctType === "") {
                 await ns.sleep(10);
                 continue;
@@ -366,28 +369,28 @@ export async function main(ns) {
                     break;
                 case "Remember all the mines":
                     // If there is already a path stored, break
-                    if (minePath == [])
+                    if (minePath.length === 0)
                         break;
 
                     // Make a matrix using the class MuiTypography-body1
                     let linearMatrix = Array.from(taskNode.getElementsByClassName("MuiTypography-body1"));
                     let side = Math.sqrt(linearMatrix.length);
-                    let matrix = [];
+                    let matrix: Element[][] = [];
                     for (let lineNbr = 0; lineNbr < side; lineNbr++) {
                         matrix[lineNbr] = [];
                     }
                     for (const nodeIndex in linearMatrix) {
-                        let x = nodeIndex % side;
-                        let y = (nodeIndex - x) / side;
+                        let x = parseInt(nodeIndex) % side;
+                        let y = (parseInt(nodeIndex) - x) / side;
                         matrix[y][x] = linearMatrix[nodeIndex];
                     }
 
                     // Locate the indexes with the class css-6zml06 for the mines
-                    let mineList = [];
+                    let mineList: Coordinates[] = [];
                     for (const matrixY in matrix) {
                         for (const matrixX in matrix[matrixY]) {
                             if (matrix[matrixY][matrixX].classList.contains("css-6zml06"))
-                                mineList.push(new Coordinates(matrixX, matrixY));
+                                mineList.push(new Coordinates(parseInt(matrixX), parseInt(matrixY)));
                         }
                     }
                     ns.tprint("Mine list: " + mineList.toString());
@@ -400,9 +403,13 @@ export async function main(ns) {
                     // Break
                     break;
                 case "Mark all the mines":
+
+                    ns.tprint(minePath.toString())
+
                     // If there is no path stored, throw an error
-                    if (minePath == [])
+                    if (minePath.length === 0)
                         throw GeolocationPositionError;
+
                     // Follow the best path
                     for (let oneMinePath of minePath) {
                         await navigatePath(ns, oneMinePath);
@@ -420,25 +427,23 @@ export async function main(ns) {
             //Do the task
             ns.print("Prout");
         }
-        documentFree = eval("document")
-    }catch(Exception){
-        ns.run(ns.getScriptName(), {spawnDelay: 1000}, targetCompany);
+    } catch (Exception) {
+        ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany);
     }
 }
 
-//css-1ro0679 -> Start infiltration (entre autres)
-//css-1qsxih2 ->
+type PathPoints = [string[], number[]];
 /**
  * @param {Coordinates} start
  * @param {Coordinates} end
  * @param {Coordinates} arrayDimensions
- * @returns {(string[] | number[])[]}
+ * @returns {PathPoints}
  */
-function findShortestPathWiWrap(start, end, arrayDimensions) {
+function findShortestPathWiWrap(start: Coordinates, end: Coordinates, arrayDimensions: Coordinates): PathPoints {
     let answer = [""].filter(() => false);
     let movement = [0].filter(() => false);
-    let directions = { "x": { "-": "a", "+": "d" }, "y": { "-": "w", "+": "s" } };
-    for (let dimension of ["x", "y"]) {
+    let directions = {"x": {"-": "a", "+": "d"}, "y": {"-": "w", "+": "s"}};
+    for (let dimension of ["x", "y"] as const) {
         let distanceSE = Math.abs(start[dimension] - end[dimension]);
         if (distanceSE < arrayDimensions[dimension] - distanceSE) // Shorter to go directly
             for (let i = 0; i < distanceSE; ++i)
@@ -454,19 +459,63 @@ function findShortestPathWiWrap(start, end, arrayDimensions) {
 
 class Coordinates {
     /**@type {number} y*/
-    y;
+    y: number;
     /**@type {number} x*/
-    x;
+    x: number;
+
     /**
      * @param {number} x
      * @param {number} y
      */
-    constructor(x, y) {
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
     }
+
     toString() {
         return "X: " + this.x + " Y: " + this.y;
+    }
+}
+class Node {
+    /**@type {Coordinates} location*/
+    location: Coordinates;
+    /**@type {Path} pathToNode*/
+    pathToNode: Path;
+    /**@type {boolean} found*/
+    found: boolean = false;
+    /**@type {boolean} permanent*/
+    permanent: boolean = false;
+
+    /**
+     * @param {Coordinates} location
+     * @param {Path} pathToNode
+     */
+    constructor(location: Coordinates, pathToNode: Path) {
+        this.location = location;
+        this.pathToNode = pathToNode;
+    }
+
+    update(pathToNode: Path) {
+        if (pathToNode.length < this.pathToNode.length) {
+            this.pathToNode = pathToNode;
+        }
+        this.found = true;
+    }
+}
+
+class Path {
+    /**@type {Node|null} previousNode*/
+    previousNode: Node | null;
+    /**@type {number} length*/
+    length: number;
+
+    /**
+     * @param {Node|null} previousNode
+     * @param {number} lengthOfPath
+     */
+    constructor(previousNode: Node | null, lengthOfPath: number) {
+        this.previousNode = previousNode;
+        this.length = lengthOfPath;
     }
 }
 
@@ -476,47 +525,11 @@ class Coordinates {
  * @param {number} mapSideLength
  * @returns {[]}
  */
-function dijkstra(locationsArray, startingLocation, mapSideLength) {
-    class Node {
-        /**@type {Coordinates} location*/
-        location;
-        /**@type {Path} pathToNode*/
-        pathToNode;
-        /**@type {boolean} found*/
-        found = false;
-        /**@type {boolean} permanent*/
-        permanent = false;
-        /**
-         * @param {Coordinates} location
-         * @param {Path} pathToNode
-         */
-        constructor(location, pathToNode) {
-            this.location = location;
-            this.pathToNode = pathToNode;
-        }
-        update(pathToNode) {
-            if (pathToNode.length < this.pathToNode.length) {
-                this.pathToNode = pathToNode;
-            }
-            this.found = true;
-        }
-    }
-    class Path {
-        /**@type {Node|null} previousNode*/
-        previousNode;
-        /**@type {number} length*/
-        length;
-        /**
-         * @param {Node|null} previousNode
-         * @param {number} lengthOfPath
-         */
-        constructor(previousNode, lengthOfPath) {
-            this.previousNode = previousNode;
-            this.length = lengthOfPath;
-        }
-    }
+function dijkstra(locationsArray: any[], startingLocation: Coordinates, mapSideLength: number): Node[] {
 
-    let nodeMap = locationsArray.map((value) => { return new Node(value, new Path(null, 100000)); });
+    let nodeMap = locationsArray.map((value) => {
+        return new Node(value, new Path(null, 100000));
+    });
     let startingLocationNode = new Node(startingLocation, new Path(null, 0));
     startingLocationNode.found = true;
     nodeMap.unshift(startingLocationNode);
@@ -531,8 +544,8 @@ function dijkstra(locationsArray, startingLocation, mapSideLength) {
         let foundI = foundsIndex[0];
         nodeMap[foundI].permanent = true;
         for (const updateI of virginsIndex.concat(foundsIndex.slice(1))) {
-            let distance = nodeMap[foundI].pathToNode.length + findShortestPathWiWrap(nodeMap[foundI].location, nodeMap[updateI].location, mapSideLength)[1].reduce((previous, current) => previous + current);
-            nodeMap[updateI].update(distance);
+            let distance = nodeMap[foundI].pathToNode.length + findShortestPathWiWrap(nodeMap[foundI].location, nodeMap[updateI].location, new Coordinates(mapSideLength, mapSideLength))[1].reduce((previous, current) => previous + current);
+            nodeMap[updateI].update(new Path(nodeMap[foundI], distance));
         }
         //}
     }
@@ -540,25 +553,26 @@ function dijkstra(locationsArray, startingLocation, mapSideLength) {
 }
 
 /**
- * @param {Array} locationsArray
+ * @param {NS} ns
+ * @param {Coordinates[]} locationsArray
  * @param {Coordinates} startingLocation
  * @param {number} mapSideLength
- * @returns {[]}
+ * @returns {PathPoints[]}
  */
-function algorithmPathing(ns, locationsArray, startingLocation, mapSideLength) {
+function algorithmPathing(ns: NS, locationsArray: Array<Coordinates>, startingLocation: Coordinates, mapSideLength: number): PathPoints[] {
     // let visitedArray = [];
     let unvisitedArray = locationsArray.slice();
-    let fullPath = [];
+    let fullPath: PathPoints[] = [];
     ns.tprint(unvisitedArray.toString());
     while (unvisitedArray.length !== 0) {
-        let closestNode = [null, 100000, 0, null];
+        let closestNode: [Coordinates, number, number,  PathPoints] = [startingLocation, 100000, 0, [[],[]]];
         for (const location2VisitIndex in unvisitedArray) {
             let location2Visit = unvisitedArray[location2VisitIndex];
             ns.print("Location: " + location2Visit.toString());
             let path = findShortestPathWiWrap(startingLocation, location2Visit, new Coordinates(mapSideLength, mapSideLength));
             ns.print(path.toString());
             if (path[1][0] + path[1][1] < closestNode[1])
-                closestNode = [location2Visit, path[1][0] + path[1][1], location2VisitIndex, path];
+                closestNode = [location2Visit, path[1][0] + path[1][1], parseInt(location2VisitIndex), path];
         }
         ns.print(closestNode);
         // visitedArray = unvisitedArray.shift()

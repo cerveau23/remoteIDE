@@ -30,7 +30,7 @@ export type Location = [
     ServerName: Hostname, // Test
     /** Server ID */
     ServerID: number,
-    /** Path to the Server via IDs */
+    /** PathPoints to the Server via IDs */
     Path: Path,
     /** Whether the server has "children" */
     HasChildren: boolean,
@@ -121,7 +121,7 @@ It has 5 possible flags:
     let id = 0;
 
     let path: Path = [];
-    map.push([currentLocation, id, path, false, true]);//writing of the starting location as example: [Server's Name, Server's ID, Path to the Server via IDs, Whether or not the server has "children", whether or not the server has been backdoored in the past]
+    map.push([currentLocation, id, path, false, true]);//writing of the starting location as example: [Server's Name, Server's ID, PathPoints to the Server via IDs, Whether or not the server has "children", whether or not the server has been backdoored in the past]
     let position = 0;
     let finishedCode = true;
     do {
@@ -195,7 +195,7 @@ It has 5 possible flags:
                 pathTarget = pathTarget.replaceAll(" --> ", "; connect ");
             }
             if (commandline) {
-                ns.tprint("Path to the target: " + pathTarget);
+                ns.tprint("PathPoints to the target: " + pathTarget);
             } else {
                 ns.printRaw(pathTarget);
             }

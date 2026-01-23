@@ -12,7 +12,7 @@ export namespace Geography{
         ServerName: Hostname, // Test
         /** Server ID */
         ServerID: number,
-        /** Path to the Server via IDs */
+        /** PathPoints to the Server via IDs */
         Path: Path,
         /** Whether the server has "children" */
         HasChildren: boolean,
