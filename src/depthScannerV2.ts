@@ -136,7 +136,7 @@ function hub(ns: NS, Flags: Flag, uploadedMap?: Geography.Map): string[] | Geogr
             path = connector(path);
         else path = path.replaceAll(" --> ", ",") // Should happen after we checked if we need connector
         if (commandline) {
-            ns.tprint("Path to the target: " + path);
+            ns.tprint("PathPoints to the target: " + path);
         } else {
             ns.printRaw(path);
         }
@@ -178,7 +178,7 @@ function WholeMap(ns: NS) : Geography.Map{
      * The path to the {@link currentLocation ``current location``}, formed by the {@link id ``UIDs``} of each location starting from {@link startLocation ``home``}. */
     let path: Geography.Path = [];
 
-    // Writing of the starting location as example: [Server's Name, Server's ID, Path to the Server via IDs, Whether or not the server has "children", whether or not the server has been backdoored in the past (Optional)]
+    // Writing of the starting location as example: [Server's Name, Server's ID, PathPoints to the Server via IDs, Whether or not the server has "children", whether or not the server has been backdoored in the past (Optional)]
     map.push([currentLocation, id, path, false, true]);
 
     /** @type {number}

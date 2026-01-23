@@ -8,6 +8,7 @@ import {SourceFile_State} from "/functional/Source-File_State";
 
 /** @param {NS} ns **/
 export async function main(ns: NS) {
+    ns.ramOverride(13);
 
     // ---------------------------------
     //         Initialization
@@ -15,7 +16,8 @@ export async function main(ns: NS) {
 
     let source_file_state = new SourceFile_State(ns, {singularity: true});
 
-    if(!source_file_state.singularity)await serverInitialization(ns, true);
+    if(!source_file_state.singularity || ((ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname())) < 77)) await serverInitialization(ns, true);
+    else ns.ramOverride(77);
 
     let mapp = await portReceiver(ns, "Server Map", 1, true);
     let serversWithoutBackdoors = [];
@@ -44,7 +46,7 @@ export async function main(ns: NS) {
     // ---------------------------------
     //              Loop
     // ---------------------------------
-    if(!source_file_state.singularity){
+    if(!source_file_state.singularity || ((ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname())) < 77)){
         await loopNoSingularity(ns, mapp, serversWithoutBackdoors, previousServer);
     }
     else{
@@ -82,7 +84,7 @@ async function loopNoSingularity(ns : NS, mapp: Geography.Map, serversWithoutBac
                 ns.toast("Backdoor finished, start new backdoor!", "error");
                 await commandWaitr(ns, command, previousServer, 1, "Waiting for command to be executed", true);
             }
-        } else while (ui.document.getElementById('terminal-input') !== undefined && ns.getServer(previousServer).isConnectedTo) {
+        } else while (ui.doCument.getElementById('terminal-input') !== undefined && ns.getServer(previousServer).isConnectedTo) {
             await ns.sleep(50);
             if (ui.isUserActive())
                 await autoEnter(ns)
@@ -141,11 +143,11 @@ async function waitr(ns: NS, seconds: number, reason: string, breaker: Function 
  */
 async function commandWaitr(ns : NS, command: string, previousServer : string, delay: number, reason: string, beeper = false) {
     await waitr(ns, delay, reason, async function () {
-        let terminal = ui.document.getElementById('terminal-input');
+        let terminal = ui.doCument.getElementById('terminal-input');
         if (terminal === null)
             throw new Error("No terminal")
-        if ((<HTMLInputElement>ui.document.getElementById('terminal-input')).value.trim() === "" || " ") {
-            (<HTMLInputElement>ui.document.getElementById('terminal-input')).value = command;
+        if ((<HTMLInputElement>ui.doCument.getElementById('terminal-input')).value.trim() === "" || " ") {
+            (<HTMLInputElement>ui.doCument.getElementById('terminal-input')).value = command;
         }
         if (ui.isUserActive() && await serverPing(true)) await autoEnter(ns)
         // if(beeper) ns.run("beep.js", 1, 1440);
@@ -157,11 +159,11 @@ async function autoEnter(ns: NS) {
     if (!await serverPing())
         return;
 
-    let terminal = ui.document.getElementById('terminal-input');
+    let terminal = ui.doCument.getElementById('terminal-input');
     if (terminal === null)
         throw Error("No terminal");
-    (<HTMLInputElement>ui.document.getElementById('terminal-input')).focus()
-    while ((<HTMLInputElement>ui.document.getElementById('terminal-input')).value.trim() === (<HTMLInputElement>ui.document.getElementById('terminal-input')).value) {
+    (<HTMLInputElement>ui.doCument.getElementById('terminal-input')).focus()
+    while ((<HTMLInputElement>ui.doCument.getElementById('terminal-input')).value.trim() === (<HTMLInputElement>ui.doCument.getElementById('terminal-input')).value) {
         await keyPressAPI(ns, "SPACE");
         await ns.sleep(50);
     }

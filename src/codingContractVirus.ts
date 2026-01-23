@@ -157,7 +157,7 @@ async function answering(ns: NS, contractName: string, serverName: string) {
         case "Algorithmic Stock Trader IV":
             answer = extension2.algoStonksIV(ns, contractName, serverName);
             break;
-        case "Minimum Path Sum in a Triangle":
+        case "Minimum PathPoints Sum in a Triangle":
             answer = extension3.minimumPathSumInATriangle(ns, contractName, serverName);
             break;
         case "Unique Paths in a Grid I":
@@ -166,7 +166,7 @@ async function answering(ns: NS, contractName: string, serverName: string) {
         case "Unique Paths in a Grid II":
             answer = extension3.uniquePathsInAGridII(ns, contractName, serverName);
             break;
-        case "Shortest Path in a Grid":
+        case "Shortest PathPoints in a Grid":
             answer = extension3.shortestPathInAGrid(ns, contractName, serverName);
             break;
         case "Sanitize Parentheses in Expression":
@@ -237,5 +237,5 @@ async function basicNewFunction(ns: NS, contractName: string, serverName: string
     return answer;
 }
 
-//["Find Largest Prime Factor","Subarray with Maximum Sum","Total Ways to Sum","Total Ways to Sum II","Spiralize Matrix","Array Jumping Game","Array Jumping Game II","Merge Overlapping Intervals","Generate IP Addresses","Algorithmic Stock Trader I","Algorithmic Stock Trader II","Algorithmic Stock Trader III","Algorithmic Stock Trader IV","Minimum Path Sum in a Triangle","Unique Paths in a Grid I","Unique Paths in a Grid II","Shortest Path in a Grid","Sanitize Parentheses in Expression","Find All Valid Math Expressions","HammingCodes: Integer to Encoded Binary","HammingCodes: Encoded Binary to Integer","Proper 2-Coloring of a Graph","Compression I: RLE Compression","Compression II: LZ Decompression","Compression III: LZ Compression","Encryption I: Caesar Cipher","Encryption II: Vigenère Cipher"]
+//["Find Largest Prime Factor","Subarray with Maximum Sum","Total Ways to Sum","Total Ways to Sum II","Spiralize Matrix","Array Jumping Game","Array Jumping Game II","Merge Overlapping Intervals","Generate IP Addresses","Algorithmic Stock Trader I","Algorithmic Stock Trader II","Algorithmic Stock Trader III","Algorithmic Stock Trader IV","Minimum PathPoints Sum in a Triangle","Unique Paths in a Grid I","Unique Paths in a Grid II","Shortest PathPoints in a Grid","Sanitize Parentheses in Expression","Find All Valid Math Expressions","HammingCodes: Integer to Encoded Binary","HammingCodes: Encoded Binary to Integer","Proper 2-Coloring of a Graph","Compression I: RLE Compression","Compression II: LZ Decompression","Compression III: LZ Compression","Encryption I: Caesar Cipher","Encryption II: Vigenère Cipher"]
 

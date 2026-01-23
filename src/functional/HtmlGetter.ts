@@ -1,26 +1,36 @@
 import { ui } from "./UIGetter";
 
-type functionCodes = "query"|"id"|"class"|"attribute"
+type functionCodes = "query"|"id"|"class"|"attribute"|"lastChild"
 
-type getHTMLReturnType<T> =
-    T extends "query" ? Element :
-        T extends "attribute" ? string : null
+type getHTMLReturnType<T extends functionCodes> =
+    T extends "query"|"lastChild" ? Element :
+        T extends "class" ? Element[] :
+            T extends "id" ? HTMLElement :
+                T extends "attribute" ? string : null
 
 
-function getHTML(selector: string, desiredFunction: "attribute", element: HTMLElement): getHTMLReturnType<"attribute">
-function getHTML<T extends functionCodes>(selector: string, desiredFunction: T, element?: HTMLElement): getHTMLReturnType<T> {
+export function getHTML<T extends "attribute"|"lastChild">(selector: string, desiredFunction: T , element: HTMLElement): getHTMLReturnType<T>
+export function getHTML<T extends "query"|"id"|"class">(selector: string, desiredFunction: T): getHTMLReturnType<T>
+export function getHTML(selector: string, desiredFunction: functionCodes, element?: HTMLElement): Element|HTMLElement|Element[]|string {
     let el;
     switch(desiredFunction) {
         case "query":
-            el = ui.document.querySelector(selector);
+            el = ui.doCument.querySelector(selector);
             break;
 
         case "class":
-            el = ui.document.getElementsByClassName(selector);
+            el = Array.from(ui.doCument.getElementsByClassName(selector));
             break;
 
         case "id":
-            el = ui.document.getElementById(selector);
+            el = ui.doCument.getElementById(selector);
+            break;
+
+        case "lastChild":
+            if (!element) {
+                throw new Error("Element is required for attribute lookup");
+            }
+            el = element.lastElementChild;
             break;
 
         case "attribute":
@@ -34,5 +44,5 @@ function getHTML<T extends functionCodes>(selector: string, desiredFunction: T, 
     if (!el) {
         throw new Error(`Element not found: ${selector}`);
     }
-    return el as getHTMLReturnType<T>;
+    return el;
 }

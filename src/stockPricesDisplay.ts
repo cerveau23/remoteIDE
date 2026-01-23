@@ -21,10 +21,10 @@ export async function main(ns: NS) {
                     ns.print("Failed to kill " + i.pid);
             }
     }
-    if (ui.document.getElementsByClassName("css-01010101010101").length === 0) {
+    if (ui.doCument.getElementsByClassName("css-01010101010101").length === 0) {
         addElementV4();
     }
-    ui.document.getElementsByClassName("css-01010101010101")[0].innerHTML = ns.formatNumber(stockMoney);
+    ui.doCument.getElementsByClassName("css-01010101010101")[0].innerHTML = ns.formatNumber(stockMoney);
     if ((ns.getHostname() === "Overseer") && ((ns.ps("Overseer").filter((a) => {
         return a.filename === ns.getScriptName();
     }).length === 1) || stockMoney === 0)) {
@@ -37,32 +37,32 @@ export async function main(ns: NS) {
             }
         }
 
-        console.log(ui.document.getElementById("Stonks")?.innerHTML);
-        (<HTMLElement>ui.document.getElementById("Stonks")).onclick = () => killer(ns);
+        console.log(ui.doCument.getElementById("Stonks")?.innerHTML);
+        (<HTMLElement>ui.doCument.getElementById("Stonks")).onclick = () => killer(ns);
         while (true)
             await ns.asleep(1000);
-        // ui.document.getElementById("Stonks").addEventListener("click",killer)
+        // ui.doCument.getElementById("Stonks").addEventListener("click",killer)
         // async function waitingTime() { while (!killinTime) { await sleep(500) } }
         // await waitingTime()
-        // ui.document.getElementById("Stonks").removeEventListener("click",killer)
+        // ui.doCument.getElementById("Stonks").removeEventListener("click",killer)
     }
 } /*
 function addElementV1() {
-    let overviewWindow = document.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML.slice(0)
+    let overviewWindow = doCument.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML.slice(0)
     let arrayWindow = overviewWindow.split("<tr").map((a) => { return "<tr" + a })
     arrayWindow.shift()
     let workingString = arrayWindow[1]
     workingString = workingString.replace("Money", "Stocks")
     workingString = workingString.replace("<td class=\"MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-d7dwfk-cell\"><p class=\"MuiTypography-root MuiTypography-body1 css-17bjo4m\">", "<td class=\"MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-d7dwfk-cell\"><p class=\"MuiTypography-root MuiTypography-body1 css-17bjo4m css-01010101010101\">")
     arrayWindow.splice(2, 0, workingString)
-    document.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML = arrayToString(arrayWindow);
+    doCument.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML = arrayToString(arrayWindow);
 }
 function addElementV2() {
-    document.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML = arrayToString(document.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML.split("<tr").map((a) => { return "<tr" + a }).slice(1).toSpliced(2, 0, document.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML.split("<tr").map((a) => { return "<tr" + a }).slice(1)[1].replace("Money", "Stocks").replace("<td class=\"MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-d7dwfk-cell\"><p class=\"MuiTypography-root MuiTypography-body1 css-17bjo4m\">", "<td class=\"MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-d7dwfk-cell\"><p class=\"MuiTypography-root MuiTypography-body1 css-17bjo4m css-01010101010101\">")))
+    doCument.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML = arrayToString(doCument.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML.split("<tr").map((a) => { return "<tr" + a }).slice(1).toSpliced(2, 0, doCument.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0].innerHTML.split("<tr").map((a) => { return "<tr" + a }).slice(1)[1].replace("Money", "Stocks").replace("<td class=\"MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-d7dwfk-cell\"><p class=\"MuiTypography-root MuiTypography-body1 css-17bjo4m\">", "<td class=\"MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-d7dwfk-cell\"><p class=\"MuiTypography-root MuiTypography-body1 css-17bjo4m css-01010101010101\">")))
 }
 function addElementV3() {
     // Get the table element by ID
-    let table = document.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0];
+    let table = doCument.getElementsByClassName("MuiTableBody-root", "css-1xnox0e")[0];
     // Insert a new row
     let newRow = table.insertRow(2);
     newRow.classList.add("MuiTableRow-root", "css-1dix92e");
@@ -82,7 +82,7 @@ function addElementV3() {
 }*/
 function addElementV4() {
     // Get the table element by ID
-    let table = ui.document.getElementsByClassName(/*"MuiTableBody-root",*/ "css-1xnox0e")[0] as HTMLTableElement;
+    let table = ui.doCument.getElementsByClassName(/*"MuiTableBody-root",*/ "css-1xnox0e")[0] as HTMLTableElement;
     // Insert a new row
     let newRow = table.insertRow(2);
     newRow.classList.add("MuiTableRow-root", "css-1dix92e");
