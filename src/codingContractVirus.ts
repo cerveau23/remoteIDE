@@ -1,5 +1,5 @@
 import {NS} from "@ns";
-import {portReceiver} from "functions";
+import {portReceiver} from "/functional/functions";
 import * as extension1 from "/cCVExtensions/cCVExtension1";
 import * as extension2 from "cCVExtensions/cCVExtension2";
 import * as extension3 from "cCVExtensions/cCVExtension3";

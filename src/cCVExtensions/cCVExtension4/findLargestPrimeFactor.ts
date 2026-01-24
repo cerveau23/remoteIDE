@@ -1,5 +1,5 @@
 import {NS} from "@ns";
-import {decompressPrimes, runLengthDecode, sieveOfEratosthenes} from "/functions";
+import {decompressPrimes, runLengthDecode, sieveOfEratosthenes} from "/functional/functions";
 
 /**
  * @param {NS} ns

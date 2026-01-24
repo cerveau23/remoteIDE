@@ -1,5 +1,5 @@
 import {NS} from "@ns";
-import {portReceiver} from "functions"
+import {portReceiver} from "/functional/functions"
 
 /** @param {NS} ns */
 export async function main(ns: NS) {

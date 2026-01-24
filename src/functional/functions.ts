@@ -1,5 +1,5 @@
 import type {BladeburnerActionType, BladeburnerCurAction, NS} from "@ns"
-import type {PortData, Geography} from "/typeLib/index"
+import type {PortData, Geography} from "/typeLib"
 
 /**
  * Gets the type of a bladeburner action.
