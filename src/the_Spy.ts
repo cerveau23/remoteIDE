@@ -3,6 +3,8 @@ import {keyPressAPI, serverUpWaiter} from "/BBA_API_handler";
 import {ui} from "/functional/UIGetter";
 import {getHTML} from "/functional/HtmlGetter"
 
+const devLog = false;
+
 async function navigatePath(ns: NS, route: PathPoints) {
     ns.tprint("Route: " + route.toString());
     for (let direction of route[0])
@@ -65,7 +67,7 @@ export async function main(ns: NS) {
                 await ns.sleep(10);
             }
             ns.print("Distracted! Will press!");
-            ns.tprint("Distracted! Will press!");
+            if (devLog) ns.tprint("Distracted! Will press!");
             //await simulateKey(ns, "Space", 32, true);
             await keyPressAPI(ns, "Space");
             ns.print("Pressed!");
@@ -73,11 +75,13 @@ export async function main(ns: NS) {
 
         async function enterCode(taskNode: Element) {
             let instructions = taskNode.children[1].children[0];
-            ns.tprint(instructions.innerHTML);
-            ns.tprint(Array.from(instructions.children).toString())
-            for (let htmlLine of instructions.children)
-                if (parseInt(getHTML("opacity", "attribute", htmlLine as HTMLElement)) !== 0.4) {
-                    ns.tprint(htmlLine.outerHTML);
+            if (devLog) ns.tprint(instructions.innerHTML);
+            if (devLog) ns.tprint(Array.from(instructions.children).toString())
+            for (let index = 0; index < instructions.children.length; ++index) {
+                const htmlLine = instructions.children[index];
+                if (devLog)if (devLog)  ns.tprint(htmlLine.outerHTML);
+                if (devLog) ns.tprint(htmlLine.textContent);
+                if ( !htmlLine.hasAttribute("opacity") && (htmlLine.textContent !== "?")) {
                     let correspondingKey;
                     switch (htmlLine.textContent) {
                         case "↑":
@@ -93,19 +97,22 @@ export async function main(ns: NS) {
                             correspondingKey = "a";
                             break;
                         default:
+                            ns.tprint("Failure on: " + htmlLine.textContent)
                             throw Error("Impossible key: " + htmlLine.textContent)
                     }
+                    if (devLog) ns.tprint("Pressing key " + correspondingKey)
                     await keyPressAPI(ns, correspondingKey);
-                }else{
-                    ns.tprint(parseInt(getHTML("opacity", "attribute", htmlLine as HTMLElement)))
+                } else {
+                    if (devLog) ns.tprint("Wrong opacity: " + parseInt(getHTML("opacity", "attribute", htmlLine as HTMLElement)));
                 }
+            }
         }
 
         async function typeBackward(taskNode: Element) {
             let sentence = taskNode.getElementsByClassName("css-1vn74cx")[0];
             for (let letter of sentence.textContent) {
                 let targetKey = letter === " " ? "Space" : letter;
-                await keyPressAPI(ns, targetKey);
+                await keyPressAPI(ns, targetKey); //TODO: Warning: "-" doesn't work!
             }
         }
 
@@ -122,7 +129,7 @@ export async function main(ns: NS) {
             invertor.set("{", "}");
             for (let character of arrayOpeningChars) {
                 let targetKey = invertor.get(character);
-                ns.tprint("Pressing " + targetKey);
+                if (devLog) ns.tprint("Pressing " + targetKey);
                 // while(! (await (await keyPressAPI(ns, targetKey)).json()).pressed){
                 //     await ns.sleep(100)
                 // }
@@ -135,33 +142,39 @@ export async function main(ns: NS) {
             let wires2cut = Array.from(taskNode.children).filter((element: Element) => {
                 return element.className.includes("css-1vn74cx");
             });
-            ns.tprint("Wires to cut: " + wires2cut.toString());
+            if (devLog) ns.tprint("Wires to cut: " + wires2cut.toString());
             for (let wire2cut of wires2cut) {
                 let currentInstruction = wire2cut.textContent;
-                ns.tprint(currentInstruction.toString());
+                if (devLog) ns.tprint(currentInstruction.toString());
                 if (currentInstruction.includes("number")) {
                     let number2cut = currentInstruction.charAt(currentInstruction.length - 2);
-                    ns.tprint("Instruction : " + currentInstruction);
-                    ns.tprint("Key pressed : " + number2cut);
+                    if (devLog) ns.tprint("Instruction : " + currentInstruction);
+                    if (devLog) ns.tprint("Key pressed : " + number2cut);
                     await keyPressAPI(ns, number2cut);
                 } else if (currentInstruction.includes("colored")) {
                     let wires = Array.from(getHTML("", "lastChild", taskNode as HTMLElement).getElementsByClassName("css-1vn74cx"));
                     let nbrWires = wires.filter((value) => value.innerHTML.match(/\d/)).length;
                     // let wireArray = [[]];
-                    ns.tprint("Wires: " + wires.toString());
-                    ns.tprint("Nbr of wires: " + nbrWires);
+                    if (devLog) ns.tprint("Wires: " + wires.toString());
+                    if (devLog) ns.tprint("Nbr of wires: " + nbrWires);
                     let wireMap: Set<string>[] = [];
                     for (let i = 0; i < nbrWires; ++i) {
                         wireMap[i] = new Set();
                     }
                     wires.forEach((wireSegment, index) => {
                         // wireArray[Math.floor(index / nbrWires)][index % nbrWires] = wireSegment;
-                        ns.tprint((<HTMLElement>wireSegment).outerHTML)
+                        if (devLog) ns.tprint((<HTMLElement>wireSegment).outerHTML)
+                        if(!wireSegment.hasAttribute("style"))
+                            return;
                         wireMap[index % nbrWires].add(getHTML("style", "attribute", wireSegment as HTMLElement).substring("color: ".length).replace(";", ""));
-                        ns.tprint(wireSegment.attributes.getNamedItemNS(null, "style")); // TODO: Bugged
-                        ns.tprint(getHTML("style", "attribute", wireSegment as HTMLElement).toString());
-                        ns.tprint(wireSegment.getAttribute("style"));
-                        ns.tprint(Object.entries(wireMap[index % nbrWires]).toString())
+                        if (devLog) ns.tprint(wireSegment.attributes.getNamedItemNS(null, "style"));
+                        if (devLog) ns.tprint(getHTML("style", "attribute", wireSegment as HTMLElement).toString());
+                        if (devLog) ns.tprint(wireSegment.getAttribute("style"));
+                        if (devLog) ns.tprint(wireMap[index % nbrWires])
+                        if (devLog) ns.tprint(wireMap[index % nbrWires][Symbol.toStringTag])
+                        if (devLog) ns.tprint(wireMap[index % nbrWires].values().toArray().toString())
+                        // ns.tprint("Substring: " + getHTML("style", "attribute", wireSegment as HTMLElement).substring("color: ".length))
+                        // ns.tprint("Full: " + getHTML("style", "attribute", wireSegment as HTMLElement).substring("color: ".length).replace(";", ""))
                         // wireSegment.getAttributeNode("style").childNodes.forEach((value)=> {
                         //     ns.tprint(value)
                         // })
@@ -171,17 +184,18 @@ export async function main(ns: NS) {
                         //     return text + "Name : " + value.localName + " " + value.namespace + " Value : " + value.value
                         // }))
                     });
+                    ns.tprint("Finished analysing wires")
                     wireMap.forEach((value) => ns.tprint("Wiremap: " + Array.from(value).toString() + " Length : " + value.size));
                     let desiredColor = currentInstruction.slice(currentInstruction.lastIndexOf(" "), currentInstruction.length - 1).toLowerCase().trim();
-                    ns.tprint("Raw desired color: " + desiredColor);
+                    if (devLog) ns.tprint("Raw desired color: " + desiredColor);
                     let colorDict = new Map([["yellow", "rgb(255, 193, 7)"], ["green", "rgb(0, 204, 0)"]]);
                     desiredColor = colorDict.has(desiredColor) ? colorDict.get(desiredColor)! : desiredColor;
-                    ns.tprint("Desired color: " + desiredColor);
+                    if (devLog) ns.tprint("Desired color: " + desiredColor);
                     for (let i in wireMap) {
-                        ns.tprint("#: " + i + " Wiremap[#]: " + wireMap[i].toLocaleString());
-                        ns.tprint(wireMap[i].has(desiredColor));
+                        if (devLog) ns.tprint("#: " + i + " Wiremap[#]: " + wireMap[i].toLocaleString());
+                        if (devLog) ns.tprint(wireMap[i].has(desiredColor));
                         if (wireMap[i].has(desiredColor)) {
-                            ns.tprint("Cut " + (Number(i) + 1));
+                            if (devLog) ns.tprint("Cut " + (Number(i) + 1));
                             await keyPressAPI(ns, "" + (Number(i) + 1));
                         }
                     }
@@ -229,7 +243,7 @@ export async function main(ns: NS) {
         async function symbolMatcher(taskNode: Element) {
             ns.write("Match the symbols".replaceAll(" ", "") + ".txt", taskNode.innerHTML, "w");
             let targets = Array.from(taskNode.getElementsByClassName("css-eg010m")[0].children).map((value) => value.textContent.trim());
-            ns.tprint("Targets: " + targets.toString());
+            if (devLog) ns.tprint("Targets: " + targets.toString());
             let currentCoords = new Coordinates(0, 0);
             let matrixElement = getHTML("", "lastChild", taskNode as HTMLElement);
             let side = Math.sqrt(matrixElement.children.length);
@@ -238,21 +252,21 @@ export async function main(ns: NS) {
             for (let i = 0; i < side; ++i)
                 matrix[i] = [];
             let matrixDimensions = new Coordinates(side, side);
-            ns.tprint("Side: " + side);
-            ns.tprint("Matrix: " + matrix);
-            ns.tprint("Len " + matrixElement.children.length);
+            if (devLog) ns.tprint("Side: " + side);
+            if (devLog) ns.tprint("Matrix: " + matrix);
+            if (devLog) ns.tprint("Len " + matrixElement.children.length);
             Array.from(matrixElement.children)
                 .forEach((value, index) => {
-                    // ns.tprint(matrix);
+                    // if (devLog) ns.tprint(matrix);
                     matrix[Math.floor(index / side)][index % side] = value.innerHTML;
                 });
-            ns.tprint("Matrix full: " + matrix.toString());
-            ns.tprint("Matrix side: " + matrix.length);
+            if (devLog) ns.tprint("Matrix full: " + matrix.toString());
+            if (devLog) ns.tprint("Matrix side: " + matrix.length);
             for (let target of targets) {
-                ns.tprint("Target: " + target);
+                if (devLog) ns.tprint("Target: " + target);
                 let rawIndex = matrix.flat(3).indexOf(target);
                 let targetCoordinates = new Coordinates(rawIndex % side, Math.floor(rawIndex / side));
-                ns.tprint("Target coordinates: " + targetCoordinates);
+                if (devLog) ns.tprint("Target coordinates: " + targetCoordinates);
                 let route = findShortestPathWiWrap(currentCoords, targetCoordinates, matrixDimensions);
                 await navigatePath(ns, route);
                 await keyPressAPI(ns, "Space");
@@ -328,7 +342,7 @@ export async function main(ns: NS) {
             if (taskNode === undefined)
                 continue;
             let taskTitle = taskNode.children[0];
-            ns.tprint(taskTitle.innerHTML);
+            if (devLog) ns.tprint(taskTitle.innerHTML);
             // enumerate through the task types to find the one to be done
             let correctType = "";
             for (let type of challengeList)
@@ -336,10 +350,10 @@ export async function main(ns: NS) {
                     correctType = type;
                     break;
                 }
-            ns.tprint("Type: " + correctType);
+            if (devLog) ns.tprint("Type: " + correctType);
             ns.toast("Type: " + correctType, "info");
-            // ns.tprint(doCument);
-            // ns.tprint(doCument.body.innerHTML);
+            // if (devLog) ns.tprint(doCument);
+            // if (devLog) ns.tprint(doCument.body.innerHTML);
             if (correctType === "") {
                 await ns.sleep(10);
                 continue;
@@ -395,18 +409,18 @@ export async function main(ns: NS) {
                                 mineList.push(new Coordinates(parseInt(matrixX), parseInt(matrixY)));
                         }
                     }
-                    ns.tprint("Mine list: " + mineList.toString());
+                    if (devLog) ns.tprint("Mine list: " + mineList.toString());
                     // Determine the best path
                     let path = algorithmPathing(ns, mineList, new Coordinates(0, 0), side);
                     // Test that path reaches everything
                     // Store the best path
                     minePath = path;
-                    ns.tprint(path.toString());
+                    if (devLog) ns.tprint(path.toString());
                     // Break
                     break;
                 case "Mark all the mines":
 
-                    ns.tprint(minePath.toString())
+                    if (devLog) ns.tprint(minePath.toString())
 
                     // If there is no path stored, throw an error
                     if (minePath.length === 0)
@@ -430,7 +444,7 @@ export async function main(ns: NS) {
             ns.print("Prout");
         }
     } catch (Exception) {
-        ns.tprint(Exception)
+        if (devLog) ns.tprint(Exception)
         ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany);
     }
 }
@@ -566,7 +580,7 @@ function algorithmPathing(ns: NS, locationsArray: Array<Coordinates>, startingLo
     // let visitedArray = [];
     let unvisitedArray = locationsArray.slice();
     let fullPath: PathPoints[] = [];
-    ns.tprint(unvisitedArray.toString());
+    if (devLog) ns.tprint(unvisitedArray.toString());
     while (unvisitedArray.length !== 0) {
         let closestNode: [Coordinates, number, number,  PathPoints] = [startingLocation, 100000, 0, [[],[]]];
         for (const location2VisitIndex in unvisitedArray) {
