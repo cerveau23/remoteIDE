@@ -121,7 +121,7 @@ export function dSe<T extends PartialFlag>( ns: NS, partialFlag?: T, uploadedMap
     commandline = false;
 
     const flags: Flag = new Flag(partialFlag)//Object.fromEntries(partialFlag)
-    return hub(ns, flags) as DSeReturn<T>;
+    return hub(ns, flags, uploadedMap) as DSeReturn<T>;
 }
 
 function hub(ns: NS, Flags: Flag, uploadedMap?: Geography.Map): string[] | Geography.Map | string | void {
