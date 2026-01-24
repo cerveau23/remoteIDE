@@ -1,4 +1,4 @@
-import {portReceiver} from "functions";
+import {portReceiver} from "/functional/functions";
 import {dSe} from "depthScannerV2";
 import {keyPressAPI, serverPing, initialization as serverInitialization} from "BBA_API_handler"
 import {NS} from "@ns";

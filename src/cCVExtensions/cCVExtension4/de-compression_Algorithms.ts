@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode,SpellCheckingInspection
 
-import {runLengthEncode} from "/functions";
+import {runLengthEncode} from "/functional/functions";
 import {NS} from "@ns";
 
 /** @param {NS} ns

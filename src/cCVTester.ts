@@ -1,6 +1,6 @@
 import { NS } from "@ns";
 import {testing} from "codingContractVirus"
-import {average, sum} from "functions"
+import {average, sum} from "/functional/functions"
 
 let endLine = "\n";
 let tab = "\t";

@@ -1,5 +1,5 @@
 import {NS} from "@ns"
-import {arrayToString, factorial, removeAll, stringToArray} from "/functions";
+import {arrayToString, factorial, removeAll, stringToArray} from "/functional/functions";
 
 /** @param {NS} ns
  *  @param {string} contractName
