@@ -1,9 +1,12 @@
 // noinspection InfiniteLoopJS
+
+import type {NS, ProcessInfo} from "@ns";
+
 let ramUsed = {weaker: 1.75, grower: 1.75, hacker: 1.7};
 
 /** @param {NS} ns */
-export async function main(ns) {
-    let flag = ns.flags([["v", "undefined"], ["h", "undefined"]]);
+export async function main(ns: NS) {
+    let flag = ns.flags([["v", "undefined"], ["h", "undefined"]]) as { v: string, h: string };
     if (flag.h === "undefined") {
         flag.h = flag.v;
     }
@@ -94,7 +97,7 @@ export async function main(ns) {
     }
 }
 
-function counting(total, value) {
+function counting(total: number, value: ProcessInfo): number {
     if (value["filename"] === "weaker.js") {
         return total++;
     } else {
@@ -106,7 +109,7 @@ function counting(total, value) {
  *  @param {string} canon
  * @param {string} target
  * @param {NS} ns*/
-function launcher(ammo, canon, target, ns) {
+function launcher(ammo: "weaker" | "grower" | "hacker", canon: string, target: string, ns: NS) {
     let usedCartridges = Math.floor((ns.getServerMaxRam(canon) - ns.getServerUsedRam(canon)) / ramUsed[ammo]);
     if (usedCartridges > 0) {
         ns.print(ammo + " deployed");
@@ -116,10 +119,12 @@ function launcher(ammo, canon, target, ns) {
     return usedCartridges;
 }
 
-/** @param {NS} ns */
-export default async function vOe(ns, ...argument) {
+/** @param {NS} ns
+ * @param {...} argument
+ */
+export default async function vOe(ns: NS, ...argument: []) {
     //await ns.tprint(argument);
-    let answer = await main(ns, argument);
+    let answer = await main(ns, ...argument);
     //await ns.tprint (answer);
     //await ns.tprint (typeof answer);
     return answer;
