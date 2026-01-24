@@ -37,8 +37,10 @@ export function getHTML(selector: string, desiredFunction: functionCodes, elemen
             if (!element) {
                 throw new Error("Element is required for attribute lookup");
             }
+            if(!("getAttribute" in element))
+                throw Error("Element is not HTMLElement?")
             el = element.getAttribute(selector);
-            break
+            break;
 
     }
     if (!el) {
