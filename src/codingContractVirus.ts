@@ -157,7 +157,7 @@ async function answering(ns: NS, contractName: string, serverName: string) {
         case "Algorithmic Stock Trader IV":
             answer = extension2.algoStonksIV(ns, contractName, serverName);
             break;
-        case "Minimum PathPoints Sum in a Triangle":
+        case "Minimum Path Sum in a Triangle":
             answer = extension3.minimumPathSumInATriangle(ns, contractName, serverName);
             break;
         case "Unique Paths in a Grid I":
@@ -166,7 +166,7 @@ async function answering(ns: NS, contractName: string, serverName: string) {
         case "Unique Paths in a Grid II":
             answer = extension3.uniquePathsInAGridII(ns, contractName, serverName);
             break;
-        case "Shortest PathPoints in a Grid":
+        case "Shortest Path in a Grid":
             answer = extension3.shortestPathInAGrid(ns, contractName, serverName);
             break;
         case "Sanitize Parentheses in Expression":
