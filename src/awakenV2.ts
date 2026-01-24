@@ -28,7 +28,7 @@ export async function main(ns: NS) {
         if (ns.fileExists("relaySMTP.exe")) { ns.relaysmtp(tServer.hostname); }
         if (ns.fileExists("HTTPWorm.exe")) { ns.httpworm(tServer.hostname); }
         if (ns.fileExists("SQLInject.exe")) { ns.sqlinject(tServer.hostname); }
-        if (tServer.numOpenPortsRequired ?? 0 <= (ns.getServer(tServer.hostname).openPortCount ?? 0)) {
+        if ((tServer.numOpenPortsRequired ?? 0) <= (ns.getServer(tServer.hostname).openPortCount ?? 0)) {
           ns.nuke(tServer.hostname);
         } else { continue; }
       }
