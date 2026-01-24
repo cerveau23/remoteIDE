@@ -164,7 +164,7 @@ export async function main(ns: NS) {
                     wires.forEach((wireSegment, index) => {
                         // wireArray[Math.floor(index / nbrWires)][index % nbrWires] = wireSegment;
                         if (devLog) ns.tprint((<HTMLElement>wireSegment).outerHTML)
-                        if(!wireSegment.hasAttribute("style"))
+                        if(wireSegment.textContent.length === 0)
                             return;
                         wireMap[index % nbrWires].add(getHTML("style", "attribute", wireSegment as HTMLElement).substring("color: ".length).replace(";", ""));
                         if (devLog) ns.tprint(wireSegment.attributes.getNamedItemNS(null, "style"));
