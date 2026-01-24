@@ -1,9 +1,13 @@
 // noinspection InfiniteLoopJS
+
+import type {NS} from "@ns";
+
 /** @param {NS} ns */
-let portfolio = {};
-let allSymbolsBank;
+let portfolio: {[key: string]: [number, number, number, number]} = {};
+let allSymbolsBank: string[];
 let stockMoney = 0;
-export async function main(ns) {
+
+export async function main(ns: NS) {
     if (!ns.stock.has4SDataTIXAPI())
         ns.exit();
     allSymbolsBank = ns.stock.getSymbols();
@@ -11,34 +15,32 @@ export async function main(ns) {
     while (true) {
         stockMoney = actualisePortfolio(ns);
         let stockMoneyWork = stockMoney;
-        let up3Symbols = [];
-        let up2Symbols = [];
-        let up1Symbols = [];
-        let down1Symbols = [];
-        let down2Symbols = [];
-        let down3Symbols = [];
-        let allSymbolsWork = [].concat(allSymbolsBank);
+        /** [Company symbol, Forecast, Volatility] */
+        let up3Symbols: [string, number, number][] = new Array<[string, number, number]>();
+        /** [Company symbol, Forecast, Volatility] */
+        let up2Symbols: [string, number, number][] = new Array<[string, number, number]>();
+        /** [Company symbol, Forecast, Volatility] */
+        let up1Symbols: [string, number, number][] = new Array<[string, number, number]>();
+        let down1Symbols: string[] = [];
+        let down2Symbols: string[] = [];
+        let down3Symbols: string[] = [];
+        let allSymbolsWork = allSymbolsBank.toSpliced(0,0);
         for (let i in allSymbolsWork) { //sorting by forecast #1
             if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.70) {
                 up3Symbols.push([allSymbolsWork[i], ns.stock.getForecast(allSymbolsWork[i]), ns.stock.getVolatility(allSymbolsWork[i])]);
-            }
-            else {
+            } else {
                 if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.60) {
                     up2Symbols.push([allSymbolsWork[i], ns.stock.getForecast(allSymbolsWork[i]), ns.stock.getVolatility(allSymbolsWork[i])]);
-                }
-                else {
+                } else {
                     if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.50) {
                         up1Symbols.push([allSymbolsWork[i], ns.stock.getForecast(allSymbolsWork[i]), ns.stock.getVolatility(allSymbolsWork[i])]);
-                    }
-                    else {
+                    } else {
                         if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.40) {
                             down1Symbols.push(allSymbolsWork[i]);
-                        }
-                        else {
+                        } else {
                             if (ns.stock.getForecast(allSymbolsWork[i]) >= 0.30) {
                                 down2Symbols.push(allSymbolsWork[i]);
-                            }
-                            else {
+                            } else {
                                 if (ns.stock.getForecast(allSymbolsWork[i]) >= 0) {
                                     down3Symbols.push(allSymbolsWork[i]);
                                 }
@@ -64,9 +66,18 @@ export async function main(ns) {
         for (let i in allGoodSymbolsSorted) {
             for (let j in allGoodSymbolsSorted[i]) {
                 if (ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]) < ns.getPlayer().money + stockMoneyWork) {
-                    let lowerShares = ([]).concat(allGoodSymbolsSorted).slice(i).map((subarray, index) => subarray.filter((value, subindex) => {
-                        return subindex > j || index > i;
-                    }, { "j": j, "i": i, "index": index }), { "j": j, "i": i });
+                    let lowerShares = (
+                            allGoodSymbolsSorted
+                            .toSpliced(0,0) // Copy
+                            .slice(parseInt(i)) // Only take the groups after i
+                            .map(
+                                (subarray, index) =>
+                                    subarray.filter((value, subindex) =>
+                                        { return subindex > parseInt(j) || index > parseInt(i); }  // Filter to only have the elements after what we're studying (for optimization (?))
+                                        , {"j": j, "i": i, "index": index} // Passing j, i, and index to the function
+                                    ).map((value) => value[0]) // Only keep the name of the stocks
+                                , {"j": j, "i": i}) // Passing j and i to the function
+                    );
                     let purchased = Math.floor((ns.getPlayer().money + stockMoneyWork - 100000 * (lowerShares.flat(1).length + 1)) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]));
                     let purchasedWithCash = Math.floor((ns.getPlayer().money - 100000) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]));
                     if (purchased > purchasedWithCash)
@@ -75,11 +86,10 @@ export async function main(ns) {
                         purchased = ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]) - ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0];
                     if (Math.min(Math.floor((ns.getPlayer().money + stockMoneyWork - 200000) / ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0])) + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0], ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))
                         > Math.min(purchasedWithCash + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0], ns.stock.getMaxShares(allGoodSymbolsSorted[i][j][0]))) { // If we can still buy shares, but that it requires selling stock:
-                        sellAll(lowerShares, ns);
+                        sellAll(lowerShares.flat(), ns);
                         stockMoneyWork = 0;
                         await ns.stock.nextUpdate();
-                    }
-                    else {
+                    } else {
                         stockMoneyWork -= (Math.max(purchased - purchasedWithCash, 0) + ns.stock.getPosition(allGoodSymbolsSorted[i][j][0])[0]) * ns.stock.getAskPrice(allGoodSymbolsSorted[i][j][0]) + 100000;
                     }
                     /*ns.print(allGoodSymbolsSorted[i][j][0]);
@@ -101,15 +111,17 @@ export async function main(ns) {
             }
         }
         let allBadSymbols = [down3Symbols, down2Symbols, down1Symbols];
-        for (let i in allBadSymbols) {
-            for (let j in allBadSymbols[i]) {
+        for (let iString in allBadSymbols) {
+            let i = parseInt(iString)
+            for (let jString in allBadSymbols[i]) {
+                let j = parseInt(jString)
                 if (portfolio[allBadSymbols[i][j]][0] !== 0) {
                     ns.stock.sellStock(allBadSymbols[i][j], portfolio[allBadSymbols[i][j]][0]);
                 }
             }
         }
         stockMoney = actualisePortfolio(ns);
-        await ns.atExit(function () {
+        ns.atExit(function () {
             sellAll(allSymbolsBank, ns);
             ns.scriptKill("stockPricesDisplay.js", "home");
             ns.scriptKill("stockPricesDisplay.js", "Overseer");
@@ -119,7 +131,8 @@ export async function main(ns) {
         await ns.stock.nextUpdate();
     }
 }
-function sellAll(symbolBank, ns) {
+
+function sellAll(symbolBank: string[], ns: NS) {
     for (let i in symbolBank) {
         ns.print(symbolBank[i]);
         ns.print(portfolio);
@@ -130,7 +143,8 @@ function sellAll(symbolBank, ns) {
         }
     }
 }
-function actualisePortfolio(ns) {
+
+function actualisePortfolio(ns: NS) {
     let stockMoney = 0;
     for (let i in allSymbolsBank) {
         portfolio[allSymbolsBank[i]] = ns.stock.getPosition(allSymbolsBank[i]);
