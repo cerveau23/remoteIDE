@@ -2,6 +2,14 @@ import "BBA_API_handler"
 
 /** @param {NS} ns */
 export async function main(ns) {
+    while(true){
+        if(Array.from(document.getElementsByClassName("css-1d6cey9")).some((value)=>value.innerText.includes("Infiltrate"))){
+            ns.tprint(Array.from(document.getElementsByClassName("css-1d6cey9")).filter((value)=>value.innerText.includes("Infiltrate")).toString() )
+            Array.from(document.getElementsByClassName("css-1d6cey9")).filter((value)=>value.innerText.includes("Infiltrate"))[0].click()
+            break;
+        }
+        await ns.sleep(100)
+    }
     //ns.exploit()
     //ns.openDevMenu()
     //ns.bypass(doCument)
