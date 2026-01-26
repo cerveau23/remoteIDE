@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {NS} from "@ns";
 import {clickAPI, keyPressAPI, serverUpWaiter} from "/BBA_API_handler";
 import {ui} from "/functional/UIGetter";
@@ -7,7 +8,7 @@ const devLog = false;
 
 async function navigatePath(ns: NS, route: PathPoints) {
     ns.tprint("Route: " + route.toString());
-    for (let direction of route[0])
+    for (const direction of route[0])
         await keyPressAPI(ns, direction);
     //if (route[0].length === 0)
     //    return;
@@ -43,8 +44,8 @@ export async function main(ns: NS) {
             const rect = (Array.from(
                 ui.doCument.getElementsByClassName("css-1d6cey9")
             ).filter((element) =>
-                element.textContent.includes("Infiltrate Company"))
-                [0].getBoundingClientRect());
+                element.textContent.includes("Infiltrate Company"))[0]
+            .getBoundingClientRect());
 
             const screenX = window.screenX + (rect.left + rect.right) / 2;
             const screenY = window.screenY + (rect.top + rect.bottom) / 2 + 40;
@@ -86,7 +87,7 @@ export async function main(ns: NS) {
     }
 
     async function enterCode(taskNode: Element) {
-        let instructions = taskNode.children[1].children[0];
+        const instructions = taskNode.children[1].children[0];
         if (devLog) ns.tprint(instructions.innerHTML);
         if (devLog) ns.tprint(Array.from(instructions.children).toString())
         for (let index = 0; index < instructions.children.length; ++index) {
@@ -121,26 +122,26 @@ export async function main(ns: NS) {
     }
 
     async function typeBackward(taskNode: Element) {
-        let sentence = taskNode.getElementsByClassName("css-1vn74cx")[0];
-        for (let letter of sentence.textContent) {
-            let targetKey = letter === " " ? "Space" : letter;
+        const sentence = taskNode.getElementsByClassName("css-1vn74cx")[0];
+        for (const letter of sentence.textContent) {
+            const targetKey = letter === " " ? "Space" : letter;
             await keyPressAPI(ns, targetKey); //TODO: Warning: "-" doesn't work!
         }
     }
 
     async function closeBrackets(taskNode: Element) {
-        let opening = taskNode.getElementsByClassName("css-1vn74cx")[0].textContent;
-        let arrayOpeningChars = opening.match(/[\[(<{]/gm);
+        const opening = taskNode.getElementsByClassName("css-1vn74cx")[0].textContent;
+        const arrayOpeningChars = opening.match(/[\[(<{]/gm);
         if (arrayOpeningChars === null)
             return;
         arrayOpeningChars.reverse();
-        let invertor = new Map();
+        const invertor = new Map();
         invertor.set("[", "]");
         invertor.set("(", ")");
         invertor.set("<", ">");
         invertor.set("{", "}");
-        for (let character of arrayOpeningChars) {
-            let targetKey = invertor.get(character);
+        for (const character of arrayOpeningChars) {
+            const targetKey = invertor.get(character);
             if (devLog) ns.tprint("Pressing " + targetKey);
             // while(! (await (await keyPressAPI(ns, targetKey)).json()).pressed){
             //     await ns.sleep(100)
@@ -151,25 +152,25 @@ export async function main(ns: NS) {
 
     async function wireCutter(taskNode: Element) {
         // Array.from(taskNode.children).forEach((value)=>ns.tprint(value.outerHTML.toString()));
-        let wires2cut = Array.from(taskNode.children).filter((element: Element) => {
+        const wires2cut = Array.from(taskNode.children).filter((element: Element) => {
             return element.className.includes("css-1vn74cx");
         });
         if (devLog) ns.tprint("Wires to cut: " + wires2cut.toString());
-        for (let wire2cut of wires2cut) {
-            let currentInstruction = wire2cut.textContent;
+        for (const wire2cut of wires2cut) {
+            const currentInstruction = wire2cut.textContent;
             if (devLog) ns.tprint(currentInstruction.toString());
             if (currentInstruction.includes("number")) {
-                let number2cut = currentInstruction.charAt(currentInstruction.length - 2);
+                const number2cut = currentInstruction.charAt(currentInstruction.length - 2);
                 if (devLog) ns.tprint("Instruction : " + currentInstruction);
                 if (devLog) ns.tprint("Key pressed : " + number2cut);
                 await keyPressAPI(ns, number2cut);
             } else if (currentInstruction.includes("colored")) {
-                let wires = Array.from(getHTML("", "lastChild", taskNode as HTMLElement).getElementsByClassName("css-1vn74cx"));
-                let nbrWires = wires.filter((value) => value.innerHTML.match(/\d/)).length;
+                const wires = Array.from(getHTML("", "lastChild", taskNode as HTMLElement).getElementsByClassName("css-1vn74cx"));
+                const nbrWires = wires.filter((value) => value.innerHTML.match(/\d/)).length;
                 // let wireArray = [[]];
                 if (devLog) ns.tprint("Wires: " + wires.toString());
                 if (devLog) ns.tprint("Nbr of wires: " + nbrWires);
-                let wireMap: Set<string>[] = [];
+                const wireMap: Set<string>[] = [];
                 for (let i = 0; i < nbrWires; ++i) {
                     wireMap[i] = new Set();
                 }
@@ -200,10 +201,10 @@ export async function main(ns: NS) {
                 wireMap.forEach((value) => ns.tprint("Wiremap: " + Array.from(value).toString() + " Length : " + value.size));
                 let desiredColor = currentInstruction.slice(currentInstruction.lastIndexOf(" "), currentInstruction.length - 1).toLowerCase().trim();
                 if (devLog) ns.tprint("Raw desired color: " + desiredColor);
-                let colorDict = new Map([["yellow", "rgb(255, 193, 7)"], ["green", "rgb(0, 204, 0)"]]);
+                const colorDict = new Map([["yellow", "rgb(255, 193, 7)"], ["green", "rgb(0, 204, 0)"]]);
                 desiredColor = colorDict.has(desiredColor) ? colorDict.get(desiredColor)! : desiredColor;
                 if (devLog) ns.tprint("Desired color: " + desiredColor);
-                for (let i in wireMap) {
+                for (const i in wireMap) {
                     if (devLog) ns.tprint("#: " + i + " Wiremap[#]: " + wireMap[i].toLocaleString());
                     if (devLog) ns.tprint(wireMap[i].has(desiredColor));
                     if (wireMap[i].has(desiredColor)) {
@@ -216,9 +217,9 @@ export async function main(ns: NS) {
     }
 
     async function complimenter(taskNode: Element) {
-        let initialWord = taskNode.getElementsByClassName("css-eg010m")[1].textContent;
+        const initialWord = taskNode.getElementsByClassName("css-eg010m")[1].textContent;
         let first = true;
-        let compliments = [
+        const compliments = [
             "generous",
             "energetic",
             "loyal",
@@ -254,16 +255,16 @@ export async function main(ns: NS) {
 
     async function symbolMatcher(taskNode: Element) {
         ns.write("Match the symbols".replaceAll(" ", "") + ".txt", taskNode.innerHTML, "w");
-        let targets = Array.from(taskNode.getElementsByClassName("css-eg010m")[0].children).map((value) => value.textContent.trim());
+        const targets = Array.from(taskNode.getElementsByClassName("css-eg010m")[0].children).map((value) => value.textContent.trim());
         if (devLog) ns.tprint("Targets: " + targets.toString());
         let currentCoords = new Coordinates(0, 0);
-        let matrixElement = getHTML("", "lastChild", taskNode as HTMLElement);
-        let side = Math.sqrt(matrixElement.children.length);
+        const matrixElement = getHTML("", "lastChild", taskNode as HTMLElement);
+        const side = Math.sqrt(matrixElement.children.length);
         /**@type {[String[]]}*/
-        let matrix: [string[]] = [[]];
+        const matrix: [string[]] = [[]];
         for (let i = 0; i < side; ++i)
             matrix[i] = [];
-        let matrixDimensions = new Coordinates(side, side);
+        const matrixDimensions = new Coordinates(side, side);
         if (devLog) ns.tprint("Side: " + side);
         if (devLog) ns.tprint("Matrix: " + matrix);
         if (devLog) ns.tprint("Len " + matrixElement.children.length);
@@ -274,12 +275,12 @@ export async function main(ns: NS) {
             });
         if (devLog) ns.tprint("Matrix full: " + matrix.toString());
         if (devLog) ns.tprint("Matrix side: " + matrix.length);
-        for (let target of targets) {
+        for (const target of targets) {
             if (devLog) ns.tprint("Target: " + target);
-            let rawIndex = matrix.flat(3).indexOf(target);
-            let targetCoordinates = new Coordinates(rawIndex % side, Math.floor(rawIndex / side));
+            const rawIndex = matrix.flat(3).indexOf(target);
+            const targetCoordinates = new Coordinates(rawIndex % side, Math.floor(rawIndex / side));
             if (devLog) ns.tprint("Target coordinates: " + targetCoordinates);
-            let route = findShortestPathWiWrap(currentCoords, targetCoordinates, matrixDimensions);
+            const route = findShortestPathWiWrap(currentCoords, targetCoordinates, matrixDimensions);
             await navigatePath(ns, route);
             await keyPressAPI(ns, "Space");
             currentCoords = targetCoordinates;
@@ -326,7 +327,7 @@ export async function main(ns: NS) {
             ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
         }
         (<HTMLElement>getHTML("css-jhk36g", "class")[0]).click();
-        let challengeList = [
+        const challengeList = [
             "Attack after the sentinel drops his guard",    // Done
             "Close the brackets",                           //
             "Type it backward",                             // Done
@@ -348,16 +349,16 @@ export async function main(ns: NS) {
                 return value.innerHTML.includes("Cancel Infiltration");
             }))[0];
         // Find the right child that has the task
-        let taskNode = Array.from(page.children).find((value) => {
+        const taskNode = Array.from(page.children).find((value) => {
             return value.classList.toString().match(/css-9bcezy|css-12f8zm3/) === null;
         });
         if (taskNode === undefined)
             continue;
-        let taskTitle = taskNode.children[0];
+        const taskTitle = taskNode.children[0];
         if (devLog) ns.tprint(taskTitle.innerHTML);
         // enumerate through the task types to find the one to be done
         let correctType = "";
-        for (let type of challengeList)
+        for (const type of challengeList)
             if (taskTitle.innerHTML.includes(type)) {
                 correctType = type;
                 break;
@@ -399,22 +400,22 @@ export async function main(ns: NS) {
                     break;
 
                 // Make a matrix using the class MuiTypography-body1
-                let linearMatrix = Array.from(taskNode.getElementsByClassName("MuiTypography-body1"));
-                let side = Math.sqrt(linearMatrix.length);
+                const linearMatrix = Array.from(taskNode.getElementsByClassName("MuiTypography-body1"));
+                const side = Math.sqrt(linearMatrix.length);
                 //ns.tprint(side)
-                let matrix: Element[][] = [];
+                const matrix: Element[][] = [];
                 for (let lineNbr = 0; lineNbr < side; lineNbr++) {
                     matrix[lineNbr] = [];
                 }
                 for (const nodeIndex in linearMatrix) {
-                    let x = parseInt(nodeIndex) % side;
-                    let y = (parseInt(nodeIndex) - x) / side;
+                    const x = parseInt(nodeIndex) % side;
+                    const y = (parseInt(nodeIndex) - x) / side;
                     matrix[y][x] = linearMatrix[nodeIndex];
                 }
                 //ns.tprint(linearMatrix.toString())
 
                 // Locate the indexes with the class css-6zml06 for the mines
-                let mineList: Coordinates[] = [];
+                const mineList: Coordinates[] = [];
                 for (const matrixY in matrix) {
                     for (const matrixX in matrix[matrixY]) {
                         if (matrix[matrixY][matrixX].classList.contains("css-6zml06"))
@@ -423,7 +424,7 @@ export async function main(ns: NS) {
                 }
                 if (devLog) ns.tprint("Mine list: " + mineList.toString());
                 // Determine the best path
-                let path = algorithmPathing(ns, mineList, new Coordinates(0, 0), side);
+                const path = algorithmPathing(ns, mineList, new Coordinates(0, 0), side);
                 // Test that path reaches everything
                 // Store the best path
                 minePath = path;
@@ -439,7 +440,7 @@ export async function main(ns: NS) {
                     throw GeolocationPositionError;
 
                 // Follow the best path
-                for (let oneMinePath of minePath) {
+                for (const oneMinePath of minePath) {
                     await navigatePath(ns, oneMinePath);
                     // Press space on each mine
                     await keyPressAPI(ns, "Space");
@@ -466,11 +467,11 @@ type PathPoints = [string[], number[]];
  * @returns {PathPoints}
  */
 function findShortestPathWiWrap(start: Coordinates, end: Coordinates, arrayDimensions: Coordinates): PathPoints {
-    let answer = [""].filter(() => false);
-    let movement = [0].filter(() => false);
-    let directions = {"x": {"-": "a", "+": "d"}, "y": {"-": "w", "+": "s"}};
-    for (let dimension of ["x", "y"] as const) {
-        let distanceSE = Math.abs(start[dimension] - end[dimension]);
+    const answer = [""].filter(() => false);
+    const movement = [0].filter(() => false);
+    const directions = {"x": {"-": "a", "+": "d"}, "y": {"-": "w", "+": "s"}};
+    for (const dimension of ["x", "y"] as const) {
+        const distanceSE = Math.abs(start[dimension] - end[dimension]);
         if (distanceSE < arrayDimensions[dimension] - distanceSE) // Shorter to go directly
             for (let i = 0; i < distanceSE; ++i)
                 answer.push(start[dimension] > end[dimension] ? directions[dimension]["-"] : directions[dimension]["+"]);
@@ -509,9 +510,9 @@ class Node {
     /**@type {Path} pathToNode*/
     pathToNode: Path;
     /**@type {boolean} found*/
-    found: boolean = false;
+    found = false;
     /**@type {boolean} permanent*/
-    permanent: boolean = false;
+    permanent = false;
 
     /**
      * @param {Coordinates} location
@@ -554,24 +555,24 @@ class Path {
  */
 function dijkstra(locationsArray: any[], startingLocation: Coordinates, mapSideLength: number): Node[] {
 
-    let nodeMap = locationsArray.map((value) => {
+    const nodeMap = locationsArray.map((value) => {
         return new Node(value, new Path(null, 100000));
     });
-    let startingLocationNode = new Node(startingLocation, new Path(null, 0));
+    const startingLocationNode = new Node(startingLocation, new Path(null, 0));
     startingLocationNode.found = true;
     nodeMap.unshift(startingLocationNode);
     while (nodeMap.some((node) => (!node.permanent))) {
         nodeMap.sort((a, b) => {
             return a.pathToNode.length - b.pathToNode.length;
         });
-        let permanentsIndex = nodeMap.map((node, index) => (node.permanent ? index : null)).filter((value) => value !== null);
-        let foundsIndex = nodeMap.map((node, index) => ((node.permanent !== node.found) ? index : null)).filter((value) => value !== null);
-        let virginsIndex = nodeMap.map((node, index) => (node.found ? null : index)).filter((value) => value !== null);
+        const permanentsIndex = nodeMap.map((node, index) => (node.permanent ? index : null)).filter((value) => value !== null);
+        const foundsIndex = nodeMap.map((node, index) => ((node.permanent !== node.found) ? index : null)).filter((value) => value !== null);
+        const virginsIndex = nodeMap.map((node, index) => (node.found ? null : index)).filter((value) => value !== null);
         // for (const foundI of foundsIndex) { // Nope, it should only take the first of the founds, the one which has the lowest path, before reloading and sorting them out again
-        let foundI = foundsIndex[0];
+        const foundI = foundsIndex[0];
         nodeMap[foundI].permanent = true;
         for (const updateI of virginsIndex.concat(foundsIndex.slice(1))) {
-            let distance = nodeMap[foundI].pathToNode.length + findShortestPathWiWrap(nodeMap[foundI].location, nodeMap[updateI].location, new Coordinates(mapSideLength, mapSideLength))[1].reduce((previous, current) => previous + current);
+            const distance = nodeMap[foundI].pathToNode.length + findShortestPathWiWrap(nodeMap[foundI].location, nodeMap[updateI].location, new Coordinates(mapSideLength, mapSideLength))[1].reduce((previous, current) => previous + current);
             nodeMap[updateI].update(new Path(nodeMap[foundI], distance));
         }
         //}
@@ -588,15 +589,15 @@ function dijkstra(locationsArray: any[], startingLocation: Coordinates, mapSideL
  */
 function algorithmPathing(ns: NS, locationsArray: Array<Coordinates>, startingLocation: Coordinates, mapSideLength: number): PathPoints[] {
     // let visitedArray = [];
-    let unvisitedArray = locationsArray.slice();
-    let fullPath: PathPoints[] = [];
+    const unvisitedArray = locationsArray.slice();
+    const fullPath: PathPoints[] = [];
     if (devLog) ns.tprint(unvisitedArray.toString());
     while (unvisitedArray.length !== 0) {
         let closestNode: [Coordinates, number, number, PathPoints] = [startingLocation, 100000, 0, [[], []]];
         for (const location2VisitIndex in unvisitedArray) {
-            let location2Visit = unvisitedArray[location2VisitIndex];
+            const location2Visit = unvisitedArray[location2VisitIndex];
             ns.print("Location: " + location2Visit.toString());
-            let path = findShortestPathWiWrap(startingLocation, location2Visit, new Coordinates(mapSideLength, mapSideLength));
+            const path = findShortestPathWiWrap(startingLocation, location2Visit, new Coordinates(mapSideLength, mapSideLength));
             ns.print(path.toString());
             if (path[1][0] + path[1][1] < closestNode[1])
                 closestNode = [location2Visit, path[1][0] + path[1][1], parseInt(location2VisitIndex), path];
