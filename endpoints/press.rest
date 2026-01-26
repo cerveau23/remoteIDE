@@ -1,0 +1,18 @@
+### Press a key (minimal)
+POST {{host}}/press
+Content-Type: application/json
+X-Auth: {{auth}}
+
+{
+  "key": "A"
+}
+
+### Press key with options
+POST {{host}}/press
+Content-Type: application/json
+X-Auth: {{auth}}
+
+{
+  "key": "A",
+  "maj": true
+}
