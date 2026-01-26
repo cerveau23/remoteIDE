@@ -1,10 +1,14 @@
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function mergeOverlappingIntervals(ns, contractName, serverName) {
+import { NS } from "@ns"
+
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @returns {Promise<String>} */
+export async function mergeOverlappingIntervals(ns: NS, contractName: string, serverName: string): Promise<string> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     ns.print(contractData)
-    contractData.sort(function (a, b) {
+    contractData.sort(function (a:number[], b:number[]) {
         return a[0] - b[0]
     });
     let goodBehavior = false;
@@ -38,25 +42,31 @@ export async function mergeOverlappingIntervals(ns, contractName, serverName) {
     return contractData;
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function generateIPAdressesSelfMade(ns, contractName, serverName) {
+// noinspection JSUnusedGlobalSymbols
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @returns {Promise<string[]>}
+ * @deprecated */
+export async function generateIPAddressesSelfMade(ns: NS, contractName: string, serverName: string): Promise<string[]> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
-    let answer = [];
+    let answer: string[] = [];
     let contractArray = [];
     for (let i = 0; i < contractData.length; i++) {
         contractArray.push(contractData[i]);
     }
 
-    /** @param {Number} n
-     *  @param {Number[]} previous */
-    function IPmaker(n, previous) {//n = position of the new dot, previous = passed array
+    /**
+     * @param {Number} n
+     * @param {string[]} previous
+     * @returns {void}*/
+    function IPmaker(n: number, previous: string[]): void {//n = position of the new dot, previous = passed array
         //await ns.asleep(1);
         /*ns.print(answer);
         ns.print(previous);*/
         if (n === previous.length) {
-            return
+            return;
         }
         if ((previous[n] !== "0") && (previous[n - 1] !== ".") && (previous[n] !== ".") && (n !== 0)) {
             let newer = previous.toSpliced(n, 0, ".");
@@ -66,24 +76,24 @@ export async function generateIPAdressesSelfMade(ns, contractName, serverName) {
             }
             let nope = false;
             let megaNope = false
-            let insurranceArray = string.split(".");
-            for (let i in insurranceArray) {
-                if (parseInt(insurranceArray[i]) > 255) {
-                    if (i !== insurranceArray.length - 1) {
+            let insuranceArray = string.split(".");
+            for (let i in insuranceArray) {
+                if (parseInt(insuranceArray[i]) > 255) {
+                    if (parseInt(i) !== insuranceArray.length - 1) {
                         megaNope = true;
                     }
                     nope = true;
                 }
-                if (parseInt(insurranceArray[i]) + "" !== insurranceArray[i]) {
+                if (parseInt(insuranceArray[i]) + "" !== insuranceArray[i]) {
                     nope = megaNope = true
                 }
             }
-            if (insurranceArray.length !== 4) {
+            if (insuranceArray.length !== 4) {
                 nope = true;
-                if (insurranceArray.length > 4) {
+                if (insuranceArray.length > 4) {
                     megaNope = true;
                 }
-            } else if (insurranceArray[insurranceArray.length - 1] > 255) {
+            } else if (parseInt(insuranceArray[insuranceArray.length - 1]) > 255) {
                 nope = megaNope = true;
             }
             if (!nope) {
@@ -104,21 +114,21 @@ export async function generateIPAdressesSelfMade(ns, contractName, serverName) {
             }
             let nope = false;
             let megaNope = false
-            let insurranceArray = string.split(".");
-            for (let i in insurranceArray) {
-                if (insurranceArray[i] > 255) {
-                    if (i !== insurranceArray.length - 1) {
+            let insuranceArray = string.split(".");
+            for (let i : number = 0 ; i < insuranceArray.length; ++i) {
+                if (parseInt(insuranceArray[i]) > 255) {
+                    if (i !== insuranceArray.length - 1) {
                         megaNope = true;
                     }
                     nope = true;
                 }
             }
-            if (insurranceArray.length !== 4) {
+            if (insuranceArray.length !== 4) {
                 nope = true;
-                if (insurranceArray.length > 4) {
+                if (insuranceArray.length > 4) {
                     megaNope = true;
                 }
-            } else if (insurranceArray[insurranceArray.length - 1] > 255) {
+            } else if (parseInt(insuranceArray[insuranceArray.length - 1]) > 255) {
                 nope = megaNope = true;
             }
             if (!nope) {
@@ -138,17 +148,18 @@ export async function generateIPAdressesSelfMade(ns, contractName, serverName) {
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function generateIPAdresses(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @return {string[]} */
+export function generateIPAddresses(ns: NS, contractName: string, serverName: string): string[] {
     let contractData = ns.codingcontract.getData(contractName, serverName);
-    let answer = [];
+    let answer : string[] = [];
 
     /**
      * Helper function to check if a segment is a valid octet
-     * @param {Number[]} segment
+     * @param {string} segment
      * @returns {boolean}
      */
-    function isValidOctet(segment) {
+    function isValidOctet(segment: string): boolean {
         if (segment.length > 1 && segment[0] === '0') return false; // No leading 0s
         let num = parseInt(segment);
         return num >= 0 && num <= 255;
@@ -159,7 +170,7 @@ export async function generateIPAdresses(ns, contractName, serverName) {
      * @param {Number} start
      * @param {Number[]} parts
      */
-    function recursiveIP(start, parts) {
+    function recursiveIP(start: number, parts: number[]) {
         // Base case: If we have 4 parts and we're at the end of the string, it's a valid IP
         if (parts.length === 4) {
             if (start === contractData.length) {
@@ -190,17 +201,18 @@ export async function generateIPAdresses(ns, contractName, serverName) {
 }
 
 /** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName
- *  @param {Array} researchArray*/
-export async function algoStonksI(ns, contractName = "", serverName = "", researchArray = []) {
-    let contractData;
+ *  @param {string} [contractName=""]
+ *  @param {string} [serverName=""]
+ *  @param {Array} [researchArray=[]]
+ *  @returns {number} */
+export function algoStonksI(ns: NS, contractName: string = "", serverName: string = "", researchArray: Array<any> = []): number {
+    let contractData: any[];
     if (researchArray.length !== 0) {
         contractData = researchArray
     } else {
         contractData = ns.codingcontract.getData(contractName, serverName);
     }
-    let memory = [];
+    let memory: number[] = [];
     if (contractData.length < 2) {
         return 0
     }
@@ -208,9 +220,9 @@ export async function algoStonksI(ns, contractName = "", serverName = "", resear
     /**
      * @param {Number} n
      * @param {Number} origin Useless??? TODO!
-     * @returns {Number}
+     * @returns {number}
      */
-    function trader(n, origin) {
+    function trader(n: number, origin: number): number {
         if (n >= contractData.length) {
             return 0
         }
@@ -221,7 +233,7 @@ export async function algoStonksI(ns, contractName = "", serverName = "", resear
     }
 
     let arrayBest = [];
-    for (let i in contractData) {
+    for (let i : number = 0; i < contractData.length; ++i) {
         let traderAnswer = trader(contractData.length - 1 - i, contractData.length - 1 - i);
         arrayBest.push((traderAnswer - contractData[contractData.length - 1 - i]) * Math.sign(traderAnswer));
     }
@@ -231,10 +243,13 @@ export async function algoStonksI(ns, contractName = "", serverName = "", resear
     return arrayBest[0];
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function algoStonksII(ns, contractName, serverName, outsourceArray = []) {
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @param {Array} [outsourceArray=[]]
+ * @returns {Number} */
+export function algoStonksII(ns: NS, contractName: string, serverName: string, outsourceArray: Array<any> = []): number {
     let contractData
     if (outsourceArray.length !== 0) {
         contractData = outsourceArray
@@ -244,7 +259,7 @@ export async function algoStonksII(ns, contractName, serverName, outsourceArray 
     let totalProfit = 0;
 
     // Loop through the prices to find all opportunities for profit
-    for (let i = 0; i < contractData.length - 1; i++) {
+    for (let i : number = 0; i < contractData.length - 1; i++) {
         // If the price on day i+1 is higher than day i, make a profit
         if (contractData[i + 1] > contractData[i]) {
             totalProfit += contractData[i + 1] - contractData[i];
@@ -256,15 +271,18 @@ export async function algoStonksII(ns, contractName, serverName, outsourceArray 
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function algoStonksIII(ns, contractName, serverName) {
-    return await algoStonksIV(ns, contractName, serverName, 2);
+ *  @param {string} serverName
+ *  @returns {Number} */
+export function algoStonksIII(ns: NS, contractName: string, serverName: string): number {
+    return algoStonksIV(ns, contractName, serverName, 2);
 }
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function algoStonksIV(ns, contractName, serverName, maxTransactions = 0) {
+ *  @param {string} serverName
+ *  @param {Number} [maxTransactions = 0]
+ *  @returns {Number} */
+export function algoStonksIV(ns: NS, contractName: string, serverName: string, maxTransactions: number = 0): number {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let k;
     let prices;
@@ -280,12 +298,12 @@ export async function algoStonksIV(ns, contractName, serverName, maxTransactions
 
     // Edge case 1: If only 1 transaction is allowed, use algoStonksI
     if ((k === 1) || (n === 2)) {
-        return await algoStonksI(ns, contractName, serverName, prices);
+        return algoStonksI(ns, contractName, serverName, prices);
     }
 
     // Edge case: if k >= n/2, it's equivalent to unlimited transactions
     if (k >= Math.floor(n / 2)) {
-        return await algoStonksII(ns, contractName, serverName, prices);  // Use the unlimited transactions solution
+        return algoStonksII(ns, contractName, serverName, prices);  // Use the unlimited transactions solution
     }
 
     // For the general case with k transactions, use the DP approach

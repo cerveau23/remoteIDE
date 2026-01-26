@@ -2,9 +2,17 @@ import "BBA_API_handler"
 
 /** @param {NS} ns */
 export async function main(ns) {
+    while(true){
+        if(Array.from(document.getElementsByClassName("css-1d6cey9")).some((value)=>value.innerText.includes("Infiltrate"))){
+            ns.tprint(Array.from(document.getElementsByClassName("css-1d6cey9")).filter((value)=>value.innerText.includes("Infiltrate")).toString() )
+            Array.from(document.getElementsByClassName("css-1d6cey9")).filter((value)=>value.innerText.includes("Infiltrate"))[0].click()
+            break;
+        }
+        await ns.sleep(100)
+    }
     //ns.exploit()
     //ns.openDevMenu()
-    //ns.bypass(document)
+    //ns.bypass(doCument)
     /*    let player = ns.getPlayer();
         ns.print("Test");
         ns.print(player.factions);
@@ -93,9 +101,9 @@ export async function main(ns) {
 }
 
 /*void ((function () {
-    var e = document.createElement('script');
+    var e = doCument.createElement('script');
     let lc = new Date().getDate();
     e.setAttribute('type', 'text/javascript');
     e.setAttribute('src', 'https://www.milirose.com/scriptphp/applet/lanceur-applet.js?lc=%27+lc');
-    document.body.appendChild(e);
+    doCument.body.appendChild(e);
 })());*/

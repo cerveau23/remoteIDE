@@ -1,5 +1,6 @@
 {
-  "include": ["NetscriptDefinitions.d.ts", "src/**/*"],
+  "include": [
+    "nsdef/NetscriptDefinitions.d.ts", "src/**/*"],
   "exclude": ["src/lib/react.ts"],
   "compilerOptions": {
     "module": "esnext",
@@ -18,10 +19,8 @@
     "jsx": "react",
     "paths": {
       "/*": ["*"],
-      "@ns": ["../NetscriptDefinitions.d.ts"],
+      "@ns": ["../nsdef/NetscriptDefinitions.d.ts"],
       "@react": ["lib/react.ts"]
-    },
-    "types": ["bitburner"],
-    "noEmit": true
+    }
   }
 }

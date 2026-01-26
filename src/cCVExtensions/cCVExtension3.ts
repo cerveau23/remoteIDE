@@ -1,9 +1,11 @@
-import {factorial, removeAll, arrayToString, stringToArray} from "/functions";
+import {NS} from "@ns"
+import {arrayToString, factorial, removeAll, stringToArray} from "/functional/functions";
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function minimumPathSumInATriangle(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {Number} */
+export function minimumPathSumInATriangle(ns: NS, contractName: string, serverName: string): number {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let answer;
     let k = contractData.length;
@@ -14,7 +16,7 @@ export async function minimumPathSumInATriangle(ns, contractName, serverName) {
             return contractData[0][0]
         }
     }
-    let memoizationArray = Array(k).fill().map(() => Array(contractData[k - 1].length).fill(100000));
+    let memoizationArray : number[][] = Array(k).fill(undefined).map(() => Array(contractData[k - 1].length).fill(100000));
     memoizationArray[0][0] = contractData[0][0];
     for (let i = 1; i < k; i++) {
         memoizationArray[i][0] = contractData[i][0] + memoizationArray[i - 1][0]
@@ -30,10 +32,13 @@ export async function minimumPathSumInATriangle(ns, contractName, serverName) {
     return answer;
 }
 
-/** @param {NS} ns
- *  @param {string} contractName
- *  @param {string} serverName */
-export async function uniquePathsInAGridI(ns, contractName, serverName, outsourceArray = []) {
+/**
+ * @param {NS} ns
+ * @param {string} contractName
+ * @param {string} serverName
+ * @param {Number[]} [outsourceArray = []]
+ * @returns {Number}*/
+export function uniquePathsInAGridI(ns: NS, contractName: string, serverName: string, outsourceArray: number[] = []): number {
     let contractData;
     if (outsourceArray.length !== 0) {
         contractData = outsourceArray;
@@ -47,12 +52,12 @@ export async function uniquePathsInAGridI(ns, contractName, serverName, outsourc
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function uniquePathsInAGridII(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {Number} */
+export function uniquePathsInAGridII(ns: NS, contractName: string, serverName: string): number {
     let contractData = ns.codingcontract.getData(contractName, serverName);
-    if (!contractData.some((value, index) => value.includes(1))) {//Base case where there are no obstacles
-        let answer = uniquePathsInAGridI(ns, "", "", [contractData.length, contractData[0].length]);
-        return answer;
+    if (!contractData.some((value: number[]) => value.includes(1))) {//Base case where there are no obstacles
+        return uniquePathsInAGridI(ns, "", "", [contractData.length, contractData[0].length]);
     }
     let n = contractData.length
     let m = contractData[0].length
@@ -74,26 +79,29 @@ export async function uniquePathsInAGridII(ns, contractName, serverName) {
         contractData[i][j] = 1 - contractData[i][j]
     }
 
-    //DP initialisation
+    //DP initialization
     let dp = Array(n).fill(0).map(() => Array(m).fill(0));
     dp[1][1] = 1;
 
     //Calculations
     for (let i = 1; i < n; i++) {
         for (let j = 1; j < contractData[i].length; j++) {
-            dp[i][j] += dp[i - 1][j] * contractData[i - 1][j] + dp[i][j - 1] * contractData[i][j - 1] //If [i-1][j] is an obstacle(simbolyzed by a 0), it will result in a 0 and not contribute to the value
+            dp[i][j] += dp[i - 1][j] * contractData[i - 1][j] + dp[i][j - 1] * contractData[i][j - 1] //If [i-1][j] is an obstacle(symbolized by a 0), it will result in a 0 and not contribute to the value
         }
     }
     ns.print(dp)
     return dp[dp.length - 1][dp[dp.length - 1].length - 1]
 }
 
+// noinspection JSUnusedGlobalSymbols
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function shortestPathInAGridSelfMade(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {string|string[]}
+ *  @deprecated*/
+export function shortestPathInAGridSelfMade(ns: NS, contractName: string, serverName: string): string | string[] {
     let contractData = ns.codingcontract.getData(contractName, serverName);
-    if (!contractData.some((value) => value.includes(1))) {//Base case where there are no obstacles
+    if (!contractData.some((value: number[]) => value.includes(1))) {//Base case where there are no obstacles
         let answer = String().concat("d".repeat(contractData.length - 1), "r".repeat(contractData[0].length - 1))
         return answer;
     }
@@ -116,8 +124,8 @@ export async function shortestPathInAGridSelfMade(ns, contractName, serverName) 
     n = contractData.length
     m = contractData[0].length
 
-    //DP initialisation
-    let dp = Array(n).fill().map(() => Array(m).fill(""));
+    //DP initialization
+    let dp : string[][][] = Array(n).fill(undefined).map(() => Array(m).fill([""]));
     dp[1][1] = ["O"];
 
     let directionDict = {"-1,0": "D", "0,-1": "R", "1,0": "U", "0,1": "L"}//What to add to the string depending on the position of the original string
@@ -130,23 +138,25 @@ export async function shortestPathInAGridSelfMade(ns, contractName, serverName) 
                 dp[i][j] = [""]
                 for (let k of [[-1, 0], [0, -1], [1, 0], [0, 1]]) {
                     if ((contractData[i + k[0]][j + k[1]] === 0) && (dp[i + k[0]][j + k[1]].length !== 0)) {
+                        // @ts-ignore
                         dp[i][j].push(dp[i + k[0]][j + k[1]] + directionDict[k.toString()]);
                     }
                 }
                 if (dp[i][j].length !== 1) {
                     dp[i][j].shift()
                 }//If there are some solutions, remove the default "" answer
-                dp[i][j] = dp[i][j].sort((a, b) => {
+                dp[i][j].sort((a, b) => {
                     return a.length - b.length
-                })[0];
+                })
+                dp[i][j] = [dp[i][j][0]];
             }
         }
-        dp[1][1] = "O";
+        dp[1][1] = ["O"];
         ns.print(dp);
         ns.print("Iteration " + counter);
         counter++;
         //await ns.sleep();
-        if (dp[n - 2][m - 2] !== "") {
+        if (dp[n - 2][m - 2].length !== 1 || dp[n - 2][m - 2][0] !== "") {
             calculationsBuffer++
         }//Once the terminus starts being reached by the calculations, we could end the loop, but I want it to loop a few more times to receive a few stragglers
         if (counter > n * m) {
@@ -159,8 +169,9 @@ export async function shortestPathInAGridSelfMade(ns, contractName, serverName) 
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function shortestPathInAGrid(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {string} */
+export function shortestPathInAGrid(ns: NS, contractName: string, serverName: string): string {
     // Get the grid data from the contract
     let grid = ns.codingcontract.getData(contractName, serverName);
     let rows = grid.length;
@@ -174,11 +185,12 @@ export async function shortestPathInAGrid(ns, contractName, serverName) {
     const dx = [1, 0, -1, 0];  // change in row
     const dy = [0, 1, 0, -1];  // change in column
     // BFS setup
-    let queue = [[0, 0, ""]]; // Store row, col, and path string
+    let queue : Array<[number, number, string]> = [[0, 0, ""]]; // Store row, col, and path string
     let visited = Array.from({length: rows}, () => Array(cols).fill(false));
     visited[0][0] = true;
     // BFS loop
     while (queue.length > 0) {
+        // @ts-ignore
         let [x, y, path] = queue.shift();
         // If we reach the bottom-right corner, return the path
         if (x === rows - 1 && y === cols - 1) {
@@ -199,15 +211,18 @@ export async function shortestPathInAGrid(ns, contractName, serverName) {
     return "";
 }
 
+// noinspection JSUnusedGlobalSymbols
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function deathToParenthesesBroken(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {Promise<string[]>}
+ *  @deprecated */
+export async function deathToParenthesesBroken(ns: NS, contractName: string, serverName: string): Promise<string[]> {
     let contractData = ns.codingcontract.getData(contractName, serverName);
     let openers = ["(", "[", "{", "<"];
     let closers = [")", "]", "}", ">"];
     let arrayData = contractData.split("");
-    let unprocessedAnswer = []
+    let unprocessedAnswer: any[][] = []
     ns.print(arrayData)
     arrayData = parenthesesTrimmer(arrayData);
     ns.print(arrayData)
@@ -215,12 +230,12 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
     /** Treats the array to remove any unmatchable parentheses
      *  @param {string} arrayToTreatTemp
      *  @returns {string[]}*/
-    function parenthesesMatcher(arrayToTreatTemp) {
-        let workingArray = stringToArray(arrayToTreatTemp);
-        workingArray = parenthesesTrimmer(workingArray);
+    function parenthesesMatcher(arrayToTreatTemp: string): string[] {
+        let workingArray : (string|string[])[] = stringToArray(arrayToTreatTemp);
+        workingArray = parenthesesTrimmer(workingArray.flat());
         console.log(workingArray)
-        let firstIndexesOpeners = []
-        let lastIndexesClosers = []
+        let firstIndexesOpeners : number[] = []
+        let lastIndexesClosers : number[] = []
         for (let i in openers) {
             firstIndexesOpeners[i] = workingArray.indexOf(openers[i]);
             lastIndexesClosers[i] = workingArray.lastIndexOf(closers[i]);
@@ -236,23 +251,25 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
         console.log(workingArray)
         for (let i in closers) {//Remove unmatched closers
             let subarray = workingArray.splice(0, firstIndexesOpeners[i]);
+            // @ts-ignore
             workingArray.unshift(removeAll(subarray, closers[i]));
             workingArray = workingArray.flat()
         }
         console.log(workingArray)
         for (let i in openers) {//Remove unmatched openers
             let subarray = workingArray.splice(lastIndexesClosers[i], workingArray.length - lastIndexesClosers[i]);
+            // @ts-ignore
             workingArray.push(removeAll(subarray, openers[i]));
             workingArray = workingArray.flat()
         }
         console.log(workingArray)
-        return workingArray
+        return workingArray.flat()
     }
 
     /**@param {string[]} array
      * @return {string[]}
      */
-    function parenthesesTrimmer(array) {
+    function parenthesesTrimmer(array: string[]): string[] {
         while (closers.includes(array[0])) {
             array.shift()
         }
@@ -266,14 +283,14 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
      * @param {string[]} workingArray
      * @returns {string[]}
      */
-    function parenthesesWeddinger(workingArray) {
+    function parenthesesWeddinger(workingArray: string[]): string[] {
         console.log(workingArray);
         let nonParentheses = Array(workingArray.length).fill("");
         for (let i in workingArray) if (!(closers.includes(workingArray[i]) || openers.includes(workingArray[i]))) {
             nonParentheses[i] = workingArray[i]
         }
         console.log(nonParentheses)
-        let dp = Array(workingArray.length).fill(0).map(() => []);
+        let dp : any[][] = Array(workingArray.length).fill(0).map(() => []);
         for (let i = workingArray.length; i >= 0; i--) {
             if (openers.includes(workingArray[i])) {
                 for (let b = workingArray.length; b >= i; b--) {
@@ -281,7 +298,7 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
                         if (openers.indexOf(workingArray[i]) !== closers.indexOf(workingArray[b])) {
                             continue;
                         }
-                        dp[i].push(b);
+                        dp[i].push("" + b);
                     }
                 }
             }
@@ -289,11 +306,11 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
         console.log(workingArray);
         console.log(dp)
         let noDuplicatesArray = [];
-        let noDuplicatesDP = [];
+        let noDuplicatesDP: string[][] = [];
         for (let i in dp) {//Remove duplicates
             let newAnswer = [];
             for (let b = 0; b < dp[i].length + nonParentheses.length; b++) {
-                let addition = [];
+                let addition = "";
                 if (typeof dp[i][b] === typeof "string") {
                     newAnswer[dp[i][b]] = workingArray[dp[i][b]];
                     addition = workingArray[i];
@@ -317,7 +334,7 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
             let tempAnswerArray = Array(workingArray.length);
             tempAnswerArray[i] = workingArray[i];
             tempAnswerArray[dp[i][b]] = workingArray[dp[i][b]];
-            for (let j = i + 1; j < dp.length; j++) for (let c in dp[j]) {
+            for (let j = i + 1; j < dp.length; j++) for (let c = 0; c < dp[j].length; ++c) {
                 if ((((j < dp[i][b]) && (c < dp[i][b])) || ((j > dp[i][b]) && (c > dp[i][b]))) && (tempAnswerArray[j] === tempAnswerArray[c])) {
                     for (let z = j; z < c; z++) {
                         tempAnswerArray[z] = j
@@ -329,7 +346,7 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
             unprocessedAnswer.push(tempAnswerArray);
         }
         console.log(unprocessedAnswer)
-        let answer = [];
+        let answer : string[] = [];
         for (let i in unprocessedAnswer) {//Reintroduce the non-parentheses
             let newAnswer = "";
             for (let b = 0; b < unprocessedAnswer[i].length + nonParentheses.length; b++) {
@@ -349,19 +366,20 @@ export async function deathToParenthesesBroken(ns, contractName, serverName) {
 
     await ns.sleep(10);
     ns.print(arrayToString(arrayData))
-    let newarrayData = parenthesesMatcher(arrayToString(arrayData));
+    let newArrayData = parenthesesMatcher(arrayToString(arrayData));
     console.log("----------------")
-    ns.print(newarrayData);
-    let answer = parenthesesWeddinger(newarrayData);
+    ns.print(newArrayData);
+    let answer = parenthesesWeddinger(newArrayData);
     ns.print(answer)
-    throw (Error);
-    //return answer;
+    //throw (Error);
+    return answer;
 }
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function deathToParentheses(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {string[]} */
+export function deathToParentheses(ns: NS, contractName: string, serverName: string): string[] {
     // Retrieve the initial contract data
     let contractData = ns.codingcontract.getData(contractName, serverName);
 
@@ -370,10 +388,10 @@ export async function deathToParentheses(ns, contractName, serverName) {
 
     /**
      * Check if a string has balanced brackets of all types
-     * @param {string[]} str
+     * @param {string} str
      * @returns {boolean}
      */
-    function isValid(str) {
+    function isValid(str: string): boolean {
         let stack = [];
         for (let char of str) {
             if (openers.includes(char)) {
@@ -390,13 +408,13 @@ export async function deathToParentheses(ns, contractName, serverName) {
 
     /**
      * Use BFS to generate all minimum valid bracket combinations
-     * @param s
+     * @param {string} s
      * @returns {string[]}
      */
-    function removeInvalidParentheses(s) {
+    function removeInvalidParentheses(s: string): string[] {
         if (!s) return [""];  // Edge case for empty input
 
-        let results = new Set();  // To store unique valid results
+        let results : Set<string> = new Set();  // To store unique valid results
         let queue = [s];  // Initialize BFS queue with the original string
         let visited = new Set(queue);  // Track visited strings to avoid duplicates
         let foundValid = false;
@@ -404,7 +422,7 @@ export async function deathToParentheses(ns, contractName, serverName) {
         while (queue.length > 0) {
             let currentLevel = queue.length;  // Only process current level nodes
             for (let i = 0; i < currentLevel; i++) {
-                let str = queue.shift();
+                let str = <string>queue.shift();
 
                 if (isValid(str)) {
                     results.add(str);  // Add valid configuration to results
@@ -434,21 +452,24 @@ export async function deathToParentheses(ns, contractName, serverName) {
     return answer;
 }
 
+// noinspection JSUnusedGlobalSymbols
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function findAllValidMathExpressionsHomemade(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {string[]}
+ *  @deprecated */
+export function findAllValidMathExpressionsHomemade(ns: NS, contractName: string, serverName: string): string[] {
     let [baseString, targetNumber] = ns.codingcontract.getData(contractName, serverName);
     let operators = ["+", "-", "*"];
     if (parseInt(baseString) < targetNumber) {
         return []
     }
-    let result = [];
+    let result: string[] = [];
 
     /** @param {Number} n
      *  @param {string} string
-     *  @return {Array}*/
-    function recursiveFunction(n, string) {
+     *  @return {void}*/
+    function recursiveFunction(n: number, string: string): void {
         if (n >= string.length - 1) {//Reached the end of the string
             if (isEqualToTarget(string)) {
                 result.push(string);
@@ -464,15 +485,16 @@ export async function findAllValidMathExpressionsHomemade(ns, contractName, serv
         }
     }
 
+    // noinspection JSUnusedLocalSymbols
     /** @param {string} string
      *  @return {boolean}*/
-    function no0First(string) {
+    function no0First(string: string): boolean {
         return !((string.charAt(0) === "0") && (string.length > 1));
     }
 
     /** @param {string} string
      *  @return {boolean}*/
-    function isEqualToTarget(string) {
+    function isEqualToTarget(string: string): boolean {
         for (let i in operators) {
             string.replaceAll(operators[i], " " + operators[i] + " ")
         }
@@ -480,32 +502,33 @@ export async function findAllValidMathExpressionsHomemade(ns, contractName, serv
         while (array.includes("*")) {
             let multPosition = array.indexOf("*");
             let subarray = array.splice(multPosition - 1, 3);
-            array.splice(multPosition - 1, 0, subarray[0] * subarray[2]);
+            array.splice(multPosition - 1, 0, "" + (parseInt(subarray[0]) * parseInt(subarray[2])));
         }
         while (array.includes("-")) {
             let multPosition = array.indexOf("-");
             let subarray = array.splice(multPosition - 1, 3);
-            array.splice(multPosition - 1, 0, subarray[0] - subarray[2]);
+            array.splice(multPosition - 1, 0, "" + (parseInt(subarray[0]) - parseInt(subarray[2])));
         }
         while (array.includes("+")) {
             let multPosition = array.indexOf("+");
             let subarray = array.splice(multPosition - 1, 3);
-            array.splice(multPosition - 1, 0, subarray[0] + subarray[2]);
+            array.splice(multPosition - 1, 0, "" + (parseInt(subarray[0]) + parseInt(subarray[2])));
         }
         return array[0] === targetNumber
     }
 
-    let answer = recursiveFunction(0, baseString);
-    return answer;
+    recursiveFunction(0, baseString);
+    return result;
 }
 
 /** @param {NS} ns
  *  @param {string} contractName
- *  @param {string} serverName */
-export async function findAllValidMathExpressions(ns, contractName, serverName) {
+ *  @param {string} serverName
+ *  @returns {string[]}*/
+export function findAllValidMathExpressions(ns: NS, contractName: string, serverName: string): string[] {
     let [baseString, targetNumber] = ns.codingcontract.getData(contractName, serverName);
     let operators = ["+", "-", "*"];
-    let results = [];  // Store all valid expressions
+    let results: string[] = [];  // Store all valid expressions
 
     /**
      * Recursive function to build expressions
@@ -513,8 +536,9 @@ export async function findAllValidMathExpressions(ns, contractName, serverName) 
      * @param {string} currentExpr
      * @param {Number} currentVal
      * @param {Number} lastOperand
+     * @returns {void}
      */
-    function recursiveFunction(pos, currentExpr, currentVal, lastOperand) {
+    function recursiveFunction(pos: number, currentExpr: string, currentVal: number, lastOperand: number): void {
         // Base case: reached the end of the string
         if (pos === baseString.length) {
             if (currentVal === targetNumber) {
