@@ -134,3 +134,18 @@ export async function serverPing(serverExistTest: boolean = false) : Promise<boo
         return false;
     }
 }
+
+export async function clickAPI( ns : NS, button : "left" | "right", position?: [number,number]){
+    if(!knownServerStatus)
+        await serverUpWaiter(ns);
+    return await fetch("http://127.0.0.1:8123/click", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Auth": "BoredAndReadyToCodeForGlory"
+        },
+        body: JSON.stringify({button: button, x: position ? Math.floor(position[0]) : null, y: position ? Math.floor(position[1]) : null})
+    }).then((r) => {
+        //ns.print(r);
+    });
+}
