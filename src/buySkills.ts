@@ -6,7 +6,7 @@ export async function main(ns: NS) {
     do{
         target = await ns.prompt("What buy", {type: "select", choices: ns.bladeburner.getSkillNames()}) as false | BladeburnerSkillName
     }while(target === false || target === undefined)
-    let continuous = await ns.prompt("Permanent?",{type:"boolean"}) as boolean;
+    const continuous = await ns.prompt("Permanent?",{type:"boolean"}) as boolean;
     ns.tprint("Target: " + target + " Permanent: " + continuous);
     ns.tprint(typeof target + typeof continuous);
     while(
