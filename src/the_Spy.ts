@@ -125,7 +125,7 @@ export async function main(ns: NS) {
         const sentence = taskNode.getElementsByClassName("css-1vn74cx")[0];
         for (const letter of sentence.textContent) {
             const targetKey = letter === " " ? "Space" : letter;
-            await keyPressAPI(ns, targetKey); //TODO: Warning: "-" doesn't work!
+            await keyPressAPI(ns, targetKey);
         }
     }
 
