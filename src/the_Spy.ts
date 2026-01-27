@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import {NS} from "@ns";
 import {clickAPI, keyPressAPI, serverUpWaiter} from "/BBA_API_handler";
 import {ui} from "/functional/UIGetter";
@@ -19,11 +18,17 @@ let targetCompany: string;
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
-    let moneyRatherThanRep = ns.args.length >= 2 ? ns.args[1] : undefined
-    moneyRatherThanRep ??= await ns.prompt("Do you want Money (Yes) or Rep (No)?", {
-        type: "boolean",
-        choices: ["money", "reputation"]
-    })
+    const options = ["money", "reputation", "fill all factions"] as const;
+    type Options = typeof options[number];
+    let moneyRatherThanRep = ((ns.args.length >= 2) && options.includes(ns.args[1] as Options)) ? ns.args[1] as Options : undefined
+    while (moneyRatherThanRep === undefined) {
+        const temp = await ns.prompt("Do you want Money, Rep,\nor Filling out rep for every faction ?", {
+            type: "select",
+            choices: Array.from(options)
+        }) as Options | ""
+        if(temp !== "")
+            moneyRatherThanRep = temp;
+    }
     let minePath: PathPoints[] = [];
     if (ns.args.length !== 0) { // A target company has been passed to the script
         if (ui.doCument.getElementsByClassName("css-1ro0679").length !== 0 && Array.from(ui.doCument.getElementsByClassName("css-1ro0679")).some((value) => value.innerHTML.includes("successful"))) //TODO: Logic to act whether we're on the terminal or on a success screen
@@ -323,7 +328,22 @@ export async function main(ns: NS) {
             while (ui.doCument.getElementsByClassName("css-lg118y").length === 0) {
                 await ns.sleep(100);
             }
-            if (moneyRatherThanRep) (<HTMLElement>Array.from(ui.doCument.getElementsByClassName("css-lg118y")).find((element) => element.textContent.includes("Sell for"))).click();
+            if (moneyRatherThanRep === "money") (<HTMLElement>Array.from(ui.doCument.getElementsByClassName("css-lg118y")).find((element) => element.textContent.includes("Sell for"))).click();
+            else if(moneyRatherThanRep === "fill all factions"){
+                let parent = ui.doCument.querySelector("#root > div.MuiBox-root.css-1mojy8p-root > div > div > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-1p7xay4 > div > div > div");
+                if(parent === null) {
+                    ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
+                    ns.exit()
+                }
+                let divElement = parent.querySelector("#root > div");
+                let inputElement = parent.querySelector("#root > input");
+                if((divElement === null) || inputElement === null) {
+                    ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
+                    ns.exit()
+                }
+                divElement.textContent = "NiteSec";
+                inputElement.nodeValue = "NiteSec";
+            }
             ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
         }
         (<HTMLElement>getHTML("css-jhk36g", "class")[0]).click();
