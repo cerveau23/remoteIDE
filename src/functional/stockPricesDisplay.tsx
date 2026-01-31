@@ -130,19 +130,26 @@ export async function main(ns: NS) {
 
     function ensureStocksRow() {
 
-        if (ui.doCument.getElementById(PARASITE_ID)) return;
+        /*if (ui.doCument.getElementById(PARASITE_ID)) return;*/
+        const observer = new MutationObserver(() => {
+            const hook = ui.doCument.getElementById(HOOK_ID);
+            if (!hook) return; // React not ready yet
 
-        const hook = ui.doCument.getElementById(HOOK_ID);
-        if (!hook) return; // React not ready yet
-
-        // create row
-        if(parent)
-            root = mount(parent,html, ns);
+            // create row
+            if (parent)
+                root = mount(parent, html, ns);
+        })
+        if (parent)
+            observer.observe(parent,{
+                    subtree: true,
+                    childList: true,
+                })
     }
 
+    ensureStocksRow();
+
     while(true) {
-        await ns.stock.nextUpdate();
-        ensureStocksRow();
+        await ns.sleep(60000000);
     }
 }
 
