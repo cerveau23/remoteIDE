@@ -335,8 +335,8 @@ export async function main(ns: NS) {
                     ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
                     ns.exit()
                 }
-                let divElement = parent.querySelector("#root > div");
-                let inputElement = parent.querySelector("#root > input");
+                let divElement = parent.querySelector("div");
+                let inputElement = parent.querySelector("input");
                 if((divElement === null) || inputElement === null) {
                     ns.spawn(ns.getScriptName(), {spawnDelay: 1000}, targetCompany, moneyRatherThanRep);
                     ns.exit()
