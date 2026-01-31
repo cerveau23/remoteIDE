@@ -12,6 +12,7 @@ export class SourceFile_State {
     readonly sleeve: boolean;
     readonly stanek: boolean;
     readonly stock: boolean;
+    readonly advancedStock: boolean;
     constructor(ns: NS, desiredKnowledge : {[K in keyof SourceFile_State]?: boolean}) {
         ns.ramOverride(1.6 + Number(desiredKnowledge.hacknet) * 4 + Number(desiredKnowledge.go) + Number(desiredKnowledge.grafting || desiredKnowledge.sleeve) + Number(desiredKnowledge.singularity) * 0.1)
         this.bladeburner =
@@ -78,6 +79,12 @@ export class SourceFile_State {
             desiredKnowledge.stock ?
                 "stock" in ns &&
                 typeof (ns as any).stock?.getBonusTime === "function"
+                : false;
+
+        this.advancedStock =
+            desiredKnowledge.advancedStock ?
+                "stock" in ns &&
+                typeof (ns as any).stock?.buyShort === "function"
                 : false;
     }
 }
