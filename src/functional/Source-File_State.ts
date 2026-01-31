@@ -58,6 +58,20 @@ type ExtendInstance<TBase extends baseConstructor, TExtra> = InstanceOf<TBase> &
 
 type ConstructorReturn<T extends baseConstructor, TExtra> = new (ns: NS, desiredKnowledge: {[K in keyof T]?: boolean}) => ExtendInstance<T, TExtra>
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the upgraded go module.<br>
+ * The go module needs to be added to the object passed to the constructor, allowing for dynamic addition.
+ * If the go module should ALWAYS be checked, see {@link WithGo `WithGo`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly go: boolean } = new (WithGoChoice(SourceFile_State_Lite))(ns, {go:true});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly go: boolean}>}
+ * @see WithGo
+ * @constructor
+ */
 export function WithGoOption<TBase extends baseConstructor>(Base: TBase):ConstructorReturn<TBase, { readonly go: boolean}>{
     //@ts-expect-error
     return class extends Base {
@@ -73,6 +87,21 @@ export function WithGoOption<TBase extends baseConstructor>(Base: TBase):Constru
         }
     };
 }
+
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the upgraded go module.<br>
+ * The go module **does not need** to be added to the object passed to the constructor, allowing for static typing.
+ * If the go module is not ALWAYS checked, see {@link WithGoOption `WithGoOption`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly go: boolean } = new (WithGo(SourceFile_State_Lite))(ns, {});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly go: boolean}>}
+ * @see WithGoOption
+ * @constructor
+ */
 export function WithGo<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly go: boolean}>  {
     //@ts-expect-error
     return class extends Base {
@@ -102,6 +131,20 @@ export function WithGo<TBase extends baseConstructor>(Base: TBase): ConstructorR
 
 }*/
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the grafting and sleeve modules.<br>
+ * The grafting and sleeve modules needs to be added to the object passed to the constructor, allowing for dynamic addition.
+ * If the grafting and sleeve modules should ALWAYS be checked, see {@link WithGraftingNSleeve `WithGraftingNSleeve`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & {readonly grafting: boolean} & {readonly sleeve: boolean} = new (WithGraftingNSleeve(SourceFile_State_Lite))(ns, {grafting:true; sleeve: false});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly grafting: boolean; readonly sleeve: boolean}>}
+ * @see WithGraftingNSleeve
+ * @constructor
+ */
 export function WithGraftingNSleeveOptions<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, {readonly grafting: boolean; readonly sleeve: boolean}>  {
     //@ts-expect-error
     return class extends Base {
@@ -125,6 +168,20 @@ export function WithGraftingNSleeveOptions<TBase extends baseConstructor>(Base: 
     };
 }
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the grafting and sleeve modules.<br>
+ * The grafting and sleeve modules **does not need** to be added to the object passed to the constructor, allowing for static typing.
+ * If the grafting and sleeve modules is not ALWAYS checked, see {@link WithGraftingNSleeveOption `WithGraftingNSleeveOption`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & {readonly grafting: boolean} & {readonly sleeve: boolean} = new (WithGraftingNSleeve(SourceFile_State_Lite))(ns, {});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly grafting: boolean; readonly sleeve: boolean}>}
+ * @see WithGraftingNSleeveOptions
+ * @constructor
+ */
 export function WithGraftingNSleeve<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, {readonly grafting: boolean; readonly sleeve: boolean}>  {
     //@ts-expect-error
     return class extends Base {
@@ -165,6 +222,20 @@ export function WithGraftingNSleeve<TBase extends baseConstructor>(Base: TBase):
 
 }*/
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the hacknet module.<br>
+ * The hacknet module needs to be added to the object passed to the constructor, allowing for dynamic addition.
+ * If the hacknet module should ALWAYS be checked, see {@link WithHacknet `WithHacknet`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly hacknet: boolean } = new (WithHacknetChoice(SourceFile_State_Lite))(ns, {hacknet:true});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly hacknet: boolean}>}
+ * @see WithHacknet
+ * @constructor
+ */
 export function WithHacknetOption<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly hacknet: boolean}> {
     //@ts-expect-error
     return class extends Base {
@@ -181,6 +252,20 @@ export function WithHacknetOption<TBase extends baseConstructor>(Base: TBase): C
     };
 }
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the hacknet module.<br>
+ * The hacknet module **does not need** to be added to the object passed to the constructor, allowing for static typing.
+ * If the hacknet module is not ALWAYS checked, see {@link WithHacknetOption `WithHacknetOption`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly hacknet: boolean } = new (WithHacknet(SourceFile_State_Lite))(ns, {});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly hacknet: boolean}>}
+ * @see WithHacknetOption
+ * @constructor
+ */
 export function WithHacknet<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly hacknet: boolean}> {
     //@ts-expect-error
     return class extends Base {
@@ -209,6 +294,20 @@ export function WithHacknet<TBase extends baseConstructor>(Base: TBase): Constru
 
 }*/
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the singularity module.<br>
+ * The singularity module needs to be added to the object passed to the constructor, allowing for dynamic addition.
+ * If the singularity module should ALWAYS be checked, see {@link WithSingularity `WithSingularity`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly singularity: boolean } = new (WithSingularityChoice(SourceFile_State_Lite))(ns, {singularity:true});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly singularity: boolean}>}
+ * @see WithSingularity
+ * @constructor
+ */
 export function WithSingularityOption<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly singularity: boolean}> {
     //@ts-expect-error
     return class extends Base {
@@ -225,6 +324,20 @@ export function WithSingularityOption<TBase extends baseConstructor>(Base: TBase
     };
 }
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the singularity module.<br>
+ * The singularity module **does not need** to be added to the object passed to the constructor, allowing for static typing.
+ * If the singularity module is not ALWAYS checked, see {@link WithSingularityOption `WithSingularityOption`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly singularity: boolean } = new (WithSingularity(SourceFile_State_Lite))(ns, {});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly singularity: boolean}>}
+ * @see WithSingularityOption
+ * @constructor
+ */
 export function WithSingularity<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly singularity: boolean}> {
     //@ts-expect-error
     return class extends Base {
@@ -253,6 +366,20 @@ export function WithSingularity<TBase extends baseConstructor>(Base: TBase): Con
 
 }*/
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the advanced stock module.<br>
+ * The advanced stock module needs to be added to the object passed to the constructor, allowing for dynamic addition.
+ * If the advanced stock module should ALWAYS be checked, see {@link WithAdvancedStock `WithAdvancedStock`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly advancedStock: boolean } = new (WithAdvancedStockChoice(SourceFile_State_Lite))(ns, {advancedStock:true});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly advancedStock: boolean}>}
+ * @see WithAdvancedStock
+ * @constructor
+ */
 export function WithAdvancedStockOption<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly advancedStock: boolean}>  {
     //@ts-expect-error
     return class extends Base {
@@ -269,6 +396,20 @@ export function WithAdvancedStockOption<TBase extends baseConstructor>(Base: TBa
     };
 }
 
+/**
+ * A function to upgrade a SourceFile_State class with the ability to check for the advanced stock module.<br>
+ * The advanced stock module **does not need** to be added to the object passed to the constructor, allowing for static typing.
+ * If the advanced stock module is not ALWAYS checked, see {@link WithAdvancedStockOption `WithAdvancedStockOption`}
+ *
+ * @example<caption>The function must be surrounded by parentheses.</caption>
+ *    let source_file_state: SourceFile_State_Lite & { readonly advancedStock: boolean } = new (WithAdvancedStock(SourceFile_State_Lite))(ns, {});
+ *
+ * @template {SourceFile_State_Lite} TBase
+ * @param {TBase} Base The SourceFile_State_Lite class or a derivate from another With- function.
+ * @returns {ConstructorReturn<TBase, {readonly advancedStock: boolean}>}
+ * @see WithAdvancedStockOption
+ * @constructor
+ */
 export function WithAdvancedStock<TBase extends baseConstructor>(Base: TBase): ConstructorReturn<TBase, { readonly advancedStock: boolean}>  {
     //@ts-expect-error
     return class extends Base {
