@@ -4,7 +4,7 @@ import {keyPressAPI, serverPing, initialization as serverInitialization} from "B
 import {NS} from "@ns";
 import {ui} from "/functional/UIGetter"
 import {Geography} from "/typeLib";
-import {SourceFile_State} from "/functional/Source-File_State";
+import {SourceFile_State_Lite, WithSingularity} from "/functional/Source-File_State";
 
 /** @param {NS} ns **/
 export async function main(ns: NS) {
@@ -14,7 +14,7 @@ export async function main(ns: NS) {
     //         Initialization
     // ---------------------------------
 
-    let source_file_state = new SourceFile_State(ns, {singularity: true});
+    let source_file_state: SourceFile_State_Lite & { readonly singularity: boolean } = new (WithSingularity(SourceFile_State_Lite))(ns, {});
 
     if(!source_file_state.singularity || ((ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname())) < 77)) await serverInitialization(ns, true);
     else ns.ramOverride(77);
