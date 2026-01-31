@@ -70,13 +70,13 @@ export class SourceFile_State {
 
         this.stanek =
             desiredKnowledge.stanek ?
-                "singularity" in ns &&
+                "stanek" in ns &&
                 typeof (ns as any).stanek?.clearGift === "function"
                 : false;
 
         this.stock =
             desiredKnowledge.stock ?
-                "singularity" in ns &&
+                "stock" in ns &&
                 typeof (ns as any).stock?.getBonusTime === "function"
                 : false;
     }
