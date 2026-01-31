@@ -1,6 +1,6 @@
 import { NS } from "@ns";
 
-export class SourceFile_State {
+export class SourceFile_State_Lite {
     readonly bladeburner: boolean;
     readonly corporation: boolean;
     readonly formulas: boolean;
@@ -13,7 +13,7 @@ export class SourceFile_State {
     readonly stanek: boolean;
     readonly stock: boolean;
     readonly advancedStock: boolean;
-    constructor(ns: NS, desiredKnowledge : {[K in keyof SourceFile_State]?: boolean}) {
+    constructor(ns: NS, desiredKnowledge : {[K in keyof SourceFile_State_Lite]?: boolean}) {
         ns.ramOverride(1.6 + Number(desiredKnowledge.hacknet) * 4 + Number(desiredKnowledge.go) + Number(desiredKnowledge.grafting || desiredKnowledge.sleeve) + Number(desiredKnowledge.singularity) * 0.1)
         this.bladeburner =
             desiredKnowledge.bladeburner ?
@@ -42,31 +42,31 @@ export class SourceFile_State {
         this.go =
             desiredKnowledge.go ?
                 "go" in ns &&
-                typeof (ns as any).go?.getCheatCount === "function" // Costs 1GB?
+                typeof (ns as any).go?.getCheatCount === "function" // Costs 1 GB
                 : false;
 
         this.grafting =
             desiredKnowledge.grafting || desiredKnowledge.sleeve ?
                 "grafting" in ns &&
-                typeof (ns as any).grafting?.waitForOngoingGrafting === "function" // Costs 1GB?
+                typeof (ns as any).grafting?.waitForOngoingGrafting === "function" // Costs 1GB
                 : false;
 
         this.hacknet =
             desiredKnowledge.hacknet ?
                 "hacknet" in ns &&
                 typeof (ns as any).hacknet?.getCacheUpgradeCost === "function"
-                : false;// Costs 1GB?
+                : false;// Costs 4GB
 
         this.singularity =
             desiredKnowledge.singularity ?
                 "singularity" in ns &&
                 typeof (ns as any).singularity?.isFocused === "function"
-                : false;
+                : false; // Costs 1.6 GB
 
         this.sleeve =
             desiredKnowledge.grafting || desiredKnowledge.sleeve ?
                 "grafting" in ns &&
-                typeof (ns as any).grafting?.waitForOngoingGrafting === "function" // Costs 1GB? Copy of Grafting since it's the same function and if there's one there's the other
+                typeof (ns as any).grafting?.waitForOngoingGrafting === "function" // Costs 1GB. Copy of Grafting since it's the same function and if there's one there's the other
                 : false;
 
         this.stanek =
@@ -85,6 +85,6 @@ export class SourceFile_State {
             desiredKnowledge.advancedStock ?
                 "stock" in ns &&
                 typeof (ns as any).stock?.buyShort === "function"
-                : false;
+                : false; // Costs 2.5 GB
     }
 }
