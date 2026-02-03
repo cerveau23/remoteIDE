@@ -1,30 +1,30 @@
 import { NS } from "@ns";
-import {ReactNode, useEffect} from "react";
+//import {ReactNode, useEffect} from "react";
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
     ns.disableLog("ALL");
-    const React = eval("window.React");
-    const ReactDOM = eval("window.ReactDOM");
+    const React = eval("window.React") as typeof import("react");
+    const ReactDOM = eval("window.ReactDOM") as typeof import("react-dom/client");
     // const Babel = eval("window.Babel");
     if(!React || !ReactDOM /*|| !Babel*/){
         ns.tprint("React or Babel not found");
         return;
     }
-    const root = eval('document.getElementById("root")');
+    const container = eval('document.createElement("div")');
+    const root = ReactDOM.createRoot(container);
     if(!root){
         ns.tprint("Root not found")
         return;
     }
-    useEffect(() =>{
-        const container = eval('document.createElement("div")');
+    React.useEffect(() =>{
         container.style.padding = "10px";
         container.style.background = "yellow";
         container.style.border = "4px solid red";
         container.style.margin = "12px";
         container.style.color = "black";
         container.style.zIndex = "9999";
-        root.appendChild(container);
+        document.body.appendChild(container);
         return () => {
             container.remove();
         }

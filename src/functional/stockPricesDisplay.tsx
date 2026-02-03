@@ -1,8 +1,6 @@
 import {NS, TIX} from "@ns";
 import {ui} from "/functional/UIGetter";
 import {getHTML} from "/functional/HtmlGetter";
-import {useEffect} from "react";
-import React from "react";
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
@@ -13,7 +11,12 @@ export async function main(ns: NS) {
     const TEXT_ID = "Stonks-Text";
     const STONKS_ID = "Stonks-Count";
 
-    const ReactDOM = eval("window.ReactDOM") as typeof import("react-dom/client");
+    const React = eval("window.React") as typeof import("react");
+    const ReactDOM = eval("window.ReactDOM") as typeof import("react-dom");
+    if(!React || !ReactDOM){
+        ns.tprint("React or Babel not found");
+        return;
+    }
 
     const moneyElement = getHTML(HOOK_ID, "id").closest('tr');
     if (moneyElement == null)
@@ -50,106 +53,129 @@ export async function main(ns: NS) {
         StonksPart.setAttribute("id", ID);
 
         // Sets the text
-        StonksPart.textContent = textContent;
+        StonksPart.innerHTML = textContent;
     }
 
-    cloneModifier(TEXT_ID, "Stocks", 0);
+    cloneModifier(TEXT_ID, "Stocks&nbsp;", 0);
     cloneModifier(STONKS_ID, "", 1);
 
     // Finished creating the template
     const html = template.outerHTML;
 
+    //ns.tprintRaw(OverviewRowShell({html : html, ns : ns}));
+    ns.tprintRaw(<OverviewRowShell html={html} ns={ns} />);
+
     function mount(parent: HTMLTableSectionElement, html: string, ns: NS) {
-        const rootEl = document.createElement("div")
-        if(!moneyElement)
+        const rootEl = ui.doCument.createElement("div")
+        if (!moneyElement)
             throw new Error("No money element");
+        parent.insertBefore(rootEl, moneyElement.nextSibling);
 
-        useEffect(() =>{
-            parent.insertBefore(rootEl, moneyElement.nextSibling);
-            return () => {
-                template.remove();
-            }
-        },[])
-
-        const root = ReactDOM.createRoot(rootEl);
-        root.render(
-            <OverviewRowShell html={html} ns={ns} />
-        )
-        return root;
+        ReactDOM.render(<OverviewRowShell html={html} ns={ns} />, rootEl)
+        return rootEl
+        // const root = ReactDOM.createRoot(rootEl);
+        // root.render(
+        //     <OverviewRowShell html={html} ns={ns} />
+        // )
+        // return root;
     }
 
     let root = mount(parent, html, ns);
 
-    if (!root) {
+    /*if (!root) {
         ns.tprint("Root not found")
         return;
-    }
+    }*/
 
-    ns.atExit(()=> {
-        root.unmount();
+    ns.atExit(() => {
+        ReactDOM.unmountComponentAtNode(root);
+        parent.removeChild(root);
     });
 
     const tix: TIX = ns.stock as TIX;
 
-    function OverviewRowShell({ html, ns }: { html: string, ns: NS }) {
+    function OverviewRowShell({html, ns}: { html: string, ns: NS }) {
+        // ns.tprint("Starting");
         const [tick, setTick] = React.useState(0);
+        // ns.tprint("Set tick");
         const [price, setPrice] = React.useState(0);
+        console.count("OverviewRowShell render");
 
-        useEffect(() =>{
+        // ns.tprint("Made states")
+
+        React.useEffect(() => {
+            console.count("stockAnalysis effect");
+            // ns.tprint("[1st]Starting 1st useEffect")
             let working = true;
             const symbols = tix.getSymbols();
+            // ns.tprint("[1st]Set constants")
 
-            async function loop(){
+            async function loop() {
                 while (working) {
-                    let portfolioState = symbols.map((symbol)=> {
+                    let portfolioState = symbols.map((symbol) => {
                         const positions = tix.getPosition(symbol);
-                        return (positions[0] ? tix.getSaleGain(symbol, positions[0], "Long") : 0) + (positions[2] ? tix.getSaleGain(symbol, positions[2], "Short") : 0)
-                    })
+                        return (positions[0] ? tix.getSaleGain(symbol, positions[0], "Long") : 0)
+                            + (positions[2] ? tix.getSaleGain(symbol, positions[2], "Short") : 0);
+                    });
                     let sum = portfolioState.reduce((previous, current) => previous + current, 0);
 
                     setPrice(sum);
-                    setTick(tick + 1);
+                    setTick(prev => prev + 1);
 
                     await tix.nextUpdate();
                 }
             }
+            // ns.tprint("[1st]Starting loop");
             loop();
-            return () => {
-                working = false;
-            }
-        },[])
+            // ns.tprint("[1st]Started loop");
 
-        useEffect(() => {
-            getHTML(STONKS_ID, "id").innerText = "$" + ns.formatNumber(price);
-        }, [tick])
+            return () => {
+                // ns.tprint("[1st] Returning");
+                working = false;
+            };
+        }, []);
+        // ns.tprint("Set 1st useEffect");
+        React.useEffect(() => {
+            console.count("priceChange effect");
+            // ns.tprint("[2nd] Starting second useEffect");
+            const el = getHTML(STONKS_ID, "id")
+            // ns.tprint("[2nd] Got the element");
+            if(el) el.innerText = "$" + ns.formatNumber(price);
+            // ns.tprint("[2nd]Set a new price");
+        }, [tick]);
+        // ns.tprint("Set 2nd useEffect");
 
         return (
-            <div dangerouslySetInnerHTML={{ __html: html }}></div>
+            <tr dangerouslySetInnerHTML={{__html: html}}></tr>
         )
     }
 
-    function ensureStocksRow() {
+    let suppresser = false;
 
+    function ensureStocksRow() {
         /*if (ui.doCument.getElementById(PARASITE_ID)) return;*/
         const observer = new MutationObserver(() => {
+            if(suppresser) return;
+            console.count("MutationObserver fired");
             const hook = ui.doCument.getElementById(HOOK_ID);
-            if (!hook) return; // React not ready yet
+            if (!hook || !parent) return; // React not ready yet
 
             // create row
-            if (parent)
-                root = mount(parent, html, ns);
+            suppresser = true;
+            /*root = */mount(parent, html, ns);
+            suppresser = false;
         })
         if (parent)
-            observer.observe(parent,{
-                    subtree: true,
-                    childList: true,
-                })
+            observer.observe(parent, {
+                childList: true,
+                subtree: false
+            })
     }
-
+    await ns.asleep(10);
     ensureStocksRow();
 
-    while(true) {
-        await ns.sleep(60000000);
+    while (true) {
+        await ns.asleep(60000000);
     }
 }
 
