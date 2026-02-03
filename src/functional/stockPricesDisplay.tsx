@@ -97,6 +97,7 @@ export async function main(ns: NS) {
     function OverviewRowShell({html, ns}: { html: string, ns: NS }) {
         // ns.tprint("Starting");
         const [tick, setTick] = React.useState(0);
+
         // ns.tprint("Set tick");
         const [price, setPrice] = React.useState(0);
         console.count("OverviewRowShell render");
