@@ -2,6 +2,7 @@ import "BBA_API_handler"
 
 /** @param {NS} ns */
 export async function main(ns) {
+    // eslint-disable-next-line no-constant-condition
     while(true){
         if(Array.from(document.getElementsByClassName("css-1d6cey9")).some((value)=>value.innerText.includes("Infiltrate"))){
             ns.tprint(Array.from(document.getElementsByClassName("css-1d6cey9")).filter((value)=>value.innerText.includes("Infiltrate")).toString() )

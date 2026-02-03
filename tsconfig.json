@@ -17,6 +17,8 @@
     "baseUrl": "src/",
     "allowJs": true,
     "jsx": "react",
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment",
     "paths": {
       "/*": ["*"],
       "@ns": ["../nsdef/NetscriptDefinitions.d.ts"],
