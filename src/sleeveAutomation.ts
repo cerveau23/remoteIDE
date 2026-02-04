@@ -1,8 +1,9 @@
-import { NS, Skills } from "@ns";
+import { NS } from "@ns";
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
     //@ignore-infinite
+    // noinspection InfiniteLoopJS
     while(true){
         for(let sleeveNbr = 0; sleeveNbr < ns.sleeve.getNumSleeves(); ++sleeveNbr){
             let sleeveStats = ns.sleeve.getSleeve(sleeveNbr);

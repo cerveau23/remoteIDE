@@ -4,6 +4,7 @@ import {NS} from "@ns";
 /** @param {NS} ns */
 export async function main(ns: NS) {
     //@ignore-infinite
+    // noinspection InfiniteLoopJS
     while(true){
         const host = "Saboteur";
         let threads = Math.floor((ns.getServerMaxRam(host) - ns.getServerUsedRam(host)) / ns.getScriptRam("grower.js"));

@@ -43,6 +43,7 @@ export async function main(ns) {
         container
     );
 
+    // noinspection InfiniteLoopJS
     while(true){
         await ns.sleep(1000);
     }

@@ -56,6 +56,7 @@ export async function main(ns: NS) {
     //eval(jsxCode);
     // ns.tprintRaw(jsxCode);
 
+    // noinspection InfiniteLoopJS
     while(true){
         await ns.sleep(1000);
     }

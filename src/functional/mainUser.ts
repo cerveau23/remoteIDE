@@ -98,5 +98,5 @@ export async function main(ns:NS, recurse = 0){
     self(ns,recurse)
 }
 function self(ns:NS, recurse:number){
-    main(ns, ++recurse);
+    main(ns, ++recurse).then(r => null);
 }

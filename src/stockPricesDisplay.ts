@@ -39,6 +39,7 @@ export async function main(ns: NS) {
 
         console.log(ui.doCument.getElementById("Stonks")?.innerHTML);
         (<HTMLElement>ui.doCument.getElementById("Stonks")).onclick = () => killer(ns);
+        // noinspection InfiniteLoopJS
         while (true)
             await ns.asleep(1000);
         // ui.doCument.getElementById("Stonks").addEventListener("click",killer)

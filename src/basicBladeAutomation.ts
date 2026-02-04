@@ -4,6 +4,7 @@ let mode: string;
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
+    // noinspection InfiniteLoopJS
     while (true) {
         let waitingTime = await ns.bladeburner.nextUpdate();
         handlePlayer(ns, waitingTime)

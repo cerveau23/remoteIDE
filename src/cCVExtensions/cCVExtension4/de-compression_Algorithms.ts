@@ -444,7 +444,7 @@ export async function lZCompressionV2(ns: NS, contractName: string, serverName: 
         if (added) {
             let setback = 0;
             let length = 0;
-            let caseInQuestion;
+            let caseInQuestion = [undefined];
             let replacement = "";
             for (let b in additions) {
                 let newLength = 0;
@@ -462,7 +462,7 @@ export async function lZCompressionV2(ns: NS, contractName: string, serverName: 
                     newReplacement = newCaseInQuestion[1]
                 }
                 // @ts-ignore
-                let best = [[length, setback, caseInQuestion, replacement], [newLength, newSetback, newCaseInQuestion, newReplacement]].sort(function (a, b) {
+                let best: [number, number, any[], string][] = [[length, setback, caseInQuestion, replacement], [newLength, newSetback, newCaseInQuestion, newReplacement]].sort(function (a: [number, number, any[], string], b: [number, number, any[], string]) {
                     return (b[0] + (b[3][3] ? (-0.5) : 0)) - (a[0] + (a[3][3] ? (-0.5) : 0))
                 });
                 [length, setback, caseInQuestion, replacement] = best[0];
@@ -1567,7 +1567,7 @@ export function lZCompressionV3(ns: NS, contractName: string, serverName: string
  *  @returns {string}
  *  @deprecated Still in development*/
 export function lZCompression(ns: NS, contractName: string, serverName: string): string {
-    let contractData = "";
+    let contractData: string;
     contractData = ns.codingcontract.getData(contractName, serverName);
     let answer = "";
     let correspondences = new Array(contractData.length).fill([]);
@@ -1624,7 +1624,7 @@ export function lZCompression(ns: NS, contractName: string, serverName: string):
     }
 
     let testingString;
-    let length = correspondences.length
+    let length = correspondences?.length ?? 0;
     for (let combination = 0; combination < (10 ** length) / 5; combination++) {
         let arrayCombination = combination.toString().split("").map((v) => parseInt(v));
         ns.print("Combination: " + arrayCombination);

@@ -1,5 +1,5 @@
 import {NS} from "@ns";
-import {compressPrimes, decompressPrimes, runLengthEncode, runLengthDecode} from "/functional/functions.js"
+import {compressPrimes, runLengthEncode} from "/functional/functions.js"
 
 let done = false;
 
