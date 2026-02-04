@@ -37,10 +37,11 @@ export async function main(ns: NS) {
 
     /**
      * @param {String} ID           The ID to give the chosen Element
-     * @param {String} textContent  The text to add to it
+     * @param {String} [textB4]       The text to change
+     * @param {String} textAfter    The text to add instead
      * @param {Number} number       The index of the chosen Element in the list of children
      */
-    function cloneModifier(ID: string, textContent: string, number: number) {
+    function cloneModifier(ID: string, textAfter: string, number: number, textB4?: string) {
         /**
          * Contains a reference to the `<p>` with the text.
          * @type {HTMLParagraphElement | null | undefined}
@@ -53,25 +54,28 @@ export async function main(ns: NS) {
         StonksPart.setAttribute("id", ID);
 
         // Sets the text
-        StonksPart.innerHTML = textContent;
+        if(textB4)
+            StonksPart.innerHTML = StonksPart.innerHTML.replace(textB4, textAfter);
+        else{
+            StonksPart.innerHTML = textAfter;
+        }
     }
 
-    cloneModifier(TEXT_ID, "Stocks&nbsp;", 0);
+    cloneModifier(TEXT_ID, "Stocks", 0, "Money");
     cloneModifier(STONKS_ID, "", 1);
 
     // Finished creating the template
-    const html = template.outerHTML;
 
     //ns.tprintRaw(OverviewRowShell({html : html, ns : ns}));
-    ns.tprintRaw(<OverviewRowShell html={html} ns={ns} />);
+    ns.tprintRaw(<OverviewRowShell element={template} ns={ns} />);
 
-    function mount(parent: HTMLTableSectionElement, html: string, ns: NS) {
+    function mount(parent: HTMLTableSectionElement, ns: NS) {
         const rootEl = ui.doCument.createElement("div")
         if (!moneyElement)
             throw new Error("No money element");
         parent.insertBefore(rootEl, moneyElement.nextSibling);
 
-        ReactDOM.render(<OverviewRowShell html={html} ns={ns} />, rootEl)
+        ReactDOM.render(<OverviewRowShell element={template} ns={ns} />, rootEl)
         return rootEl
         // const root = ReactDOM.createRoot(rootEl);
         // root.render(
@@ -80,7 +84,7 @@ export async function main(ns: NS) {
         // return root;
     }
 
-    let root = mount(parent, html, ns);
+    let root = mount(parent, ns);
 
     /*if (!root) {
         ns.tprint("Root not found")
@@ -94,7 +98,7 @@ export async function main(ns: NS) {
 
     const tix: TIX = ns.stock as TIX;
 
-    function OverviewRowShell({html, ns}: { html: string, ns: NS }) {
+    function OverviewRowShell({element, ns}: { element: HTMLTableRowElement, ns: NS }) {
         // ns.tprint("Starting");
         const [tick, setTick] = React.useState(0);
 
@@ -147,7 +151,7 @@ export async function main(ns: NS) {
         // ns.tprint("Set 2nd useEffect");
 
         return (
-            <tr dangerouslySetInnerHTML={{__html: html}}></tr>
+            <tr className={element.className} dangerouslySetInnerHTML={{__html: element.innerHTML}}></tr>
         )
     }
 
@@ -161,9 +165,11 @@ export async function main(ns: NS) {
             const hook = ui.doCument.getElementById(HOOK_ID);
             if (!hook || !parent) return; // React not ready yet
 
+            if(ui.doCument.getElementById(PARASITE_HOOK_ID)) return; // Element still exists
+
             // create row
             suppresser = true;
-            /*root = */mount(parent, html, ns);
+            /*root = */mount(parent, ns);
             suppresser = false;
         })
         if (parent)
