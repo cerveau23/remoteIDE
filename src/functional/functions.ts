@@ -1,5 +1,5 @@
 import type {BladeburnerActionType, BladeburnerCurAction, NS} from "@ns"
-import type {PortData, Geography} from "/typeLib"
+import type {Geography, PortData} from "/typeLib"
 
 /**
  * Gets the type of a bladeburner action.
@@ -359,4 +359,35 @@ export async function simulateKey(ns : NS, keyToPress: string, keysCode: number,
 		initDict.type = "keyup";
 		document.body.dispatchEvent(new KeyboardEvent('keyup', initDict));
 	}
+}
+// noinspection JSUnusedLocalSymbols
+/** @param {String} text */
+export function copyToClipboard(text: string) {
+    // Use the Clipboard API to copy the text
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            // Display success message
+            // alert('Text copied to clipboard!');
+        })
+        .catch(err => {
+            // Handle errors
+            console.error('Failed to copy: ', err);
+        });
+}
+
+/**
+ * @deprecated
+ */
+function pasteFromClipboard() {
+    // Use the Clipboard API to read text from the clipboard
+    navigator.clipboard.readText()
+        .then(text => {
+            // Set the pasted text into the textarea
+            let s = document.getElementById('terminal-input');
+            if (s !== null) s.innerText = text;
+        })
+        .catch(err => {
+            // Handle any errors (e.g., permission denied)
+            console.error('Failed to read clipboard: ', err);
+        });
 }
