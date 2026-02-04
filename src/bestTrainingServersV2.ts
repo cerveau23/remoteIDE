@@ -1,5 +1,6 @@
 import { NS } from "@ns";
-import {dSe, Location, Map} from "depthScanner";
+import {dSe} from "depthScannerV2";
+import {Geography} from "/typeLib";
 
 /**let previousExp = 0;
  let amountSame = 0;*/
@@ -20,7 +21,7 @@ let bestServers : bestServersType = [[]]//{0: []};
 export async function main(ns: NS) : Promise<[bestServersType, number, number, number[]]> {
     ns.ui.openTail();
     trueNS = ns;
-    let mapp = <Map>dSe(ns);
+    let mapp = <Geography.Map>dSe(ns);
     mapp.forEach(checkExp);
     //ns.print("Servers same exp: " + amountSame);
     ns.print("Max exp: " + maxExp + " Amount: " + maxExpAmount);
@@ -37,7 +38,7 @@ export async function main(ns: NS) : Promise<[bestServersType, number, number, n
  * @param {string} location The name of the server to analyse TODO: Check if it's really a string!
  * @return {void} It doesn't return anything, instead it affects global variables inside the script
  */
-function checkExp(location: Location): void {
+function checkExp(location: Geography.Location): void {
     let exp = trueNS.formulas.hacking.hackExp(trueNS.getServer(location[0]), trueNS.getPlayer());
     //trueNS.print(exp + " exp;" + Object.values(bestServers));
     //if (exp == previousExp) { amountSame++; }

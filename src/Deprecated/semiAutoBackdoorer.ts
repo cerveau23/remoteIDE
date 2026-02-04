@@ -1,7 +1,7 @@
-import {portReceiver} from "/functional/functions";
-import {dSe} from "depthScannerV2";
-import {keyPressAPI, serverPing, initialization as serverInitialization} from "BBA_API_handler"
-import { NS } from "@ns";
+import {copyToClipboard, portReceiver} from "/functional/functions";
+import {dSe} from "/depthScannerV2";
+import {initialization as serverInitialization, keyPressAPI, serverPing} from "/BBA_API_handler"
+import {NS} from "@ns";
 
 // noinspection JSUnusedLocalSymbols
 /** @param {NS} ns **/
@@ -85,38 +85,6 @@ export async function main(ns: NS) {
     ns.tprint("All servers backdoored!");
     /* } */
     ns.write("lastHackingAtLevel.txt", ns.getHackingLevel().toString(), "w");
-}
-
-/** @param {String} text */
-export function copyToClipboard(text: string) {
-    // Use the Clipboard API to copy the text
-    navigator.clipboard.writeText(text)
-        .then(() => {
-            // Display success message
-            // alert('Text copied to clipboard!');
-        })
-        .catch(err => {
-            // Handle errors
-            console.error('Failed to copy: ', err);
-        });
-}
-
-// noinspection JSUnusedLocalSymbols
-/**
- * @deprecated
- */
-function pasteFromClipboard() {
-    // Use the Clipboard API to read text from the clipboard
-    navigator.clipboard.readText()
-        .then(text => {
-            // Set the pasted text into the textarea
-            let s = document.getElementById('terminal-input');
-                if(s!==null) s.innerText = text;
-        })
-        .catch(err => {
-            // Handle any errors (e.g., permission denied)
-            console.error('Failed to read clipboard: ', err);
-        });
 }
 
 // noinspection JSUnusedLocalSymbols

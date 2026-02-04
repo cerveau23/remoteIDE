@@ -1,5 +1,5 @@
 import { NS } from "@ns";
-import { dSe } from "depthScanner";
+import { dSe } from "depthScannerV2";
 let awakenAtStartOfScript: string;
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -58,7 +58,7 @@ export async function main(ns: NS) {
  * Checks if new servers are available for hacking
  * @param {NS} ns */
 async function newHackingServers(ns: NS) {
-  let toBeHacked = dSe(ns, [["NAS", true]]) as string[];
+  let toBeHacked = dSe(ns, {"NAS": true});
   let toBeHackedString;
   let color;
   const reset = "\u001b[0m";

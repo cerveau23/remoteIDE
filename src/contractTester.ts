@@ -1,5 +1,6 @@
 import { NS } from "@ns";
-import { copyToClipboard } from "semiAutoBackdoorer"
+
+import {copyToClipboard} from "/functional/functions";
 /** @param {NS} ns */
 export async function main(ns: NS) {
 	let type = <string> await ns.prompt("Type:", { type: "select", choices: ns.codingcontract.getContractTypes() })
