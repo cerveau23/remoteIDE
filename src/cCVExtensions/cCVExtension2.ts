@@ -260,7 +260,7 @@ export function algoStonksII(ns: NS, contractName: string, serverName: string, o
 
     // Loop through the prices to find all opportunities for profit
     for (let i : number = 0; i < contractData.length - 1; i++) {
-        // If the price on day i+1 is higher than day i, make a profit
+        // If the avgPrice on day i+1 is higher than day i, make a profit
         if (contractData[i + 1] > contractData[i]) {
             totalProfit += contractData[i + 1] - contractData[i];
         }
@@ -316,7 +316,7 @@ export function algoStonksIV(ns: NS, contractName: string, serverName: string, m
             // Update the dp table for t transactions at day d
             dp[t][d] = Math.max(dp[t][d - 1], prices[d] + maxDiff);
 
-            // Update maxDiff to keep track of the best buy price up to day d
+            // Update maxDiff to keep track of the best buy avgPrice up to day d
             maxDiff = Math.max(maxDiff, dp[t - 1][d] - prices[d]);
         }
     }

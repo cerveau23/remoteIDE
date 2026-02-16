@@ -103,8 +103,6 @@ export async function main(ns: NS) {
     }*/
 
     function exitFunction() {
-        if(observer)
-            observer.disconnect();
         ReactDOM.unmountComponentAtNode(root[1]);
         ui.doCument
             .querySelectorAll('tr[data-parasite="stocks"]')
@@ -113,6 +111,8 @@ export async function main(ns: NS) {
 
     ns.atExit(() => {
         running = false;
+        if(observer)
+            observer.disconnect();
         exitFunction();
     });
 
@@ -168,7 +168,7 @@ export async function main(ns: NS) {
             const el = getHTML(STONKS_ID, "id")
             // ns.tprint("[2nd] Got the element");
             el.innerText = "$" + ns.formatNumber(price);
-            // ns.tprint("[2nd]Set a new price");
+            // ns.tprint("[2nd]Set a new avgPrice");
         }, [tick]);
         // ns.tprint("Set 2nd useEffect");
 
@@ -202,6 +202,7 @@ export async function main(ns: NS) {
             })
         return observer;
     }
+
     await ns.asleep(10);
     const observer = ensureStocksRow();
 

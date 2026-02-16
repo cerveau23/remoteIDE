@@ -16,9 +16,9 @@ export async function main(ns: NS) {
     ns.ramOverride(2.9);
     ns.run(await softResetManager(ns));
     await ns.sleep(10);
-    if (ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname()) >= ns.getScriptRam("wolf.js")) {
+    /*if (ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname()) >= ns.getScriptRam("wolf.js")) {
       ns.run("wolf.js", { preventDuplicates: true, temporary: true });
-    }
+    }*/
     ns.tprint("Low Ram");
     // eslint-disable-next-line no-constant-condition
     // noinspection InfiniteLoopJS
@@ -43,7 +43,7 @@ export async function main(ns: NS) {
   }, 0) > 1) {
     ns.exit();
   }
-  let runningScripts = ["wolf.js", "googleMaps.js"]; //, "codingContractVirus.js"];
+  let runningScripts = [/*"wolf.js",*/ "googleMaps.js"]; //, "codingContractVirus.js"];
   for (let i of runningScripts) {
     ns.run(i, { preventDuplicates: true, temporary: true });
   }
