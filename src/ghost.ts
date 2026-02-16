@@ -15,21 +15,21 @@ let stockMoney: number = 0;
 class Stock {
 
     /**
-     * The stock's symbol
+     * The stock's symbol.
      * @type {string}
      * @readonly
      */
     public readonly symbol: string;
 
     /**
-     * The maximum number of shares the player can own at once
+     * The maximum number of shares the player can own at once.
      * @type {number}
      * @readonly
      */
     public readonly maxStocks: number;
 
     /**
-     * The static instance of ns shared among all Stock instances
+     * The static instance of ns shared among all Stock instances.
      * @type {NS}
      * @private
      * @static
@@ -44,10 +44,10 @@ class Stock {
     public readonly volatility: number;
 
     /**
-     * The constructor of the Stock class
-     * @param {string} symbol The stock's symbol
-     * @param {NS} [ns] A way to actualise the static ns instance stored in the Stock class
-     * @param {boolean} [noSell = false] If true, will not sell any share even if they go against the current trend
+     * The constructor of the Stock class.
+     * @param {string} symbol The stock's symbol.
+     * @param {NS} [ns] A way to actualise the static ns instance stored in the Stock class.
+     * @param {boolean} [noSell = false] If true, will not sell any share even if they go against the current trend.
      */
     constructor(symbol: string, ns?: NS, noSell: boolean = false) {
 
@@ -68,30 +68,86 @@ class Stock {
     }
 
     /**
-     * A way to shorten the namespace
+     * A way to shorten the namespace.
      * @returns {TIX}
      * @private
      */
     private get tix(): TIX {return Stock.#ns.stock}
 
+    /**
+     * The number of long shares (Value up = gain).
+     * @returns {number}
+     */
     get sharesLong(): number {return this.tix.getPosition(this.symbol)[0]}
+    /**
+     * The average price of the long shares possessed at the time of purchase.
+     * @returns {number}
+     */
     get avgLongPrice(): number {return this.tix.getPosition(this.symbol)[1]}
+    /**
+     * The number of short shares (Value down = gain).
+     * @returns {number}
+     */
     get sharesShort(): number {return this.tix.getPosition(this.symbol)[2]}
+    /**
+     * The average price of the short shares possessed at the time of purchase.
+     * @returns {number}
+     */
     get avgShortPrice(): number {return this.tix.getPosition(this.symbol)[3]}
 
+    /**
+     * The forecast of the stock.
+     * @returns {number}
+     */
     get forecast(): number {return this.tix.getForecast(this.symbol)}
 
+    /**
+     * The average price of the stock per share.
+     * @returns {number}
+     */
     get avgPrice(): number {return this.tix.getPrice(this.symbol)}
+    /**
+     * The asking price of the stock per share.
+     * @returns {number}
+     */
     get askPrice(): number {return this.tix.getAskPrice(this.symbol)}
+    /**
+     * The bidding price of the stock per share.
+     * @returns {number}
+     */
     get bidPrice(): number {return this.tix.getBidPrice(this.symbol)}
 
+    /**
+     * Whether the stock is growing or shrinking.
+     * @returns {"positive" | "negative"}
+     */
     get growth(): "positive" | "negative" {return (this.forecast > 0.50) ? "positive" : "negative"}
+    /**
+     * Gets the average growth (absolute) in percentage of the stock price.
+     * @returns {number}
+     */
     get avgGrowthPc(): number {return (this.forecast - 0.5) * this.volatility}
+    /**
+     * Gets the average growth (absolute) in dollars (according to the stock price.
+     * @returns {number}
+     */
     get avgGrowth$(): number {return this.avgGrowthPc * this.avgPrice}
 
+    /**
+     * The price of buying the stock, depending on its forecast.
+     * @returns {number}
+     */
     get buyPrice(): number  {return (this.growth === "positive") ? this.askPrice : this.bidPrice}
+    /**
+     * The price of selling the stock, depending on its forecast.
+     * @returns {number}
+     */
     get sellPrice(): number  {return (this.growth === "negative") ? this.bidPrice : this.askPrice}
 
+    /**
+     * Sells the stocks that will lose money.
+     * @private
+     */
     private sellBadStock() {
         if ((this.growth === "positive") && (this.sharesShort !== 0))
             this.tix.sellShort(this.symbol, this.maxStocks);
@@ -99,6 +155,9 @@ class Stock {
             this.tix.sellStock(this.symbol, this.maxStocks);
     }
 
+    /**
+     * Sells all stocks.
+     */
     destroy(){
         this.tix.sellShort(this.symbol, this.maxStocks);
         this.tix.sellStock(this.symbol, this.maxStocks);
@@ -129,6 +188,7 @@ export async function main(ns: NS) {
     let buyingLimit = 10000000;
 
     while (true) {
+        updateStockNS();
 
         stockMoney = actualisePortfolio(ns);
         let stockMoneyWork = stockMoney;
