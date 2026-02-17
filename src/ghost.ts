@@ -74,6 +74,9 @@ class Stock {
      */
     private get tix(): TIX {return Stock.#ns.stock}
 
+    /*-------------------------------------
+                    Portfolio
+     -------------------------------------*/
     /**
      * The number of long shares (Value up = gain).
      * @returns {number}
@@ -101,6 +104,9 @@ class Stock {
      */
     get forecast(): number {return this.tix.getForecast(this.symbol)}
 
+    /*-------------------------------------
+                 Market Prices
+     -------------------------------------*/
     /**
      * The average price of the stock per share.
      * @returns {number}
@@ -117,6 +123,9 @@ class Stock {
      */
     get bidPrice(): number {return this.tix.getBidPrice(this.symbol)}
 
+    /*-------------------------------------
+                    Growth
+     -------------------------------------*/
     /**
      * Whether the stock is growing or shrinking.
      * @returns {"positive" | "negative"}
@@ -128,11 +137,14 @@ class Stock {
      */
     get avgGrowthPc(): number {return (this.forecast - 0.5) * this.volatility}
     /**
-     * Gets the average growth (absolute) in dollars (according to the stock price.
+     * Gets the average growth (absolute) in dollars (according to the stock price).
      * @returns {number}
      */
     get avgGrowth$(): number {return this.avgGrowthPc * this.avgPrice}
 
+    /*-------------------------------------
+                  Stock Prices
+     -------------------------------------*/
     /**
      * The price of buying the stock, depending on its forecast.
      * @returns {number}
@@ -184,7 +196,7 @@ export async function main(ns: NS) {
         // ns.run("extraMuros.js", 1, "--script", "stockPricesDisplay.js", "--args", 0);
     });
 
-    // What is it for again?
+    // What is this variable for again?
     let buyingLimit = 10000000;
 
     while (true) {
