@@ -12,6 +12,8 @@ let allSymbolsBank: string[];
 let allStocks: Stock[];
 let stockMoney: number = 0;
 
+const tradingTax = 100000;
+
 class Stock {
 
     /**
@@ -342,6 +344,7 @@ function actualisePortfolio(ns: NS): number {
         portfolioList[allSymbolsBank[i]] = ns.stock.getPosition(allSymbolsBank[i]);
         stockMoney += (portfolioList[allSymbolsBank[i]][0] * ns.stock.getBidPrice(allSymbolsBank[i])
             + portfolioList[allSymbolsBank[i]][2] * ns.stock.getAskPrice(allSymbolsBank[i]));
+        stockMoney -= (Number(portfolioList[allSymbolsBank[i]][0] !== 0) + Number(portfolioList[allSymbolsBank[i]][2] !== 0)) * tradingTax;
     }
     return stockMoney;
 }
