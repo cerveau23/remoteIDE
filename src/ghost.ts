@@ -105,6 +105,11 @@ class Stock {
      * @returns {number}
      */
     get forecast(): number {return this.tix.getForecast(this.symbol)}
+    /**
+     * The multiplier of the stock's value. Is 1 + (forecast - 0.5)
+     * @returns {number}
+     */
+    get forecastMultiplier(): number {return this.forecast - 0.5 + 1;}
 
     /*-------------------------------------
                  Market Prices
@@ -134,15 +139,25 @@ class Stock {
      */
     get growth(): "positive" | "negative" {return (this.forecast > 0.50) ? "positive" : "negative"}
     /**
-     * Gets the average growth (absolute) in percentage of the stock price.
+     * Gets the maximum growth in percentage of the stock price.
      * @returns {number}
      */
-    get avgGrowthPc(): number {return (this.forecast - 0.5) * this.volatility}
+    get maxGrowthPc(): number {return (this.forecast - 0.5) * this.volatility}
+    /**
+     * Gets the most extreme growth multiplier of the stock price.
+     * @returns {number}
+     */
+    get maxGrowthPcMultiplier(): number {return (this.forecastMultiplier) * this.volatility}
     /**
      * Gets the average growth (absolute) in dollars (according to the stock price).
      * @returns {number}
      */
-    get avgGrowth$(): number {return Math.abs(this.avgGrowthPc) * this.avgPrice}
+    get avgGrowth$(): number {return Math.abs(this.maxGrowthPc / 2) * this.avgPrice}
+    /**
+     * Gets the average price in dollars (according to the stock price) at the next tick.
+     * @returns {number}
+     */
+    get avgNextPrice(): number {return (this.maxGrowthPc / 2 + 1) * this.avgPrice}
 
     /*-------------------------------------
                   Stock Prices
@@ -157,6 +172,17 @@ class Stock {
      * @returns {number}
      */
     get sellPrice(): number  {return (this.growth === "negative") ? this.bidPrice : this.askPrice}
+
+    /*-------------------------------------
+                 Type coercion
+     -------------------------------------*/
+    [Symbol.toPrimitive](hint: string) {
+        /*if (hint === "number") {
+            return Math.sqrt(this.x ** 2 + this.y ** 2);
+        }
+        return `(${this.x}, ${this.y})`;*/
+    }
+
 
     /**
      * Sells the stocks that will lose money.
@@ -176,6 +202,13 @@ class Stock {
         this.tix.sellShort(this.symbol, this.maxStocks);
         this.tix.sellStock(this.symbol, this.maxStocks);
     }
+}
+
+function deltaAvgGrowth(a: Stock,b: Stock) {
+    return b.avgGrowth$ - a.avgGrowth$
+}
+function deltaAvgGrowthWMostStocks(a: Stock,b: Stock) {
+    return b.avgGrowth$ - a.avgGrowth$
 }
 
 
@@ -203,6 +236,9 @@ export async function main(ns: NS) {
 
     while (true) {
         updateStockNS();
+
+        // Sort the stocks by the average growth expected
+        allStocks.sort(deltaAvgGrowth);
 
         stockMoney = actualisePortfolio(ns);
         let stockMoneyWork = stockMoney;
