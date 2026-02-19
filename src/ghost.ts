@@ -142,7 +142,7 @@ class Stock {
      * Gets the average growth (absolute) in dollars (according to the stock price).
      * @returns {number}
      */
-    get avgGrowth$(): number {return this.avgGrowthPc * this.avgPrice}
+    get avgGrowth$(): number {return Math.abs(this.avgGrowthPc) * this.avgPrice}
 
     /*-------------------------------------
                   Stock Prices
