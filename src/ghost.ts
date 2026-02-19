@@ -198,7 +198,7 @@ export async function main(ns: NS) {
         // ns.run("extraMuros.js", 1, "--script", "stockPricesDisplay.js", "--args", 0);
     });
 
-    // What is this variable for again?
+    // Defines the minimum money to have in the bank before buying more stocks.
     let buyingLimit = 10000000;
 
     while (true) {
